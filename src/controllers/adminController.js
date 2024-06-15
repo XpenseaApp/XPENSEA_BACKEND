@@ -3,6 +3,7 @@ const Admin = require("../models/adminModel");
 const Role = require("../models/roleModel");
 const { hashPassword, comparePasswords } = require("../utils/bcrypt");
 const { generateToken } = require("../utils/generateToken");
+const checkAccess = require("../helpers/checkAccess");
 const {
   createAdminSchema,
   editAdminSchema,
@@ -30,7 +31,7 @@ exports.loginAdmin = async (req, res) => {
       return responseHandler(res, 401, "Invalid password", null);
     }
 
-    const token = generateToken(findAdmin._id);
+    const token = generateToken(findAdmin._id, findAdmin.role);
 
     return responseHandler(res, 200, "Login successfull", token);
   } catch (error) {
@@ -102,6 +103,16 @@ exports.editAdmin = async (req, res) => {
     const { id } = req.params;
     if (!id) {
       return responseHandler(res, 400, "Admin ID is required", null);
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("adminManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action",
+        null
+      );
     }
 
     const findAdmin = await Admin.findById(id);
@@ -210,6 +221,17 @@ exports.editRole = async (req, res) => {
     if (!id) {
       return responseHandler(res, 400, "Role ID is required", null);
     }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("roleManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action",
+        null
+      );
+    }
+
     const findRole = await Role.findById(id);
     if (!findRole) {
       return responseHandler(res, 404, "Role not found", null);
@@ -271,7 +293,6 @@ exports.getRole = async (req, res) => {
   }
 };
 
-
 /* The `exports.listController` function is a controller responsible for listing either admins or roles
 based on the `type` parameter provided in the request query. Here is a breakdown of what the
 function is doing: */
@@ -281,7 +302,23 @@ exports.listController = async (req, res) => {
     const skipCount = 10 * (pageNo - 1);
     const filter = {};
 
+    const accessPermissions = {
+      admins: "adminManagement_view",
+      roles: "roleManagement_view",
+    };
+
     if (type === "admins") {
+      const check = await checkAccess(req.roleId, "permissions");
+
+      if (!check || !check.includes(accessPermissions[type])) {
+        return responseHandler(
+          res,
+          403,
+          "You don't have permission to perform this action",
+          null
+        );
+      }
+
       const totalCount = await Admin.countDocuments(filter);
       const fetchAdmins = await Admin.find(filter)
         .select("-password")
@@ -293,6 +330,17 @@ exports.listController = async (req, res) => {
       }
       return responseHandler(res, 200, "Admins found", fetchAdmins, totalCount);
     } else if (type === "roles") {
+      const check = await checkAccess(req.roleId, "permissions");
+
+      if (!check || !check.includes(accessPermissions[type])) {
+        return responseHandler(
+          res,
+          403,
+          "You don't have permission to perform this action",
+          null
+        );
+      }
+
       const totalCount = await Role.countDocuments(filter);
       const fetchRoles = await Role.find(filter)
         .skip(skipCount)

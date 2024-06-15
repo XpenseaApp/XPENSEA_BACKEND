@@ -5,7 +5,7 @@ const adminRoute = express.Router();
 
 adminRoute
   .route("/")
-  .post(adminController.createAdmin)
+  .post(authVerify, adminController.createAdmin)
   .get(authVerify, adminController.getAdmin);
 
 adminRoute.put("/admin/:id", authVerify, adminController.editAdmin);
