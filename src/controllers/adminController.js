@@ -163,7 +163,7 @@ exports.getAdmin = async (req, res) => {
     if (!id) {
       return responseHandler(res, 400, "Admin ID is required", null);
     }
-    const findAdmin = await Admin.findById(id);
+    const findAdmin = await Admin.findById(id).populate("role", "permissions locationAccess");
     if (!findAdmin) {
       return responseHandler(res, 404, "Admin not found", null);
     }
