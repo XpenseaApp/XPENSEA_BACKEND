@@ -5,6 +5,8 @@
  *     description: Admin related endpoints
  *   - name: Role
  *     description: Role related endpoints
+ *   - name: List
+ *     description: List related endpoints
  */
 
 /**
@@ -126,6 +128,32 @@
  *         description: Bad request
  *       404:
  *         description: Admin not found
+ */
+
+/**
+ * @swagger
+ * /admin/list/:
+ *   get:
+ *     summary: Get an admin or roles
+ *     description: API endpoint to get existing admins or roles based on query type
+ *     tags:
+ *       - List
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Type of data to retrieve (admins or roles)
+ *     responses:
+ *       200:
+ *         description: Data retrieved successfully
+ *       404:
+ *         description: Data not found
+ *       500:
+ *         description: Internal Server Error
  */
 
 /**

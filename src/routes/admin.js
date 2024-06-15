@@ -19,4 +19,6 @@ adminRoute
   .put(adminController.editRole)
   .get(adminController.getRole);
 
+adminRoute.get("/list", authVerify, adminController.listController);
+
 module.exports = adminRoute;

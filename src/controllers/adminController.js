@@ -270,3 +270,45 @@ exports.getRole = async (req, res) => {
     );
   }
 };
+
+
+/* The `exports.listController` function is a controller responsible for listing either admins or roles
+based on the `type` parameter provided in the request query. Here is a breakdown of what the
+function is doing: */
+exports.listController = async (req, res) => {
+  try {
+    const { type, pageNo = 1 } = req.query;
+    const skipCount = 10 * (pageNo - 1);
+    const filter = {};
+
+    if (type === "admins") {
+      const totalCount = await Admin.countDocuments(filter);
+      const fetchAdmins = await Admin.find(filter)
+        .select("-password")
+        .skip(skipCount)
+        .limit(10)
+        .lean();
+      if (!fetchAdmins || fetchAdmins.length === 0) {
+        return responseHandler(res, 404, "No Admins found", null);
+      }
+      return responseHandler(res, 200, "Admins found", fetchAdmins, totalCount);
+    } else if (type === "roles") {
+      const totalCount = await Role.countDocuments(filter);
+      const fetchRoles = await Role.find(filter)
+        .skip(skipCount)
+        .limit(10)
+        .lean();
+      if (!fetchRoles || fetchRoles.length === 0) {
+        return responseHandler(res, 404, "No Admins found", null);
+      }
+      return responseHandler(res, 200, "Admins found", fetchRoles, totalCount);
+    }
+  } catch (error) {
+    return responseHandler(
+      res,
+      500,
+      `Internal Server Error ${error.message}`,
+      null
+    );
+  }
+};
