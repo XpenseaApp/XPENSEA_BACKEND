@@ -99,7 +99,7 @@ exports.createAdmin = async (req, res) => {
 is a breakdown of what the function is doing: */
 exports.editAdmin = async (req, res) => {
   try {
-    const id = req.userId;
+    const { id } = req.params;
     if (!id) {
       return responseHandler(res, 400, "Admin ID is required", null);
     }

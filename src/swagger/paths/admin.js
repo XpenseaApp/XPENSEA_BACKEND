@@ -79,6 +79,11 @@
  *         description: Admin retrieved successfully
  *       404:
  *         description: Admin not found
+ */
+
+/**
+ * @swagger
+ * /admin/{id}:
  *   put:
  *     summary: Update an admin
  *     description: API endpoint to update an existing admin
@@ -86,6 +91,13 @@
  *       - Admin
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of and admin to update
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
