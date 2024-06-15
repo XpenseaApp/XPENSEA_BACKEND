@@ -23,17 +23,6 @@ const tierSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-tierSchema.pre("save", function (next) {
-  const tier = this;
-  if (tier.isModified("categories") || tier.isNew) {
-    tier.totalAmount = tier.categories.reduce(
-      (sum, category) => sum + (category.maxAmount || 0),
-      0
-    );
-  }
-  next();
-});
-
 const Tier = mongoose.model("Tier", tierSchema);
 
 module.exports = Tier;

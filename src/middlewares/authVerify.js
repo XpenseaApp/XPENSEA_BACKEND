@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const responseHandler = require("../helpers/responseHandler");
 
 const authVerify = (req, res, next) => {
   const header = req.headers["authorization"];
@@ -6,12 +7,12 @@ const authVerify = (req, res, next) => {
   const jwtToken = header && header.split(" ")[1];
 
   if (!jwtToken) {
-    return res.status(401).json({ message: "No token provided" });
+    return responseHandler(res, 401, `No token provided...!`);
   }
 
   jwt.verify(jwtToken, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(403).json({ message: "Failed to authenticate token" });
+      return responseHandler(res, 403, `Failed to authenticate token...!`);
     }
     req.userId = decoded.payload.userId;
     req.roleId = decoded.payload.roleId;

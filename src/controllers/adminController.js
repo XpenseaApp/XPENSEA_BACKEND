@@ -9,18 +9,21 @@ const {
   editAdminSchema,
   createRoleSchema,
   editRoleSchema,
+  createTierSchema,
+  editTierSchema,
 } = require("../validations");
+const Tier = require("../models/tierModel");
 
 exports.loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return responseHandler(res, 400, "Email and password are required", null);
+      return responseHandler(res, 400, "Email and password are required");
     }
 
     const findAdmin = await Admin.findOne({ email });
     if (!findAdmin) {
-      return responseHandler(res, 404, "Admin not found", null);
+      return responseHandler(res, 404, "Admin not found");
     }
 
     const comparePassword = await comparePasswords(
@@ -28,7 +31,7 @@ exports.loginAdmin = async (req, res) => {
       findAdmin.password
     );
     if (!comparePassword) {
-      return responseHandler(res, 401, "Invalid password", null);
+      return responseHandler(res, 401, "Invalid password");
     }
 
     const token = generateToken(findAdmin._id, findAdmin.role);
@@ -55,8 +58,7 @@ exports.createAdmin = async (req, res) => {
       return responseHandler(
         res,
         400,
-        `Invalid input: ${createAdminValidator.error}`,
-        null
+        `Invalid input: ${createAdminValidator.error}`
       );
     }
 
@@ -67,8 +69,7 @@ exports.createAdmin = async (req, res) => {
       return responseHandler(
         res,
         409,
-        `Admin with this email or phone already exists`,
-        null
+        `Admin with this email or phone already exists`
       );
 
     const hashedPassword = await hashPassword(req.body.password);
@@ -84,15 +85,10 @@ exports.createAdmin = async (req, res) => {
         newAdmin
       );
     } else {
-      return responseHandler(res, 400, `Admin creation failed...!`, null);
+      return responseHandler(res, 400, `Admin creation failed...!`);
     }
   } catch (error) {
-    return responseHandler(
-      res,
-      500,
-      `Internal Server Error ${error.message}`,
-      null
-    );
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
 
@@ -102,7 +98,7 @@ exports.editAdmin = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
-      return responseHandler(res, 400, "Admin ID is required", null);
+      return responseHandler(res, 400, "Admin ID is required");
     }
 
     const check = await checkAccess(req.roleId, "permissions");
@@ -110,14 +106,13 @@ exports.editAdmin = async (req, res) => {
       return responseHandler(
         res,
         403,
-        "You don't have permission to perform this action",
-        null
+        "You don't have permission to perform this action"
       );
     }
 
     const findAdmin = await Admin.findById(id);
     if (!findAdmin) {
-      return responseHandler(res, 404, "Admin not found", null);
+      return responseHandler(res, 404, "Admin not found");
     }
 
     const editAdminValidator = editAdminSchema.validate(req.body, {
@@ -127,8 +122,7 @@ exports.editAdmin = async (req, res) => {
       return responseHandler(
         res,
         400,
-        `Invalid input: ${editAdminValidator.error}`,
-        null
+        `Invalid input: ${editAdminValidator.error}`
       );
     }
 
@@ -143,15 +137,10 @@ exports.editAdmin = async (req, res) => {
         updateAdmin
       );
     } else {
-      return responseHandler(res, 400, `Admin update failed...!`, null);
+      return responseHandler(res, 400, `Admin update failed...!`);
     }
   } catch (error) {
-    return responseHandler(
-      res,
-      500,
-      `Internal Server Error ${error.message}`,
-      null
-    );
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
 
@@ -161,20 +150,18 @@ exports.getAdmin = async (req, res) => {
   try {
     const id = req.userId;
     if (!id) {
-      return responseHandler(res, 400, "Admin ID is required", null);
+      return responseHandler(res, 400, "Admin ID is required");
     }
-    const findAdmin = await Admin.findById(id).populate("role", "permissions locationAccess");
+    const findAdmin = await Admin.findById(id).populate(
+      "role",
+      "permissions locationAccess"
+    );
     if (!findAdmin) {
-      return responseHandler(res, 404, "Admin not found", null);
+      return responseHandler(res, 404, "Admin not found");
     }
     return responseHandler(res, 200, "Admin found", findAdmin);
   } catch (error) {
-    return responseHandler(
-      res,
-      500,
-      `Internal Server Error ${error.message}`,
-      null
-    );
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
 
@@ -189,13 +176,12 @@ exports.createRole = async (req, res) => {
       return responseHandler(
         res,
         400,
-        `Invalid input: ${createRoleValidator.error}`,
-        null
+        `Invalid input: ${createRoleValidator.error}`
       );
     }
     const newRole = await Role.create(req.body);
     if (!newRole) {
-      return responseHandler(res, 400, `Role creation failed...!`, null);
+      return responseHandler(res, 400, `Role creation failed...!`);
     }
     return responseHandler(
       res,
@@ -204,12 +190,7 @@ exports.createRole = async (req, res) => {
       newRole
     );
   } catch (error) {
-    return responseHandler(
-      res,
-      500,
-      `Internal Server Error ${error.message}`,
-      null
-    );
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
 
@@ -219,22 +200,23 @@ exports.editRole = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
-      return responseHandler(res, 400, "Role ID is required", null);
+      return responseHandler(res, 400, "Role ID is required");
     }
 
     const check = await checkAccess(req.roleId, "permissions");
+    console.log("🚀 ~ exports.editRole= ~ req.roleId:", req.roleId);
+    console.log("🚀 ~ exports.editRole= ~ check:", check);
     if (!check || !check.includes("roleManagement_modify")) {
       return responseHandler(
         res,
         403,
-        "You don't have permission to perform this action",
-        null
+        "You don't have permission to perform this action"
       );
     }
 
     const findRole = await Role.findById(id);
     if (!findRole) {
-      return responseHandler(res, 404, "Role not found", null);
+      return responseHandler(res, 404, "Role not found");
     }
     const editRoleValidator = editRoleSchema.validate(req.body, {
       abortEarly: true,
@@ -243,8 +225,7 @@ exports.editRole = async (req, res) => {
       return responseHandler(
         res,
         400,
-        `Invalid input: ${editRoleValidator.error}`,
-        null
+        `Invalid input: ${editRoleValidator.error}`
       );
     }
     const updateRole = await Role.findByIdAndUpdate(id, req.body, {
@@ -258,15 +239,10 @@ exports.editRole = async (req, res) => {
         updateRole
       );
     } else {
-      return responseHandler(res, 400, `Role update failed...!`, null);
+      return responseHandler(res, 400, `Role update failed...!`);
     }
   } catch (error) {
-    return responseHandler(
-      res,
-      500,
-      `Internal Server Error ${error.message}`,
-      null
-    );
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
 
@@ -276,26 +252,20 @@ exports.getRole = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
-      return responseHandler(res, 400, "Role ID is required", null);
+      return responseHandler(res, 400, "Role ID is required");
     }
     const findRole = await Role.findById(id);
     if (!findRole) {
-      return responseHandler(res, 404, "Role not found", null);
+      return responseHandler(res, 404, "Role not found");
     }
     return responseHandler(res, 200, "Role found", findRole);
   } catch (error) {
-    return responseHandler(
-      res,
-      500,
-      `Internal Server Error ${error.message}`,
-      null
-    );
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
 
-/* The `exports.listController` function is a controller responsible for listing either admins or roles
-based on the `type` parameter provided in the request query. Here is a breakdown of what the
-function is doing: */
+/* The above code is a controller function in a Node.js application that handles listing data based on
+the `type` parameter provided in the request query. Here's a breakdown of what the code is doing: */
 exports.listController = async (req, res) => {
   try {
     const { type, pageNo = 1 } = req.query;
@@ -305,6 +275,7 @@ exports.listController = async (req, res) => {
     const accessPermissions = {
       admins: "adminManagement_view",
       roles: "roleManagement_view",
+      tiers: "tierManagement_view",
     };
 
     if (type === "admins") {
@@ -314,8 +285,7 @@ exports.listController = async (req, res) => {
         return responseHandler(
           res,
           403,
-          "You don't have permission to perform this action",
-          null
+          "You don't have permission to perform this action"
         );
       }
 
@@ -326,7 +296,7 @@ exports.listController = async (req, res) => {
         .limit(10)
         .lean();
       if (!fetchAdmins || fetchAdmins.length === 0) {
-        return responseHandler(res, 404, "No Admins found", null);
+        return responseHandler(res, 404, "No Admins found");
       }
       return responseHandler(res, 200, "Admins found", fetchAdmins, totalCount);
     } else if (type === "roles") {
@@ -336,8 +306,7 @@ exports.listController = async (req, res) => {
         return responseHandler(
           res,
           403,
-          "You don't have permission to perform this action",
-          null
+          "You don't have permission to perform this action"
         );
       }
 
@@ -347,16 +316,131 @@ exports.listController = async (req, res) => {
         .limit(10)
         .lean();
       if (!fetchRoles || fetchRoles.length === 0) {
-        return responseHandler(res, 404, "No Admins found", null);
+        return responseHandler(res, 404, "No Roles found");
       }
-      return responseHandler(res, 200, "Admins found", fetchRoles, totalCount);
+      return responseHandler(res, 200, "Roles found", fetchRoles, totalCount);
+    } else if (type === "tiers") {
+      const check = await checkAccess(req.roleId, "permissions");
+
+      if (!check || !check.includes(accessPermissions[type])) {
+        return responseHandler(
+          res,
+          403,
+          "You don't have permission to perform this action"
+        );
+      }
+
+      const totalCount = await Tier.countDocuments(filter);
+      const fetchTiers = await Tier.find(filter)
+        .skip(skipCount)
+        .limit(10)
+        .lean();
+      if (!fetchTiers || fetchTiers.length === 0) {
+        return responseHandler(res, 404, "No Tiers found");
+      }
+      return responseHandler(res, 200, "Tiers found", fetchTiers, totalCount);
+    } else {
+      return responseHandler(res, 404, "Invalid type..!");
     }
   } catch (error) {
-    return responseHandler(
-      res,
-      500,
-      `Internal Server Error ${error.message}`,
-      null
-    );
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The `exports.createTier` function is responsible for creating a new tier in the system. Here is a
+breakdown of what the function is doing: */
+exports.createTier = async (req, res) => {
+  try {
+    const createTierValidator = createTierSchema.validate(req.body, {
+      abortEarly: true,
+    });
+    if (createTierValidator.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${createTierValidator.error}`
+      );
+    }
+    const createTier = await Tier.create(req.body);
+    if (createTier) {
+      return responseHandler(
+        res,
+        200,
+        `Tier created successfully..!`,
+        createTier
+      );
+    } else {
+      return responseHandler(res, 400, `Tier creation failed...!`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is an asynchronous function in a Node.js application that is responsible for editing
+a tier in a system. Here is a breakdown of what the code is doing: */
+exports.editTier = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Tier ID is required");
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("tierManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const findTier = await Tier.findById(id);
+    if (!findTier) {
+      return responseHandler(res, 404, "Tier not found");
+    }
+    const editTierValidator = editTierSchema.validate(req.body, {
+      abortEarly: true,
+    });
+    if (editTierValidator.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${editTierValidator.error}`
+      );
+    }
+    const updateTier = await Tier.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    if (updateTier) {
+      return responseHandler(
+        res,
+        200,
+        `Tier updated successfully..!`,
+        updateTier
+      );
+    } else {
+      return responseHandler(res, 400, `Tier update failed...!`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is a JavaScript function that is used to retrieve a specific tier by its ID. It is an
+asynchronous function that takes a request and response object as parameters. */
+exports.getTier = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Tier ID is required");
+    }
+    const findTier = await Tier.findById(id);
+    if (!findTier) {
+      return responseHandler(res, 404, "Tier not found");
+    }
+    return responseHandler(res, 200, "Tier found", findTier);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };

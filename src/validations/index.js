@@ -31,3 +31,19 @@ exports.editRoleSchema = Joi.object({
   locationAccess: Joi.array(),
   status: Joi.boolean(),
 });
+
+exports.createTierSchema = Joi.object({
+  title: Joi.string().required(),
+  activationDate: Joi.date().required(),
+  categories: Joi.array(),
+  status: Joi.boolean(),
+  totalAmount: Joi.number(),
+});
+
+exports.editTierSchema = Joi.object({
+  title: Joi.string(),
+  activationDate: Joi.date(),
+  categories: Joi.array(),
+  status: Joi.boolean(),
+  totalAmount: Joi.number(),
+});

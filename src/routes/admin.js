@@ -12,13 +12,20 @@ adminRoute.put("/admin/:id", authVerify, adminController.editAdmin);
 
 adminRoute.post("/login", adminController.loginAdmin);
 
-adminRoute.route("/role").post(adminController.createRole);
+adminRoute.route("/role").post(authVerify, adminController.createRole);
 
 adminRoute
   .route("/role/:id")
-  .put(adminController.editRole)
-  .get(adminController.getRole);
+  .put(authVerify, adminController.editRole)
+  .get(authVerify, adminController.getRole);
 
 adminRoute.get("/list", authVerify, adminController.listController);
+
+adminRoute.post("/tier", authVerify, adminController.createTier);
+
+adminRoute
+  .route("/tier/:id")
+  .put(authVerify, adminController.editTier)
+  .get(adminController.getTier);
 
 module.exports = adminRoute;
