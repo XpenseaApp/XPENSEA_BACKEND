@@ -440,7 +440,6 @@ exports.getTier = async (req, res) => {
     }
 
     const check = await checkAccess(req.roleId, "permissions");
-    console.log("🚀 ~ exports.getTier= ~ check:", check)
     if (!check || !check.includes("tierManagement_view")) {
       return responseHandler(
         res,
