@@ -1,6 +1,8 @@
 const responseHandler = require("../helpers/responseHandler");
 const Admin = require("../models/adminModel");
 const Role = require("../models/roleModel");
+const Tier = require("../models/tierModel");
+const User = require("../models/userModel");
 const { hashPassword, comparePasswords } = require("../utils/bcrypt");
 const { generateToken } = require("../utils/generateToken");
 const checkAccess = require("../helpers/checkAccess");
@@ -11,8 +13,9 @@ const {
   editRoleSchema,
   createTierSchema,
   editTierSchema,
+  createUserSchema,
+  editUserSchema,
 } = require("../validations");
-const Tier = require("../models/tierModel");
 
 exports.loginAdmin = async (req, res) => {
   try {
@@ -435,11 +438,128 @@ exports.getTier = async (req, res) => {
     if (!id) {
       return responseHandler(res, 400, "Tier ID is required");
     }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    console.log("🚀 ~ exports.getTier= ~ check:", check)
+    if (!check || !check.includes("tierManagement_view")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
     const findTier = await Tier.findById(id);
     if (!findTier) {
       return responseHandler(res, 404, "Tier not found");
     }
     return responseHandler(res, 200, "Tier found", findTier);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is a JavaScript function that is used to create a new user. Here is a breakdown of
+what the code is doing: */
+exports.createUser = async (req, res) => {
+  try {
+    const createUserValidator = createUserSchema.validate(req.body, {
+      abortEarly: true,
+    });
+    if (createUserValidator.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${createUserValidator.error}`
+      );
+    }
+    const createUser = await User.create(req.body);
+    if (createUser) {
+      return responseHandler(
+        res,
+        200,
+        `User created successfully..!`,
+        createUser
+      );
+    } else {
+      return responseHandler(res, 400, `User creation failed...!`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is an asynchronous function in a Node.js application that is responsible for editing
+a user's information. Here is a breakdown of what the code is doing: */
+exports.editUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "User ID is required");
+    }
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("userManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+    const findUser = await User.findById(id);
+    if (!findUser) {
+      return responseHandler(res, 404, "User not found");
+    }
+    const editUserValidator = editUserSchema.validate(req.body, {
+      abortEarly: true,
+    });
+    if (editUserValidator.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${editUserValidator.error}`
+      );
+    }
+    const updateUser = await User.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    if (updateUser) {
+      return responseHandler(
+        res,
+        200,
+        `User updated successfully..!`,
+        updateUser
+      );
+    } else {
+      return responseHandler(res, 400, `User update failed...!`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is a JavaScript function that is used to retrieve a user by their ID. Here is a
+breakdown of what the code is doing: */
+exports.getUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "User ID is required");
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("userManagement_view")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const findUser = await User.findById(id);
+    if (!findUser) {
+      return responseHandler(res, 404, "User not found");
+    }
+    return responseHandler(res, 200, "User found", findUser);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }

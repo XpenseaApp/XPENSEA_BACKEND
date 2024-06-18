@@ -6,11 +6,13 @@ const userSchema = mongoose.Schema(
     name: { type: String },
     email: { type: String },
     mobile: { type: String },
-    password: { type: String },
     image: { type: String },
     otp: { type: Number },
     mpin: { type: Number },
-    userType: { type: String },
+    userType: {
+      type: String,
+      enum: ["submitter", "approver"],
+    },
     status: {
       type: Boolean,
       default: false,

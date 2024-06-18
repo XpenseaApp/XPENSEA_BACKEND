@@ -47,3 +47,24 @@ exports.editTierSchema = Joi.object({
   status: Joi.boolean(),
   totalAmount: Joi.number(),
 });
+
+exports.createUserSchema = Joi.object({
+  employeeId: Joi.string().required(),
+  name: Joi.string().required(),
+  email: Joi.string().required(),
+  mobile: Joi.string().required(),
+  tier: Joi.string().required(),
+  userType: Joi.string().required(),
+  location: Joi.string().required(),
+});
+
+exports.editUserSchema = Joi.object({
+  employeeId: Joi.string(),
+  name: Joi.string(),
+  email: Joi.string(),
+  mobile: Joi.string(),
+  tier: Joi.string(),
+  userType: Joi.string(),
+  location: Joi.string(),
+  status: Joi.boolean(),
+});

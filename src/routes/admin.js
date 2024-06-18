@@ -26,6 +26,13 @@ adminRoute.post("/tier", authVerify, adminController.createTier);
 adminRoute
   .route("/tier/:id")
   .put(authVerify, adminController.editTier)
-  .get(adminController.getTier);
+  .get(authVerify, adminController.getTier);
+
+adminRoute.post("/user", authVerify, adminController.createUser);
+
+adminRoute
+  .route("/user/:id")
+  .put(authVerify, adminController.editUser)
+  .get(authVerify, adminController.getUser);
 
 module.exports = adminRoute;

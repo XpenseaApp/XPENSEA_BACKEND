@@ -9,6 +9,8 @@
  *     description: Tier related endpoints
  *   - name: List
  *     description: List related endpoints for admin
+ *   - name: User
+ *     description: User related endpoints
  */
 
 /**
@@ -151,8 +153,8 @@
  * @swagger
  * /admin/list:
  *   get:
- *     summary: Get an admin, roles or tiers
- *     description: API endpoint to get existing admins, roles or tiers based on query type
+ *     summary: Get admins, roles, or tiers
+ *     description: API endpoint to get existing admins, roles, or tiers based on query type
  *     tags:
  *       - List
  *     security:
@@ -163,7 +165,7 @@
  *         schema:
  *           type: string
  *         required: true
- *         description: Type of data to retrieve (admins, roles or tiers)
+ *         description: Type of data to retrieve (admins, roles, or tiers)
  *     responses:
  *       200:
  *         description: Data retrieved successfully
@@ -364,9 +366,6 @@
  *                     maxAmount:
  *                       type: number
  *                       example: 500
- *                     status:
- *                       type: boolean
- *                       example: true
  *               status:
  *                 type: boolean
  *                 example: true
@@ -396,4 +395,113 @@
  *         description: Tier found
  *       404:
  *         description: Tier not found
+ */
+
+/**
+ * @swagger
+ * /admin/user:
+ *   post:
+ *     summary: Create a new user
+ *     description: API endpoint to create a new user
+ *     tags:
+ *       - User
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Jane Doe"
+ *               email:
+ *                 type: string
+ *                 example: "jane@example.com"
+ *               phone:
+ *                 type: string
+ *                 example: "+123456789"
+ *               password:
+ *                 type: string
+ *                 example: "password123"
+ *               tierId:
+ *                 type: string
+ *                 example: "666c1a3895a6b176b7f2bcf7"
+ *     responses:
+ *       200:
+ *         description: User created successfully
+ *       400:
+ *         description: Bad request
+ */
+
+/**
+ * @swagger
+ * /admin/user/{id}:
+ *   put:
+ *     summary: Update a user
+ *     description: API endpoint to update an existing user
+ *     tags:
+ *       - User
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the user to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Jane Doe"
+ *               email:
+ *                 type: string
+ *                 example: "jane@example.com"
+ *               phone:
+ *                 type: string
+ *                 example: "+123456789"
+ *               password:
+ *                 type: string
+ *                 example: "newpassword123"
+ *               tierId:
+ *                 type: string
+ *                 example: "666c1a3895a6b176b7f2bcf7"
+ *               status:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: User not found
+ *   get:
+ *     summary: Get a user
+ *     description: API endpoint to get an existing user
+ *     tags:
+ *       - User
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the user to retrieve
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User found
+ *       404:
+ *         description: User not found
  */
