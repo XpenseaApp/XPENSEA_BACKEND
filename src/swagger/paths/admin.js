@@ -8,7 +8,7 @@
  *   - name: Tier
  *     description: Tier related endpoints
  *   - name: List
- *     description: List related endpoints
+ *     description: List related endpoints for admin
  */
 
 /**
