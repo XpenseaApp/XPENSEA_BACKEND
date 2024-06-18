@@ -9,6 +9,7 @@ adminRoute
   .get(authVerify, adminController.getAdmin);
 
 adminRoute.put("/admin/:id", authVerify, adminController.editAdmin);
+adminRoute.delete("/admin/:id", authVerify, adminController.deleteAdmin);
 
 adminRoute.post("/login", adminController.loginAdmin);
 
@@ -17,7 +18,8 @@ adminRoute.route("/role").post(authVerify, adminController.createRole);
 adminRoute
   .route("/role/:id")
   .put(authVerify, adminController.editRole)
-  .get(authVerify, adminController.getRole);
+  .get(authVerify, adminController.getRole)
+  .delete(authVerify, adminController.deleteRole);
 
 adminRoute.get("/list", authVerify, adminController.listController);
 
@@ -26,13 +28,15 @@ adminRoute.post("/tier", authVerify, adminController.createTier);
 adminRoute
   .route("/tier/:id")
   .put(authVerify, adminController.editTier)
-  .get(authVerify, adminController.getTier);
+  .get(authVerify, adminController.getTier)
+  .delete(authVerify, adminController.deleteTier);
 
 adminRoute.post("/user", authVerify, adminController.createUser);
 
 adminRoute
   .route("/user/:id")
   .put(authVerify, adminController.editUser)
-  .get(authVerify, adminController.getUser);
+  .get(authVerify, adminController.getUser)
+  .delete(authVerify, adminController.deleteUser);
 
 module.exports = adminRoute;

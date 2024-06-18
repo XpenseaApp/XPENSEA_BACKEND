@@ -3,6 +3,7 @@ const Admin = require("../models/adminModel");
 const Role = require("../models/roleModel");
 const Tier = require("../models/tierModel");
 const User = require("../models/userModel");
+const Event = require("../models/eventModel");
 const { hashPassword, comparePasswords } = require("../utils/bcrypt");
 const { generateToken } = require("../utils/generateToken");
 const checkAccess = require("../helpers/checkAccess");
@@ -147,6 +148,40 @@ exports.editAdmin = async (req, res) => {
   }
 };
 
+/* The above code is a JavaScript function that is used to delete an admin user from a system. Here is
+a breakdown of what the code is doing: */
+exports.deleteAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Admin ID is required");
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("adminManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const findAdmin = await Admin.findById(id);
+    if (!findAdmin) {
+      return responseHandler(res, 404, "Admin not found");
+    }
+
+    const deleteAdmin = await Admin.findByIdAndDelete(id);
+    if (deleteAdmin) {
+      return responseHandler(res, 200, `Admin deleted successfully..!`);
+    } else {
+      return responseHandler(res, 400, `Admin deletion failed...!`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
 /* The `exports.getAdmin` function is responsible for retrieving an admin's information based on the
 provided ID. Here is a breakdown of what the function is doing: */
 exports.getAdmin = async (req, res) => {
@@ -267,6 +302,40 @@ exports.getRole = async (req, res) => {
   }
 };
 
+/* The above code is a JavaScript function that handles the deletion of a role. Here is a breakdown of
+what the code is doing: */
+exports.deleteRole = async(req, res)=>{
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Role ID is required");
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("roleManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const findRole = await Role.findById(id);
+    if (!findRole) {
+      return responseHandler(res, 404, "Role not found");
+    }
+
+    const deleteRole = await Role.findByIdAndDelete(id);
+    if (deleteRole) {
+      return responseHandler(res, 200, `Role deleted successfully..!`);
+    } else {
+      return responseHandler(res, 400, `Role deletion failed...!`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+}
+
 /* The above code is a controller function in a Node.js application that handles listing data based on
 the `type` parameter provided in the request query. Here's a breakdown of what the code is doing: */
 exports.listController = async (req, res) => {
@@ -279,6 +348,8 @@ exports.listController = async (req, res) => {
       admins: "adminManagement_view",
       roles: "roleManagement_view",
       tiers: "tierManagement_view",
+      events: "eventManagement_view",
+      users: "userManagement_view",
     };
 
     if (type === "admins") {
@@ -342,6 +413,46 @@ exports.listController = async (req, res) => {
         return responseHandler(res, 404, "No Tiers found");
       }
       return responseHandler(res, 200, "Tiers found", fetchTiers, totalCount);
+    } else if (type === "users") {
+      const check = await checkAccess(req.roleId, "permissions");
+
+      if (!check || !check.includes(accessPermissions[type])) {
+        return responseHandler(
+          res,
+          403,
+          "You don't have permission to perform this action"
+        );
+      }
+
+      const totalCount = await User.countDocuments(filter);
+      const fetchUsers = await User.find(filter)
+        .skip(skipCount)
+        .limit(10)
+        .lean();
+      if (!fetchUsers || fetchUsers.length === 0) {
+        return responseHandler(res, 404, "No Users found");
+      }
+      return responseHandler(res, 200, "Users found", fetchUsers, totalCount);
+    } else if (type === "events") {
+      const check = await checkAccess(req.roleId, "permissions");
+
+      if (!check || !check.includes(accessPermissions[type])) {
+        return responseHandler(
+          res,
+          403,
+          "You don't have permission to perform this action"
+        );
+      }
+
+      const totalCount = await Event.countDocuments(filter);
+      const fetchEvents = await Event.find(filter)
+        .skip(skipCount)
+        .limit(10)
+        .lean();
+      if (!fetchEvents || fetchEvents.length === 0) {
+        return responseHandler(res, 404, "No Events found");
+      }
+      return responseHandler(res, 200, "Events found", fetchEvents, totalCount);
     } else {
       return responseHandler(res, 404, "Invalid type..!");
     }
@@ -429,6 +540,40 @@ exports.editTier = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
+
+/* The above code is a JavaScript function that handles the deletion of a tier. Here is a breakdown of
+what the code is doing: */
+exports.deleteTier = async(req, res)=>{
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Tier ID is required");
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("tierManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const findTier = await Tier.findById(id);
+    if (!findTier) {
+      return responseHandler(res, 404, "Tier not found");
+    }
+
+    const deleteTier = await Tier.findByIdAndDelete(id);
+    if (deleteTier) {
+      return responseHandler(res, 200, `Tier deleted successfully..!`);
+    } else {
+      return responseHandler(res, 400, `Tier deletion failed...!`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+}
 
 /* The above code is a JavaScript function that is used to retrieve a specific tier by its ID. It is an
 asynchronous function that takes a request and response object as parameters. */
@@ -559,6 +704,40 @@ exports.getUser = async (req, res) => {
       return responseHandler(res, 404, "User not found");
     }
     return responseHandler(res, 200, "User found", findUser);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is a JavaScript function that is used to delete a user from a database. Here is a
+breakdown of what the code is doing: */
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "User ID is required");
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("userManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const findUser = await User.findById(id);
+    if (!findUser) {
+      return responseHandler(res, 404, "User not found");
+    }
+
+    const deleteUser = await User.findByIdAndDelete(id);
+    if (deleteUser) {
+      return responseHandler(res, 200, "User deleted successfully..!");
+    } else {
+      return responseHandler(res, 400, "User deletion failed...!");
+    }
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }

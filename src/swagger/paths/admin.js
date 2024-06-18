@@ -147,14 +147,35 @@
  *         description: Bad request
  *       404:
  *         description: Admin not found
+ *   delete:
+ *     summary: Delete an admin
+ *     description: API endpoint to delete an existing admin
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the admin to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Admin deleted successfully
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Admin not found
  */
 
 /**
  * @swagger
  * /admin/list:
  *   get:
- *     summary: Get admins, roles, or tiers
- *     description: API endpoint to get existing admins, roles, or tiers based on query type
+ *     summary: Get admins, roles, tiers, users or events
+ *     description: API endpoint to get existing admins, roles, tiers, users or events based on query type
  *     tags:
  *       - List
  *     security:
@@ -165,7 +186,7 @@
  *         schema:
  *           type: string
  *         required: true
- *         description: Type of data to retrieve (admins, roles, or tiers)
+ *         description: Type of data to retrieve (admins, roles, tiers, users or events)
  *     responses:
  *       200:
  *         description: Data retrieved successfully
@@ -278,6 +299,29 @@
  *         description: Role found
  *       404:
  *         description: Role not found
+ *   delete:
+ *     summary: Delete a role
+ *     description: API endpoint to delete an existing role
+ *     tags:
+ *       - Role
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the role to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Role deleted successfully
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Role not found
+ *       500:
+ *         description: Internal Server Error
  */
 
 /**
@@ -395,6 +439,29 @@
  *         description: Tier found
  *       404:
  *         description: Tier not found
+ *   delete:
+ *     summary: Delete a tier
+ *     description: API endpoint to delete an existing tier
+ *     tags:
+ *       - Tier
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the tier to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Tier deleted successfully
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Tier not found
+ *       500:
+ *         description: Internal Server Error
  */
 
 /**
@@ -504,4 +571,27 @@
  *         description: User found
  *       404:
  *         description: User not found
+ *   delete:
+ *     summary: Delete a user
+ *     description: API endpoint to delete an existing user
+ *     tags:
+ *       - User
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the user to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal Server Error
  */
