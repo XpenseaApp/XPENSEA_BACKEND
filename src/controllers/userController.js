@@ -1,3 +1,4 @@
+const moment = require("moment-timezone");
 const responseHandler = require("../helpers/responseHandler");
 const { sendOtp } = require("../helpers/sendOtp");
 const Expense = require("../models/expenseModel");
@@ -188,6 +189,121 @@ exports.createReport = async (req, res) => {
       );
     } else {
       return responseHandler(res, 400, `Report creation failed...!`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+exports.listController = async (req, res) => {
+  try {
+    const { type, pageNo = 1 } = req.query;
+    const skipCount = 10 * (pageNo - 1);
+    const filter = {
+      user: req.userId,
+    };
+
+    if (type === "reports") {
+      const totalCount = await Report.countDocuments(filter);
+      const fetchReports = await Report.find(filter)
+        .populate({
+          path: "expenses",
+          select: "amount",
+        })
+        .skip(skipCount)
+        .limit(10)
+        .lean();
+      if (!fetchReports || fetchReports.length === 0) {
+        return responseHandler(res, 404, "No Reports found");
+      }
+
+      const mappedData = fetchReports.map((item) => {
+        const totalAmount = item.expenses.reduce(
+          (acc, exp) => acc + exp.amount,
+          0
+        );
+        return {
+          title: item.title,
+          status: item.status,
+          totalAmount,
+          expenseCount: item.expenses.length,
+          date: moment(item.reportDate).format("MMM DD YYYY"),
+        };
+      });
+
+      return responseHandler(
+        res,
+        200,
+        "Reports found",
+        mappedData,
+        totalCount
+      );
+    } else if (type === "expenses") {
+      const totalCount = await Expense.countDocuments(filter);
+      const fetchExpenses = await Expense.find(filter)
+        .skip(skipCount)
+        .limit(10)
+        .lean();
+      if (!fetchExpenses || fetchExpenses.length === 0) {
+        return responseHandler(res, 404, "No Expenses found");
+      }
+
+      const mappedData = fetchExpenses.map((item) => {
+        return {
+          title: item.title,
+          status: item.status,
+          amount: item.amount,
+          date: moment(item.createdAt).format("MMM DD YYYY"),
+        };
+      });
+
+      return responseHandler(
+        res,
+        200,
+        "Expenses found",
+        mappedData,
+        totalCount
+      );
+    } else if (type === "notifications") {
+      const totalCount = await Notification.countDocuments(filter);
+      const fetchNotifications = await Notification.find(filter)
+        .populate({
+          path: "content",
+          populate: {
+            path: "expenses",
+            select: "amount",
+          },
+        })
+        .skip(skipCount)
+        .limit(10)
+        .lean();
+      if (!fetchNotifications || fetchNotifications.length === 0) {
+        return responseHandler(res, 404, "No Notifications found");
+      }
+
+      const mappedData = fetchNotifications.map((item) => {
+        const totalAmount = item.content.expenses.reduce(
+          (acc, exp) => acc + exp.amount,
+          0
+        );
+        return {
+          title: item.content.title,
+          status: item.status,
+          totalAmount,
+          expenseCount: item.content.expenses.length,
+          date: moment(item.createdAt).format("MMM DD YYYY"),
+        };
+      });
+
+      return responseHandler(
+        res,
+        200,
+        "Notifications found",
+        mappedData,
+        totalCount
+      );
+    } else {
+      return responseHandler(res, 404, "Invalid type..!");
     }
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);

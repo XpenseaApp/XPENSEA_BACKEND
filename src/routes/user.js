@@ -8,5 +8,6 @@ userRoute.post("/verify", userController.verifyUser);
 userRoute.post("/mpin", userController.mpinHandler);
 userRoute.post("/expense", authVerify, userController.createExpense);
 userRoute.post("/report", authVerify, userController.createReport);
+userRoute.get("/list", authVerify, userController.listController);
 
 module.exports = userRoute;
