@@ -177,6 +177,7 @@ exports.createReport = async (req, res) => {
       const data = {
         content: newReport._id,
         user: req.userId,
+        status: newReport.status,
       };
       await Notification.create(data);
       return responseHandler(

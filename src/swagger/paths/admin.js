@@ -8,7 +8,7 @@
  *   - name: Tier
  *     description: Tier related endpoints
  *   - name: List
- *     description: List related endpoints for admin
+ *     description: List related endpoints for admin and users
  *   - name: User
  *     description: User related endpoints
  *   - name: Expense

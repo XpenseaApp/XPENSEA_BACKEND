@@ -188,3 +188,27 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /user/list:
+ *   get:
+ *     summary: Get reports, expenses or notifications
+ *     description: API endpoint to get existing reports, expenses or notifications based on query type
+ *     tags:
+ *       - List
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Type of data to retrieve (reports, expenses or notifications)
+ *     responses:
+ *       200:
+ *         description: Data retrieved successfully
+ *       404:
+ *         description: Data not found
+ *       500:
+ *         description: Internal Server Error
+ */
