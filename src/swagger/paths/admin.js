@@ -11,6 +11,8 @@
  *     description: List related endpoints for admin
  *   - name: User
  *     description: User related endpoints
+ *   - name: Expense
+ *     description: Expense related endpoints
  */
 
 /**

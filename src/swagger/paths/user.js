@@ -64,7 +64,7 @@
  * /user/mpin:
  *   post:
  *     summary: Add MPIN for User
- *     description: API endpoint to add or update a user's MPIN
+ *     description: API endpoint to add or login via user's MPIN
  *     tags:
  *       - User
  *     requestBody:
@@ -75,8 +75,11 @@
  *             type: object
  *             properties:
  *               mpin:
- *                 type: number
- *                 example: 1234
+ *                 type: string
+ *                 example: "1234"
+ *               mobile:
+ *                 type: string
+ *                 example: "9876543210"
  *     responses:
  *       200:
  *         description: User mpin added successfully
@@ -84,6 +87,56 @@
  *         description: Bad request
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /user/expense:
+ *   post:
+ *     summary: Create Expense
+ *     description: API endpoint to create a new expense
+ *     tags:
+ *       - Expense
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Team Lunch"
+ *               amount:
+ *                 type: number
+ *                 example: 100.50
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-06-19"
+ *               time:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2024-06-19T13:45:00Z"
+ *               location:
+ *                 type: string
+ *                 example: "New York, NY"
+ *               category:
+ *                 type: string
+ *                 example: "Food"
+ *               description:
+ *                 type: string
+ *                 example: "Lunch with the marketing team"
+ *               image:
+ *                 type: string
+ *                 example: "https://example.com/image.jpg"
+ *     responses:
+ *       200:
+ *         description: Expense created successfully
+ *       400:
+ *         description: Invalid input or expense creation failed
  *       500:
  *         description: Internal Server Error
  */

@@ -79,3 +79,14 @@ exports.editUserSchema = Joi.object({
   location: Joi.string(),
   status: Joi.boolean(),
 });
+
+exports.createExpenseSchema = Joi.object({
+  title: Joi.string().required(),
+  amount: Joi.number().required(),
+  date: Joi.date().required(),
+  time: Joi.date().required(),
+  location: Joi.string().required(),
+  category: Joi.string().required(),
+  description: Joi.string().required(),
+  image: Joi.string().required(),
+});

@@ -8,7 +8,7 @@ const userSchema = mongoose.Schema(
     mobile: { type: String },
     image: { type: String },
     otp: { type: Number },
-    mpin: { type: Number },
+    mpin: { type: String },
     userType: {
       type: String,
       enum: ["submitter", "approver"],
