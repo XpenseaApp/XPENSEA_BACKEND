@@ -1,11 +1,13 @@
 const responseHandler = require("../helpers/responseHandler");
 const { sendOtp } = require("../helpers/sendOtp");
 const Expense = require("../models/expenseModel");
+const Notification = require("../models/notificationModel");
+const Report = require("../models/reportModel");
 const User = require("../models/userModel");
 const { hashPassword, comparePasswords } = require("../utils/bcrypt");
 const { generateOTP } = require("../utils/generateOTP");
 const { generateToken } = require("../utils/generateToken");
-const { createExpenseSchema } = require("../validations");
+const { createExpenseSchema, createReportSchema } = require("../validations");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -130,6 +132,61 @@ exports.createExpense = async (req, res) => {
       );
     } else {
       return responseHandler(res, 400, `Expense creation failed...!`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The `exports.createReport` function is responsible for creating a new report record. Here is a
+breakdown of what the function is doing: */
+exports.createReport = async (req, res) => {
+  try {
+    const createReportValidator = createReportSchema.validate(req.body, {
+      abortEarly: true,
+    });
+    if (createReportValidator.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${createReportValidator.error}`
+      );
+    }
+
+    const expenseIds = req.body.expenses;
+    const expenses = await Expense.find({ _id: { $in: expenseIds } });
+
+    for (let expense of expenses) {
+      if (expense.status === "mapped") {
+        return responseHandler(
+          res,
+          400,
+          `Expense with title ${expense.title} is already mapped.`
+        );
+      }
+    }
+
+    await Expense.updateMany(
+      { _id: { $in: expenseIds } },
+      { status: "mapped" }
+    );
+
+    req.body.user = req.userId;
+    const newReport = await Report.create(req.body);
+    if (newReport) {
+      const data = {
+        content: newReport._id,
+        user: req.userId,
+      };
+      await Notification.create(data);
+      return responseHandler(
+        res,
+        200,
+        `Report created successfully..!`,
+        newReport
+      );
+    } else {
+      return responseHandler(res, 400, `Report creation failed...!`);
     }
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);

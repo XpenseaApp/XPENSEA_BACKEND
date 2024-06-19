@@ -140,3 +140,51 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /user/report:
+ *   post:
+ *     summary: Create Report
+ *     description: API endpoint to create a new report
+ *     tags:
+ *       - Report
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reportId:
+ *                 type: string
+ *                 example: "RPT123456"
+ *               title:
+ *                 type: string
+ *                 example: "Monthly Expense Report"
+ *               reportDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-06-19"
+ *               description:
+ *                 type: string
+ *                 example: "Detailed report of all monthly expenses"
+ *               location:
+ *                 type: string
+ *                 example: "New York"
+ *               status:
+ *                 type: string
+ *                 example: "drafted //Send this field only if the status is 'drafted' "
+ *               expenses:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "667275cda0521a39e214cd6c"
+ *     responses:
+ *       200:
+ *         description: Report created successfully
+ *       400:
+ *         description: Invalid input or report creation failed
+ *       500:
+ *         description: Internal Server Error
+ */

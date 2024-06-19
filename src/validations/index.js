@@ -90,3 +90,13 @@ exports.createExpenseSchema = Joi.object({
   description: Joi.string().required(),
   image: Joi.string().required(),
 });
+
+exports.createReportSchema = Joi.object({
+  reportId: Joi.string().required(),
+  title: Joi.string().required(),
+  reportDate: Joi.date().required(),
+  description: Joi.string().required(),
+  expenses: Joi.array().required(),
+  location: Joi.string().required(),
+  status: Joi.string(),
+});

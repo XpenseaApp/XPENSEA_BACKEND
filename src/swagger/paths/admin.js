@@ -13,6 +13,8 @@
  *     description: User related endpoints
  *   - name: Expense
  *     description: Expense related endpoints
+ *   - name: Report
+ *     description: Report related endpoints
  */
 
 /**
