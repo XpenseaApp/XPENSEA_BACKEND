@@ -195,6 +195,9 @@ exports.createReport = async (req, res) => {
   }
 };
 
+/* The above code is a list controller function in a Node.js application that handles requests to fetch
+data based on the specified type (reports, expenses, notifications) and page number. Here's a
+breakdown of what the code is doing: */
 exports.listController = async (req, res) => {
   try {
     const { type, pageNo = 1 } = req.query;
@@ -231,13 +234,7 @@ exports.listController = async (req, res) => {
         };
       });
 
-      return responseHandler(
-        res,
-        200,
-        "Reports found",
-        mappedData,
-        totalCount
-      );
+      return responseHandler(res, 200, "Reports found", mappedData, totalCount);
     } else if (type === "expenses") {
       const totalCount = await Expense.countDocuments(filter);
       const fetchExpenses = await Expense.find(filter)
@@ -305,6 +302,70 @@ exports.listController = async (req, res) => {
     } else {
       return responseHandler(res, 404, "Invalid type..!");
     }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The `exports.getExpense` function is responsible for fetching a specific expense record based on the
+provided expense ID. Here is a breakdown of what the function is doing: */
+exports.getExpense = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = req.userId;
+    if (!id) {
+      return responseHandler(res, 404, "Expense ID is required");
+    }
+    const expense = await Expense.findOne({ _id: id, user });
+
+    if (!expense) {
+      return responseHandler(res, 404, "Expense not found");
+    }
+
+    const mappedData = {
+      title: expense.title,
+      status: expense.status,
+      amount: expense.amount,
+      date: moment(expense.createdAt).format("MMM DD YYYY"),
+    };
+
+    return responseHandler(res, 200, "Expense found", mappedData);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The `exports.getReport` function is responsible for fetching a specific report record based on the
+provided report ID. Here is a breakdown of what the function is doing: */
+exports.getReport = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = req.userId;
+    if (!id) {
+      return responseHandler(res, 404, "Report ID is required");
+    }
+    const report = await Report.findOne({ _id: id, user }).populate("expenses");
+
+    if (!report) {
+      return responseHandler(res, 404, "Report not found");
+    }
+
+    const mappedData = {
+      reportId: report.reportId,
+      title: report.title,
+      status: report.status,
+      totalAmount: report.expenses.reduce((acc, exp) => acc + exp.amount, 0),
+      expenseCount: report.expenses.length,
+      expenses: report.expenses.map((expense) => ({
+        title: expense.title,
+        amount: expense.amount,
+        date: moment(expense.date).format("MMM DD YYYY"),
+        status: expense.status,
+      })),
+      date: moment(report.reportDate).format("MMM DD YYYY"),
+    };
+
+    return responseHandler(res, 200, "Report found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }

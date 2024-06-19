@@ -212,3 +212,50 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /user/expense/{id}:
+ *   get:
+ *     summary: Get Expense by ID
+ *     description: API endpoint to get an expense by its ID
+ *     tags:
+ *       - Expense
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "667275cda0521a39e214cd6c"
+ *         description: The ID of the expense to retrieve
+ *     responses:
+ *       200:
+ *         description: Expense retrieved successfully
+ *       404:
+ *         description: Expense not found
+ *       500:
+ *         description: Internal Server Error
+ *
+ * /user/report/{id}:
+ *   get:
+ *     summary: Get Report by ID
+ *     description: API endpoint to get a report by its ID
+ *     tags:
+ *       - Report
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "66729822aca3dc807ee0f0b4"
+ *         description: The ID of the report to retrieve
+ *     responses:
+ *       200:
+ *         description: Report retrieved successfully
+ *       404:
+ *         description: Report not found
+ *       500:
+ *         description: Internal Server Error
+ */
