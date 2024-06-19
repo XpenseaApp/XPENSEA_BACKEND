@@ -68,3 +68,14 @@ exports.editUserSchema = Joi.object({
   location: Joi.string(),
   status: Joi.boolean(),
 });
+
+exports.editUserSchema = Joi.object({
+  employeeId: Joi.string(),
+  name: Joi.string(),
+  email: Joi.string(),
+  mobile: Joi.string(),
+  tier: Joi.string(),
+  userType: Joi.string(),
+  location: Joi.string(),
+  status: Joi.boolean(),
+});

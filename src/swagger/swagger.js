@@ -35,6 +35,15 @@ const options = {
   apis: ["./src/swagger/paths/*.js"],
 };
 
+const swaggerOptions = {
+  swaggerOptions: {
+    docExpansion: "none", 
+    filter: true, 
+    tagsSorter: "alpha", 
+    operationsSorter: "alpha" 
+  }
+};
+
 const swaggerSpec = swaggerJSDoc(options);
 
-module.exports = { swaggerUi, swaggerSpec };
+module.exports = { swaggerUi, swaggerSpec, swaggerOptions };

@@ -490,9 +490,6 @@
  *               phone:
  *                 type: string
  *                 example: "+123456789"
- *               password:
- *                 type: string
- *                 example: "password123"
  *               tierId:
  *                 type: string
  *                 example: "666c1a3895a6b176b7f2bcf7"
@@ -536,9 +533,6 @@
  *               phone:
  *                 type: string
  *                 example: "+123456789"
- *               password:
- *                 type: string
- *                 example: "newpassword123"
  *               tierId:
  *                 type: string
  *                 example: "666c1a3895a6b176b7f2bcf7"
