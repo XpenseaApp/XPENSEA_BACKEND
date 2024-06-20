@@ -15,11 +15,15 @@ const reportModel = mongoose.Schema(
     status: {
       type: String,
       default: "pending",
-      enum: ["drafted", "pending", "approved", "rejected"],
+      enum: ["drafted", "pending", "approved", "reimbursed", "rejected"],
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    type: {
+      type: String,
+      enum: ["event", "other"],
     },
     location: { type: String },
   },

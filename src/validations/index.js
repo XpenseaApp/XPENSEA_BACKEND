@@ -98,5 +98,6 @@ exports.createReportSchema = Joi.object({
   description: Joi.string().required(),
   expenses: Joi.array().required(),
   location: Joi.string().required(),
+  type: Joi.string().required(),
   status: Joi.string(),
 });

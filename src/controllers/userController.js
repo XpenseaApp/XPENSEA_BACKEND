@@ -150,12 +150,19 @@ exports.createReport = async (req, res) => {
       return responseHandler(
         res,
         400,
-        `Invalid input: ${createReportValidator.error}`
+        `Invalid input: ${createReportValidator.error.message}`
       );
     }
 
     const expenseIds = req.body.expenses;
     const expenses = await Expense.find({ _id: { $in: expenseIds } });
+    const userId = req.userId;
+
+    // Fetch user and populate tier information
+    const user = await User.findOne({ _id: userId }).populate("tier");
+
+    // Object to keep track of total amounts per category
+    const categoryTotals = [];
 
     for (let expense of expenses) {
       if (expense.status === "mapped") {
@@ -165,6 +172,65 @@ exports.createReport = async (req, res) => {
           `Expense with title ${expense.title} is already mapped.`
         );
       }
+
+      // Calculate total amount per category
+      const categoryIndex = categoryTotals.findIndex(
+        (cat) => cat.title === expense.category
+      );
+      if (categoryIndex > -1) {
+        categoryTotals[categoryIndex].value += expense.amount;
+      } else {
+        categoryTotals.push({ title: expense.category, value: expense.amount });
+      }
+    }
+
+    // Check if any category total exceeds the user's tier category max amount
+    for (let category of categoryTotals) {
+      const tierCategory = user.tier.categories.find(
+        (cat) => cat.title === category.title
+      );
+      if (tierCategory && tierCategory.status === false) {
+        return responseHandler(
+          res,
+          400,
+          `Category ${category.title} is disabled.`
+        );
+      }
+      if (tierCategory && category.value > tierCategory.maxAmount) {
+        return responseHandler(
+          res,
+          400,
+          `Total amount for category ${category.title} exceeds the maximum allowed.`
+        );
+      }
+    }
+
+    const existingReport = await Report.findOne({
+      expenses: { $in: expenseIds },
+      status: { $in: ["approved", "reimbursed"] },
+    });
+    if (existingReport) {
+      return responseHandler(
+        res,
+        400,
+        `${existingReport.title} is already included in an existing report.`
+      );
+    }
+
+    const today = moment().startOf("day");
+    const thirtyDaysAgo = moment().subtract(30, "days").startOf("day");
+
+    const existingReports = await Report.find({
+      reportDate: { $gte: thirtyDaysAgo.toDate(), $lte: today.toDate() },
+      status: { $in: ["approved", "reimbursed"] },
+    });
+
+    if (existingReports.length > 0) {
+      return responseHandler(
+        res,
+        400,
+        `A report with the specified date is already present within the last 30 days.`
+      );
     }
 
     await Expense.updateMany(
