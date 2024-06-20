@@ -15,6 +15,8 @@
  *     description: Expense related endpoints
  *   - name: Report
  *     description: Report related endpoints
+ *   - name: Event
+ *     description: Event related endpoints
  */
 
 /**
@@ -590,6 +592,63 @@
  *         description: Bad request
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /admin/event:
+ *   post:
+ *     summary: Create Event
+ *     description: API endpoint to create a new event
+ *     tags:
+ *       - Event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               eventName:
+ *                 type: string
+ *                 example: "Annual Conference"
+ *               days:
+ *                 type: number
+ *                 example: 3
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-07-01"
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-07-03"
+ *               startTime:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2024-07-01T09:00:00Z"
+ *               endTime:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2024-07-01T17:00:00Z"
+ *               description:
+ *                 type: string
+ *                 example: "An annual conference focusing on industry trends and networking."
+ *               location:
+ *                 type: string
+ *                 example: "Convention Center, Downtown"
+ *               staffs:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "66711406bb0f277c28941cb4"
+ *     responses:
+ *       200:
+ *         description: Event created successfully
+ *       400:
+ *         description: Invalid input or event creation failed
  *       500:
  *         description: Internal Server Error
  */

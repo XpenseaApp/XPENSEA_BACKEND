@@ -100,3 +100,15 @@ exports.createReportSchema = Joi.object({
   type: Joi.string().required(),
   status: Joi.string(),
 });
+
+exports.createEventSchema = Joi.object({
+  eventName: Joi.string().required(),
+  days: Joi.number().required(),
+  startDate: Joi.date().required(),
+  endDate: Joi.date().required(),
+  startTime: Joi.date().required(),
+  endTime: Joi.date().required(),
+  description: Joi.string().required(),
+  location: Joi.string().required(),
+  staffs: Joi.array().required(),
+});

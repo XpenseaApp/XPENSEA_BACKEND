@@ -16,6 +16,7 @@ const {
   editTierSchema,
   createUserSchema,
   editUserSchema,
+  createEventSchema,
 } = require("../validations");
 
 exports.loginAdmin = async (req, res) => {
@@ -304,7 +305,7 @@ exports.getRole = async (req, res) => {
 
 /* The above code is a JavaScript function that handles the deletion of a role. Here is a breakdown of
 what the code is doing: */
-exports.deleteRole = async(req, res)=>{
+exports.deleteRole = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
@@ -334,7 +335,7 @@ exports.deleteRole = async(req, res)=>{
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
-}
+};
 
 /* The above code is a controller function in a Node.js application that handles listing data based on
 the `type` parameter provided in the request query. Here's a breakdown of what the code is doing: */
@@ -543,7 +544,7 @@ exports.editTier = async (req, res) => {
 
 /* The above code is a JavaScript function that handles the deletion of a tier. Here is a breakdown of
 what the code is doing: */
-exports.deleteTier = async(req, res)=>{
+exports.deleteTier = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
@@ -573,7 +574,7 @@ exports.deleteTier = async(req, res)=>{
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
-}
+};
 
 /* The above code is a JavaScript function that is used to retrieve a specific tier by its ID. It is an
 asynchronous function that takes a request and response object as parameters. */
@@ -737,6 +738,36 @@ exports.deleteUser = async (req, res) => {
       return responseHandler(res, 200, "User deleted successfully..!");
     } else {
       return responseHandler(res, 400, "User deletion failed...!");
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is a JavaScript function that handles the creation of an event. Here is a breakdown
+of what the code does: */
+exports.createEvent = async (req, res) => {
+  try {
+    const createEventValidator = createEventSchema.validate(req.body, {
+      abortEarly: true,
+    });
+    if (createEventValidator.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${createEventValidator.error}`
+      );
+    }
+    const newEvent = await Event.create(req.body);
+    if (newEvent) {
+      return responseHandler(
+        res,
+        200,
+        `Event created successfully..!`,
+        newEvent
+      );
+    } else {
+      return responseHandler(res, 400, `Event creation failed...!`);
     }
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
