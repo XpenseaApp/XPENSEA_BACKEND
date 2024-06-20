@@ -297,6 +297,7 @@ exports.listController = async (req, res) => {
           0
         );
         return {
+          _id: item._id,
           title: item.title,
           status: item.status,
           totalAmount,
@@ -318,6 +319,7 @@ exports.listController = async (req, res) => {
 
       const mappedData = fetchExpenses.map((item) => {
         return {
+          _id: item._id,
           title: item.title,
           status: item.status,
           amount: item.amount,
@@ -355,6 +357,7 @@ exports.listController = async (req, res) => {
           0
         );
         return {
+          _id: item._id,
           title: item.content.title,
           status: item.status,
           totalAmount,
@@ -394,6 +397,7 @@ exports.getExpense = async (req, res) => {
     }
 
     const mappedData = {
+      _id: expense._id,
       title: expense.title,
       status: expense.status,
       amount: expense.amount,
@@ -422,6 +426,7 @@ exports.getReport = async (req, res) => {
     }
 
     const mappedData = {
+      _id: report._id,
       reportId: report.reportId,
       title: report.title,
       status: report.status,
