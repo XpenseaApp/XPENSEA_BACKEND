@@ -169,6 +169,9 @@
  *               location:
  *                 type: string
  *                 example: "New York"
+ *               type:
+ *                 type: string
+ *                 example: "other // event"
  *               status:
  *                 type: string
  *                 example: "drafted //Send this field only if the status is 'drafted' "
