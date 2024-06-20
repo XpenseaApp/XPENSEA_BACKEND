@@ -154,6 +154,11 @@ exports.createReport = async (req, res) => {
       );
     }
 
+    const reportCount = await Report.countDocuments();
+    const nextReportNumber = reportCount + 1;
+    const formattedReportNumber = nextReportNumber.toString().padStart(3, "0");
+    req.body.reportId = `Rep#${formattedReportNumber}`;
+
     const expenseIds = req.body.expenses;
     const expenses = await Expense.find({ _id: { $in: expenseIds } });
     const userId = req.userId;

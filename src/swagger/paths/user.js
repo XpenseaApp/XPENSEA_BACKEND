@@ -156,9 +156,6 @@
  *           schema:
  *             type: object
  *             properties:
- *               reportId:
- *                 type: string
- *                 example: "RPT123456"
  *               title:
  *                 type: string
  *                 example: "Monthly Expense Report"

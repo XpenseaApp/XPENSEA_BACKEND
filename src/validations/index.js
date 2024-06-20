@@ -92,7 +92,6 @@ exports.createExpenseSchema = Joi.object({
 });
 
 exports.createReportSchema = Joi.object({
-  reportId: Joi.string().required(),
   title: Joi.string().required(),
   reportDate: Joi.date().required(),
   description: Joi.string().required(),
