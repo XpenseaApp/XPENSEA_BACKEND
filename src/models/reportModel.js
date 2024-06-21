@@ -25,6 +25,10 @@ const reportModel = mongoose.Schema(
       type: String,
       enum: ["event", "other"],
     },
+    event: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Event",
+    },
     location: { type: String },
   },
   { timestamps: true }

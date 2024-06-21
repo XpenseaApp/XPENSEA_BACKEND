@@ -172,6 +172,9 @@
  *               type:
  *                 type: string
  *                 example: "other // event"
+ *               event:
+ *                 type: string
+ *                 example: "6673f805cb67f6f4d2ef4b34 //Send this field only if the type is 'event' "
  *               status:
  *                 type: string
  *                 example: "drafted //Send this field only if the status is 'drafted' "

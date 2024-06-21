@@ -99,6 +99,7 @@ exports.createReportSchema = Joi.object({
   location: Joi.string().required(),
   type: Joi.string().required(),
   status: Joi.string(),
+  event: Joi.string(),
 });
 
 exports.createEventSchema = Joi.object({
