@@ -17,6 +17,8 @@
  *     description: Report related endpoints
  *   - name: Event
  *     description: Event related endpoints
+ *   - name: Category
+ *     description: Category related endpoints
  */
 
 /**

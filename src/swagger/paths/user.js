@@ -262,3 +262,20 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /user/category:
+ *   get:
+ *     summary: Get User Categories
+ *     description: API endpoint to get categories for a user based on their tier
+ *     tags:
+ *       - Category
+ *     responses:
+ *       200:
+ *         description: Categories found
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal Server Error
+ */

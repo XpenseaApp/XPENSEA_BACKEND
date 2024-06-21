@@ -456,3 +456,23 @@ exports.getReport = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
+
+/* The `exports.getCategory` function is responsible for fetching a list of categories. Here is a
+breakdown of what the function is doing: */
+exports.getCategory = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).populate("tier");
+    if (!user) {
+      return responseHandler(res, 404, "User not found");
+    }
+    const mappedData = user.tier.categories
+      .filter((item) => item.status)
+      .map((item) => ({
+        title: item.title,
+      }));
+
+    return responseHandler(res, 200, "Categories found", mappedData);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};

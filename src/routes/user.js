@@ -11,5 +11,6 @@ userRoute.post("/report", authVerify, userController.createReport);
 userRoute.get("/list", authVerify, userController.listController);
 userRoute.get("/expense/:id", authVerify, userController.getExpense);
 userRoute.get("/report/:id", authVerify, userController.getReport);
+userRoute.get("/category", authVerify, userController.getCategory);
 
 module.exports = userRoute;
