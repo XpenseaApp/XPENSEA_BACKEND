@@ -218,7 +218,7 @@ exports.createReport = async (req, res) => {
       return responseHandler(
         res,
         400,
-        `${existingReport.title} is already included in an existing report.`
+        `${existingReport.title} is already included some expenses you mapped.`
       );
     }
 
@@ -230,11 +230,21 @@ exports.createReport = async (req, res) => {
       status: { $in: ["approved", "reimbursed"] },
     });
 
-    if (existingReports.length > 0) {
+    let existingTotalAmount = 0;
+    for (let report of existingReports) {
+      const reportExpenses = await Expense.find({
+        _id: { $in: report.expenses },
+      });
+      for (let expense of reportExpenses) {
+        existingTotalAmount += expense.amount;
+      }
+    }
+
+    if (existingTotalAmount > user.tier.totalAmount) {
       return responseHandler(
         res,
         400,
-        `A report with the specified date is already present within the last 30 days.`
+        `The total amount of existing reports within the last 30 days exceeds your tier limit of ${user.tier.totalAmount}.`
       );
     }
 
