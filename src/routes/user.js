@@ -13,5 +13,6 @@ userRoute.get("/expense/:id", authVerify, userController.getExpense);
 userRoute.get("/report/:id", authVerify, userController.getReport);
 userRoute.get("/category", authVerify, userController.getCategory);
 userRoute.put("/change-mpin", authVerify, userController.changeMpin);
+userRoute.post("/report-problem", authVerify, userController.reportProblem);
 
 module.exports = userRoute;

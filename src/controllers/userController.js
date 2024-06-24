@@ -8,7 +8,12 @@ const User = require("../models/userModel");
 const { hashPassword, comparePasswords } = require("../utils/bcrypt");
 const { generateOTP } = require("../utils/generateOTP");
 const { generateToken } = require("../utils/generateToken");
-const { createExpenseSchema, createReportSchema } = require("../validations");
+const {
+  createExpenseSchema,
+  createReportSchema,
+  problemSchema,
+} = require("../validations");
+const Problem = require("../models/problemModel");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -503,6 +508,29 @@ exports.changeMpin = async (req, res) => {
     user.mpin = hashedPassword;
     await user.save();
     return responseHandler(res, 200, "MPIN changed successfully");
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is a JavaScript function that handles reporting a problem. Here is a breakdown of
+what the code is doing: */
+exports.reportProblem = async (req, res) => {
+  try {
+    const problemSchemaValidator = problemSchema.validate(req.body, {
+      abortEarly: true,
+    });
+    if (problemSchemaValidator.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${problemSchemaValidator.error}`
+      );
+    }
+    req.body.user = req.userId;
+    const report = Problem(req.body);
+    if (!report) return responseHandler(res, 400, `Report creation failed`);
+    return responseHandler(res, 200, "Reported added successfully");
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }

@@ -314,3 +314,33 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /user/report-problem:
+ *   post:
+ *     summary: Report a Problem
+ *     description: API endpoint to report a problem
+ *     tags:
+ *       - Problem
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               to:
+ *                 type: string
+ *                 example: "approver, admin"
+ *               description:
+ *                 type: string
+ *                 example: "Unable to login with correct credentials."
+ *     responses:
+ *       200:
+ *         description: Report added successfully
+ *       400:
+ *         description: Invalid input or report creation failed
+ *       500:
+ *         description: Internal Server Error
+ */

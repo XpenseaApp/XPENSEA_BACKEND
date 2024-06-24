@@ -113,3 +113,8 @@ exports.createEventSchema = Joi.object({
   location: Joi.string().required(),
   staffs: Joi.array().required(),
 });
+
+exports.problemSchema = Joi.object({
+  description: Joi.string().required(),
+  to: Joi.string().required(),
+})

@@ -19,6 +19,8 @@
  *     description: Event related endpoints
  *   - name: Category
  *     description: Category related endpoints
+ *   - name: Problem
+ *     description: User Problem related endpoints
  */
 
 /**
