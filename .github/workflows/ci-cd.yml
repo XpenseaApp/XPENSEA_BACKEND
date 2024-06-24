@@ -37,8 +37,8 @@ jobs:
         id: build-and-push-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          ECR_REPOSITORY: xpensea
+          IMAGE_TAG: latest
         run: |
           if ! docker pull ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}; then
             echo "Docker image not found. Building and pushing a new image."
@@ -57,7 +57,7 @@ jobs:
           EC2_INSTANCE_IP: ${{ secrets.XPENSEA_BACKEND }}
           SSH_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
           USERNAME: ec2-user
-          PORT: 5050
+          PORT: 3040
           CONTAINER_NAME: xpensea
         uses: appleboy/ssh-action@master
         with:
