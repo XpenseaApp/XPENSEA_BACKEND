@@ -279,3 +279,38 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /user/change-mpin:
+ *   put:
+ *     summary: Change MPIN
+ *     description: API endpoint to change the MPIN of a user
+ *     tags:
+ *       - User
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               mobile:
+ *                 type: string
+ *                 example: "9876543210"
+ *               mpin:
+ *                 type: string
+ *                 example: "4321"
+ *               otp:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: MPIN changed successfully
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal Server Error
+ */

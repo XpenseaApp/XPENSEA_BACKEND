@@ -476,3 +476,34 @@ exports.getCategory = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
+
+/* The above code is a JavaScript function that is used to change the MPIN (Mobile Personal
+Identification Number) for a user. It takes in the mobile number, new MPIN, and OTP (One Time
+Password) as input from the request body. Here is a breakdown of the code: */
+exports.changeMpin = async (req, res) => {
+  try {
+    const { mobile, mpin, otp } = req.body;
+    if (!mobile) {
+      return responseHandler(res, 400, "Mobile number is required");
+    }
+    if (!mpin) {
+      return responseHandler(res, 400, "MPIN is required");
+    }
+
+    const user = await User.findOne({ mobile });
+    if (!user) {
+      return responseHandler(res, 404, "User not found");
+    }
+
+    if (user.otp !== otp) {
+      return responseHandler(res, 400, "Invalid OTP");
+    }
+    user.otp = null;
+    const hashedPassword = await hashPassword(mpin);
+    user.mpin = hashedPassword;
+    await user.save();
+    return responseHandler(res, 200, "MPIN changed successfully");
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
