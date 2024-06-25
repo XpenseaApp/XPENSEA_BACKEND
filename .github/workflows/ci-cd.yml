@@ -65,7 +65,6 @@ jobs:
           username: ${{ env.USERNAME }}
           key: ${{ env.SSH_KEY }}
           script: |
-            echo ${{env.SSH_KEY}}
             # Refresh ECR login
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
 
