@@ -1,5 +1,5 @@
-name: Deploy xpensea-backend
-# Controls when the workflow will run
+name: Deploy Xpensea-backend
+
 on:
   push:
     branches:
