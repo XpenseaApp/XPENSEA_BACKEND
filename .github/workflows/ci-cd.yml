@@ -63,7 +63,7 @@ jobs:
           CONTAINER_NAME: XPENSEA_BACKEND
         uses: appleboy/ssh-action@v0.1.5
         with:
-          host: ${{ secrets.EC2_INSTANCE_IP }}
+          host: ${{ env.EC2_INSTANCE_IP }}
           username: ${{ env.USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
