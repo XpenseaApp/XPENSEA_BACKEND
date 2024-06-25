@@ -15,9 +15,9 @@ const loadSecrets = require("./src/config/env.config");
 
 const app = express();
 app.use(volleyball);
+const  NODE_ENV  =  process.env.NODE_ENV;
 
-//* Define the PORT & API version based on environment variable
-const { PORT, API_VERSION, NODE_ENV } = process.env;
+
 
 //* Function to start the server
 const startServer = async () => {
@@ -25,6 +25,8 @@ const startServer = async () => {
     if (NODE_ENV === "production") {
       await loadSecrets();
     }
+    const { PORT, API_VERSION } = process.env;
+//* Define the PORT & API version based on environment variable
 
     //* Enable Cross-Origin Resource Sharing (CORS) middleware
     app.use(cors());
@@ -59,7 +61,7 @@ const startServer = async () => {
     //! Start the server and listen on the specified port from environment variable
     app.listen(PORT, () => {
       const portMessage = clc.redBright(`✓ App is running on port: ${PORT}`);
-      const envMessage = clc.yellowBright(`✓ Environment: ${NODE_ENV}`);
+      const envMessage = clc.yellowBright(`✓ Environment: ${NODE_ENV || 'development'}`);
       console.log(`${portMessage}\n${envMessage}`);
     });
   } catch (error) {
