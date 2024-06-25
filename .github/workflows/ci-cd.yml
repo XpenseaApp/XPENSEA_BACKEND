@@ -59,8 +59,8 @@ jobs:
             USERNAME: ec2-user
             PORT: 3040
             CONTAINER_NAME: XPENSEA_BACKEND
-          uses: appleboy/ssh-action@master
-          with:
+        uses: appleboy/ssh-action@master
+        with:
             host: ${{ env.EC2_INSTANCE_IP }}
             username: ${{ env.USERNAME }}
             key: ${{ env.SSH_KEY }}
