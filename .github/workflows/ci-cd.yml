@@ -39,47 +39,51 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
-        
-        run: |     
-            docker build -t ${{env.ECR_REGISTRY}}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
-            docker push ${{env.ECR_REGISTRY}}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+        run: |
+          if ! docker pull ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}; then
+            echo "Docker image not found. Building and pushing a new image."
+            docker build -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
+            docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          fi
 
       - name: Deploy to EC2
         env:
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ env.IMAGE_TAG }}
-          EC2_INSTANCE_IP: ${{ secrets.EC2_INSTANCE_IP }}
-          SSH_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
-          USERNAME: ec2-user
-          PORT: 3040
-          CONTAINER_NAME: XPENSEA_BACKEND
-
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.EC2_INSTANCE_IP }}
-          username: ${{ env.USERNAME }}
-          key: ${{ env.SSH_KEY }}
-          
-          script: |
-
-                # Refresh ECR login
-                aws ecr get-login-password --region ${{ env.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-            
-                # Pull Docker Image
-                sudo docker pull ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_REGION: ${{ secrets.AWS_REGION }}
+            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+            ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+            IMAGE_TAG: ${{ env.IMAGE_TAG }}
+            EC2_INSTANCE_IP: ${{ secrets.EC2_INSTANCE_IP }}
+            SSH_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
+            USERNAME: ec2-user
+            PORT: 3040
+            CONTAINER_NAME: XPENSEA_BACKEND
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ env.EC2_INSTANCE_IP }}
+            username: ${{ env.USERNAME }}
+            key: ${{ env.SSH_KEY }}
+            script: |
+              # Print a truncated version or hash of the SSH key for verification
+              echo "SSH Key (truncated):" ${SSH_KEY:0:10}...
+              echo "SSH Key MD5:" $(echo -n $SSH_KEY | md5sum)
+        
+              # Refresh ECR login
+              aws ecr get-login-password --region ${{ env.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+        
+              # Pull Docker Image
+              if sudo docker pull ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}; then
+                # Stop and remove the current container if it exists
                 sudo docker stop ${{ env.CONTAINER_NAME }} || true
                 sudo docker rm ${{ env.CONTAINER_NAME }} || true
-
+        
+                # Run the new container
                 sudo docker run -d \
-                -p ${{ env.PORT }}:${{ env.PORT }} \
-                --name ${{ env.CONTAINER_NAME }} \
-                ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-
-                
+                  -p ${{ env.PORT }}:${{ env.PORT }} \
+                  --name ${{ env.CONTAINER_NAME }} \
+                  ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+              else
+                echo "Docker image not found after build attempt. Skipping deployment."
+              fi
         
