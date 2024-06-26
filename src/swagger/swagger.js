@@ -12,8 +12,10 @@ const swaggerDefinition = {
   servers: [
     {
       url: `http://localhost:${PORT}/api/${API_VERSION}`,
-      url: `https://dev-api.xpensea.com/api/v1`,
     },
+    {
+      url: `https://dev-api.xpensea.com/api/v1`,
+    }
   ],
   components: {
     securitySchemes: {
