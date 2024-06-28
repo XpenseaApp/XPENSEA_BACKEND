@@ -197,7 +197,7 @@ exports.getAdmin = async (req, res) => {
       "permissions locationAccess"
     ).lean();
     const mappedData = {
-      ...findAdmin._doc,
+      ...findAdmin,
       createdAt: moment(findAdmin.createdAt).format("MMM DD YYYY"),
     }
     if (!findAdmin) {
@@ -298,7 +298,7 @@ exports.getRole = async (req, res) => {
     }
     const findRole = await Role.findById(id).lean();
     const mappedData = {
-      ...findRole._doc,
+      ...findRole,
       createdAt: moment(findRole.createdAt).format("MMM DD YYYY"),
     };
     if (!findRole) {
@@ -636,7 +636,7 @@ exports.getTier = async (req, res) => {
 
     const findTier = await Tier.findById(id).lean();
     const mappedData = {
-      ...findTier._doc,
+      ...findTier,
       activationDate: moment(findTier.activationDate).format("MMM DD YYYY"),
       createdAt: moment(findTier.createdAt).format("MMM DD YYYY"),
     }
@@ -747,7 +747,7 @@ exports.getUser = async (req, res) => {
 
     const findUser = await User.findById(id).lean();
     const mappedData = {
-      ...findUser._doc,
+      ...findUser,
       createdAt: moment(findUser.createdAt).format("MMM DD YYYY"),
     }
     if (!findUser) {
