@@ -18,6 +18,7 @@ const {
   editUserSchema,
   createEventSchema,
 } = require("../validations");
+const moment = require("moment-timezone");
 
 exports.loginAdmin = async (req, res) => {
   try {
@@ -243,8 +244,6 @@ exports.editRole = async (req, res) => {
     }
 
     const check = await checkAccess(req.roleId, "permissions");
-    console.log("🚀 ~ exports.editRole= ~ req.roleId:", req.roleId);
-    console.log("🚀 ~ exports.editRole= ~ check:", check);
     if (!check || !check.includes("roleManagement_modify")) {
       return responseHandler(
         res,
@@ -390,6 +389,12 @@ exports.listController = async (req, res) => {
         .skip(skipCount)
         .limit(10)
         .lean();
+      const mappedData = fetchRoles.map((data) => {
+        return {
+          ...data,
+          createdAt: moment(item.createdAt).format("MMM DD YYYY"),
+        };
+      });
       if (!fetchRoles || fetchRoles.length === 0) {
         return responseHandler(res, 404, "No Roles found");
       }
@@ -410,10 +415,16 @@ exports.listController = async (req, res) => {
         .skip(skipCount)
         .limit(10)
         .lean();
+      const mappedData = fetchTiers.map((data) => {
+        return {
+          ...data,
+          createdAt: moment(item.createdAt).format("MMM DD YYYY"),
+        };
+      });
       if (!fetchTiers || fetchTiers.length === 0) {
         return responseHandler(res, 404, "No Tiers found");
       }
-      return responseHandler(res, 200, "Tiers found", fetchTiers, totalCount);
+      return responseHandler(res, 200, "Tiers found", mappedData, totalCount);
     } else if (type === "users") {
       const check = await checkAccess(req.roleId, "permissions");
 
@@ -430,10 +441,16 @@ exports.listController = async (req, res) => {
         .skip(skipCount)
         .limit(10)
         .lean();
+      const mappedData = fetchUsers.map((data) => {
+        return {
+          ...data,
+          createdAt: moment(item.createdAt).format("MMM DD YYYY"),
+        };
+      });
       if (!fetchUsers || fetchUsers.length === 0) {
         return responseHandler(res, 404, "No Users found");
       }
-      return responseHandler(res, 200, "Users found", fetchUsers, totalCount);
+      return responseHandler(res, 200, "Users found", mappedData, totalCount);
     } else if (type === "events") {
       const check = await checkAccess(req.roleId, "permissions");
 
@@ -453,9 +470,11 @@ exports.listController = async (req, res) => {
       const mappedData = fetchEvents.map((data) => {
         return {
           ...data,
+          startDate: moment(data.startDate).format("MMM DD YYYY"),
+          endDate: moment(data.endDate).format("MMM DD YYYY"),
           staffCount: data.staffs.length,
         };
-      })
+      });
       if (!fetchEvents || fetchEvents.length === 0) {
         return responseHandler(res, 404, "No Events found");
       }
