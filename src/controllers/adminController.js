@@ -444,7 +444,7 @@ exports.listController = async (req, res) => {
       const mappedData = fetchUsers.map((data) => {
         return {
           ...data,
-          createdAt: moment(item.createdAt).format("MMM DD YYYY"),
+          createdAt: moment(data.createdAt).format("MMM DD YYYY"),
         };
       });
       if (!fetchUsers || fetchUsers.length === 0) {
