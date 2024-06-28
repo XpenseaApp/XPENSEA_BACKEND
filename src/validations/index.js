@@ -4,7 +4,7 @@ exports.createAdminSchema = Joi.object({
   name: Joi.string().required(),
   designation: Joi.string().required(),
   email: Joi.string().required(),
-  phone: Joi.string().required(),
+  mobile: Joi.string().required(),
   password: Joi.string().required(),
   role: Joi.string().required(),
 });
@@ -13,7 +13,7 @@ exports.editAdminSchema = Joi.object({
   name: Joi.string(),
   designation: Joi.string(),
   email: Joi.string(),
-  phone: Joi.string(),
+  mobile: Joi.string(),
   password: Joi.string(),
   role: Joi.string(),
   status: Joi.boolean(),

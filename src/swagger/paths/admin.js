@@ -77,7 +77,7 @@
  *               email:
  *                 type: string
  *                 example: "admin@example.com"
- *               phone:
+ *               mobile:
  *                 type: string
  *                 example: "+123456789"
  *               password:
@@ -138,7 +138,7 @@
  *               email:
  *                 type: string
  *                 example: "admin@example.com"
- *               phone:
+ *               mobile:
  *                 type: string
  *                 example: "+123456789"
  *               password:
@@ -497,7 +497,7 @@
  *               email:
  *                 type: string
  *                 example: "jane@example.com"
- *               phone:
+ *               mobile:
  *                 type: string
  *                 example: "+123456789"
  *               tierId:
@@ -540,7 +540,7 @@
  *               email:
  *                 type: string
  *                 example: "jane@example.com"
- *               phone:
+ *               mobile:
  *                 type: string
  *                 example: "+123456789"
  *               tierId:
