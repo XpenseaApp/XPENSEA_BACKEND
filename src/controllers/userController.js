@@ -339,6 +339,7 @@ exports.listController = async (req, res) => {
           title: item.title,
           status: item.status,
           amount: item.amount,
+          category: item.category,
           date: moment(item.createdAt).format("MMM DD YYYY"),
         };
       });
