@@ -369,10 +369,16 @@ exports.listController = async (req, res) => {
         .skip(skipCount)
         .limit(10)
         .lean();
+      const mappedData = fetchAdmins.map((data) => {
+        return {
+          ...data,
+          createdAt: moment(data.createdAt).format("MMM DD YYYY"),
+        };
+      });
       if (!fetchAdmins || fetchAdmins.length === 0) {
         return responseHandler(res, 404, "No Admins found");
       }
-      return responseHandler(res, 200, "Admins found", fetchAdmins, totalCount);
+      return responseHandler(res, 200, "Admins found", mappedData, totalCount);
     } else if (type === "roles") {
       const check = await checkAccess(req.roleId, "permissions");
 
