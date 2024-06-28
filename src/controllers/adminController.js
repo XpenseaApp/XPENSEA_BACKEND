@@ -195,11 +195,15 @@ exports.getAdmin = async (req, res) => {
     const findAdmin = await Admin.findById(id).populate(
       "role",
       "permissions locationAccess"
-    );
+    ).lean();
+    const mappedData = {
+      ...findAdmin._doc,
+      createdAt: moment(findAdmin.createdAt).format("MMM DD YYYY"),
+    }
     if (!findAdmin) {
       return responseHandler(res, 404, "Admin not found");
     }
-    return responseHandler(res, 200, "Admin found", findAdmin);
+    return responseHandler(res, 200, "Admin found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
@@ -292,11 +296,15 @@ exports.getRole = async (req, res) => {
     if (!id) {
       return responseHandler(res, 400, "Role ID is required");
     }
-    const findRole = await Role.findById(id);
+    const findRole = await Role.findById(id).lean();
+    const mappedData = {
+      ...findRole._doc,
+      createdAt: moment(findRole.createdAt).format("MMM DD YYYY"),
+    };
     if (!findRole) {
       return responseHandler(res, 404, "Role not found");
     }
-    return responseHandler(res, 200, "Role found", findRole);
+    return responseHandler(res, 200, "Role found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
@@ -424,6 +432,7 @@ exports.listController = async (req, res) => {
       const mappedData = fetchTiers.map((data) => {
         return {
           ...data,
+          activationDate: moment(data.activationDate).format("MMM DD YYYY"),
           createdAt: moment(data.createdAt).format("MMM DD YYYY"),
         };
       });
@@ -625,11 +634,16 @@ exports.getTier = async (req, res) => {
       );
     }
 
-    const findTier = await Tier.findById(id);
+    const findTier = await Tier.findById(id).lean();
+    const mappedData = {
+      ...findTier._doc,
+      activationDate: moment(findTier.activationDate).format("MMM DD YYYY"),
+      createdAt: moment(findTier.createdAt).format("MMM DD YYYY"),
+    }
     if (!findTier) {
       return responseHandler(res, 404, "Tier not found");
     }
-    return responseHandler(res, 200, "Tier found", findTier);
+    return responseHandler(res, 200, "Tier found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
@@ -731,11 +745,15 @@ exports.getUser = async (req, res) => {
       );
     }
 
-    const findUser = await User.findById(id);
+    const findUser = await User.findById(id).lean();
+    const mappedData = {
+      ...findUser._doc,
+      createdAt: moment(findUser.createdAt).format("MMM DD YYYY"),
+    }
     if (!findUser) {
       return responseHandler(res, 404, "User not found");
     }
-    return responseHandler(res, 200, "User found", findUser);
+    return responseHandler(res, 200, "User found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
