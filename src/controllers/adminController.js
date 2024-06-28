@@ -418,7 +418,7 @@ exports.listController = async (req, res) => {
       const mappedData = fetchTiers.map((data) => {
         return {
           ...data,
-          createdAt: moment(item.createdAt).format("MMM DD YYYY"),
+          createdAt: moment(data.createdAt).format("MMM DD YYYY"),
         };
       });
       if (!fetchTiers || fetchTiers.length === 0) {
