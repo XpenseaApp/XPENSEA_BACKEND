@@ -14,6 +14,7 @@ const {
   problemSchema,
 } = require("../validations");
 const Problem = require("../models/problemModel");
+const Event = require("../models/eventModel");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -385,6 +386,40 @@ exports.listController = async (req, res) => {
         res,
         200,
         "Notifications found",
+        mappedData,
+        totalCount
+      );
+    } else if (type === "events") {
+      const query = {
+        staffs: { $in: [req.userId] },
+      }
+      const totalCount = await Event.countDocuments(query);
+      const fetchEvents = await Event.find(query)
+        .skip(skipCount)
+        .limit(10)
+        .lean();
+      if (!fetchEvents || fetchEvents.length === 0) {
+        return responseHandler(res, 404, "No Expenses found");
+      }
+
+      const mappedData = fetchEvents.map((item) => {
+        return {
+          _id: item._id,
+          eventName: item.eventName,
+          startDate: moment(item.startDate).format("MMM DD YYYY"),
+          endDate: moment(item.endDate).format("MMM DD YYYY"),
+          startTime: moment(item.startTime).format("hh:mm A"),
+          endTime: moment(item.endTime).format("hh:mm A"),
+          description: item.description,
+          location: item.location,
+          status: item.status,
+        };
+      });
+
+      return responseHandler(
+        res,
+        200,
+        "Expenses found",
         mappedData,
         totalCount
       );

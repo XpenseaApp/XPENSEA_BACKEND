@@ -196,8 +196,8 @@
  * @swagger
  * /user/list:
  *   get:
- *     summary: Get reports, expenses or notifications
- *     description: API endpoint to get existing reports, expenses or notifications based on query type
+ *     summary: Get reports, expenses, events or notifications
+ *     description: API endpoint to get existing reports, expenses, events or notifications based on query type
  *     tags:
  *       - List
  *     parameters:
@@ -206,7 +206,7 @@
  *         schema:
  *           type: string
  *         required: true
- *         description: Type of data to retrieve (reports, expenses or notifications)
+ *         description: Type of data to retrieve (reports, expenses, events or notifications)
  *     responses:
  *       200:
  *         description: Data retrieved successfully
