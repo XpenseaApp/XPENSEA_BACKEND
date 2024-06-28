@@ -450,10 +450,16 @@ exports.listController = async (req, res) => {
         .skip(skipCount)
         .limit(10)
         .lean();
+      const mappedData = fetchEvents.map((data) => {
+        return {
+          ...data,
+          staffCount: data.staffs.length,
+        };
+      })
       if (!fetchEvents || fetchEvents.length === 0) {
         return responseHandler(res, 404, "No Events found");
       }
-      return responseHandler(res, 200, "Events found", fetchEvents, totalCount);
+      return responseHandler(res, 200, "Events found", mappedData, totalCount);
     } else {
       return responseHandler(res, 404, "Invalid type..!");
     }

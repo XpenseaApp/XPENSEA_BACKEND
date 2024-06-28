@@ -491,6 +491,9 @@
  *           schema:
  *             type: object
  *             properties:
+ *               employeeId:
+ *                 type: string
+ *                 example: "emp#123"
  *               name:
  *                 type: string
  *                 example: "Jane Doe"
@@ -500,9 +503,15 @@
  *               mobile:
  *                 type: string
  *                 example: "+123456789"
- *               tierId:
+ *               tier:
  *                 type: string
  *                 example: "666c1a3895a6b176b7f2bcf7"
+ *               userType:
+ *                 type: string
+ *                 example: "submitter"
+ *               location:
+ *                 type: string
+ *                 example: "Kochi"
  *     responses:
  *       200:
  *         description: User created successfully
