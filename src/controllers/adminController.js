@@ -406,13 +406,14 @@ exports.listController = async (req, res) => {
       const mappedData = fetchRoles.map((data) => {
         return {
           ...data,
-          createdAt: moment(item.createdAt).format("MMM DD YYYY"),
+          createdAt: moment(data.createdAt).format("MMM DD YYYY"),
+          updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
         };
       });
       if (!fetchRoles || fetchRoles.length === 0) {
         return responseHandler(res, 404, "No Roles found");
       }
-      return responseHandler(res, 200, "Roles found", fetchRoles, totalCount);
+      return responseHandler(res, 200, "Roles found", mappedData, totalCount);
     } else if (type === "tiers") {
       const check = await checkAccess(req.roleId, "permissions");
 
