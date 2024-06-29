@@ -17,6 +17,7 @@ const {
   createUserSchema,
   editUserSchema,
   createEventSchema,
+  editEventSchema,
 } = require("../validations");
 const moment = require("moment-timezone");
 
@@ -839,6 +840,113 @@ exports.createEvent = async (req, res) => {
       );
     } else {
       return responseHandler(res, 400, `Event creation failed...!`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+
+/* The `exports.editEvent` function is responsible for updating an existing event in the system. Here is
+a breakdown of what the function is doing: */
+exports.editEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Event ID is required");
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("eventManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const findEvent = await Event.findById(id);
+    if (!findEvent) {
+      return responseHandler(res, 404, "Event not found");
+    }
+    const editEventValidator = editEventSchema.validate(req.body, {
+      abortEarly: true,
+    });
+    if (editEventValidator.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${editEventValidator.error}`
+      );
+    }
+    const updateEvent = await Event.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    if (updateEvent) {
+      return responseHandler(
+        res,
+        200,
+        `Event updated successfully..!`,
+        updateEvent
+      );
+    } else {
+      return responseHandler(res, 400, `Event update failed...!`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The `exports.getEvent` function is responsible for retrieving a event's information based on the
+provided ID. Here is a breakdown of what the function is doing: */
+exports.getEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Event ID is required");
+    }
+    const findEvent = await Event.findById(id).lean();
+    const mappedData = {
+      ...findEvent,
+      createdAt: moment(findEvent.createdAt).format("MMM DD YYYY"),
+    };
+    if (!findEvent) {
+      return responseHandler(res, 404, "Event not found");
+    }
+    return responseHandler(res, 200, "Event found", mappedData);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is a JavaScript function that handles the deletion of a event. Here is a breakdown of
+what the code is doing: */
+exports.deleteEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Event ID is required");
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("eventManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const findEvent = await Event.findById(id);
+    if (!findEvent) {
+      return responseHandler(res, 404, "Event not found");
+    }
+
+    const deleteEvent = await Event.findByIdAndDelete(id);
+    if (deleteEvent) {
+      return responseHandler(res, 200, `Event deleted successfully..!`);
+    } else {
+      return responseHandler(res, 400, `Event deletion failed...!`);
     }
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);

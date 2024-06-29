@@ -684,3 +684,128 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /admin/events/{id}:
+ *   put:
+ *     summary: Edit an event
+ *     description: API endpoint for editing an event
+ *     tags:
+ *       - Event
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the event to edit
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               eventName:
+ *                 type: string
+ *                 example: "Updated Event Name"
+ *               days:
+ *                 type: number
+ *                 example: 5
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2023-07-01"
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2023-07-05"
+ *               startTime:
+ *                 type: string
+ *                 format: time
+ *                 example: "09:00:00"
+ *               endTime:
+ *                 type: string
+ *                 format: time
+ *                 example: "17:00:00"
+ *               description:
+ *                 type: string
+ *                 example: "Updated event description"
+ *               location:
+ *                 type: string
+ *                 example: "Updated event location"
+ *               staffs:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "Staff Member 1"
+ *               status:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Event updated successfully
+ *       400:
+ *         description: Invalid input or Event update failed
+ *       403:
+ *         description: You don't have permission to perform this action
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /admin/events/{id}:
+ *   get:
+ *     summary: Get event details
+ *     description: API endpoint for retrieving event details
+ *     tags:
+ *       - Event
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the event to retrieve
+ *     responses:
+ *       200:
+ *         description: Event found
+ *       400:
+ *         description: Event ID is required
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /admin/events/{id}:
+ *   delete:
+ *     summary: Delete an event
+ *     description: API endpoint for deleting an event
+ *     tags:
+ *       - Event
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the event to delete
+ *     responses:
+ *       200:
+ *         description: Event deleted successfully
+ *       400:
+ *         description: Event ID is required
+ *       403:
+ *         description: You don't have permission to perform this action
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Internal Server Error
+ */

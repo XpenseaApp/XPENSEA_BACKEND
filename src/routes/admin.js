@@ -43,5 +43,10 @@ adminRoute
   .delete(authVerify, adminController.deleteUser);
 
 adminRoute.post("/event", authVerify, adminController.createEvent);
+adminRoute
+  .route("/event/:id")
+  .get(authVerify, adminController.getEvent)
+  .put(authVerify, adminController.editEvent)
+  .delete(authVerify, adminController.deleteEvent);
 
 module.exports = adminRoute;
