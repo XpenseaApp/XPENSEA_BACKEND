@@ -245,6 +245,9 @@
  *               roleName:
  *                 type: string
  *                 example: "Manager"
+ *               description:
+ *                 type: string
+ *                 example: "Manager of the company"
  *               permissions:
  *                 type: array
  *                 items:
@@ -289,6 +292,9 @@
  *               roleName:
  *                 type: string
  *                 example: "Manager"
+ *               description:
+ *                 type: string
+ *                 example: "Manager of the company"
  *               permissions:
  *                 type: array
  *                 items:

@@ -21,12 +21,14 @@ exports.editAdminSchema = Joi.object({
 
 exports.createRoleSchema = Joi.object({
   roleName: Joi.string().required(),
+  description: Joi.string(),
   permissions: Joi.array(),
   locationAccess: Joi.array(),
 });
 
 exports.editRoleSchema = Joi.object({
   roleName: Joi.string(),
+  description: Joi.string(),
   permissions: Joi.array(),
   locationAccess: Joi.array(),
   status: Joi.boolean(),
