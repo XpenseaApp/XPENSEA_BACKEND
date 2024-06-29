@@ -107,7 +107,7 @@
 
 /**
  * @swagger
- * /admin/{id}:
+ * /admin/admin/{id}:
  *   put:
  *     summary: Update an admin
  *     description: API endpoint to update an existing admin

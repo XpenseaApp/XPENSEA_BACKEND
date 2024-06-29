@@ -3,50 +3,53 @@ const adminController = require("../controllers/adminController");
 const authVerify = require("../middlewares/authVerify");
 const adminRoute = express.Router();
 
-adminRoute
-  .route("/")
-  .post(authVerify, adminController.createAdmin)
-  .get(authVerify, adminController.getAdmin);
-
-adminRoute
-  .route("/:id")
-  .put(authVerify, adminController.editAdmin)
-  .get(authVerify, adminController.getAdminById)
-  .delete(authVerify, adminController.deleteAdmin);
-
 adminRoute.post("/login", adminController.loginAdmin);
 
-adminRoute.route("/role").post(authVerify, adminController.createRole);
+adminRoute.use(authVerify);
+
+adminRoute
+  .route("/")
+  .post(adminController.createAdmin)
+  .get(adminController.getAdmin);
+
+adminRoute
+  .route("/admin/:id")
+  .put(adminController.editAdmin)
+  .get(adminController.getAdminById)
+  .delete(adminController.deleteAdmin);
+
+adminRoute.route("/role").post(adminController.createRole);
 
 adminRoute
   .route("/role/:id")
-  .put(authVerify, adminController.editRole)
-  .get(authVerify, adminController.getRole)
-  .delete(authVerify, adminController.deleteRole);
+  .put(adminController.editRole)
+  .get(adminController.getRole)
+  .delete(adminController.deleteRole);
 
-adminRoute.get("/list", authVerify, adminController.listController);
+adminRoute.get("/list", adminController.listController);
 
-adminRoute.post("/tier", authVerify, adminController.createTier);
+adminRoute.post("/tier", adminController.createTier);
 
 adminRoute
   .route("/tier/:id")
-  .put(authVerify, adminController.editTier)
-  .get(authVerify, adminController.getTier)
-  .delete(authVerify, adminController.deleteTier);
+  .put(adminController.editTier)
+  .get(adminController.getTier)
+  .delete(adminController.deleteTier);
 
-adminRoute.post("/user", authVerify, adminController.createUser);
+adminRoute.post("/user", adminController.createUser);
 
 adminRoute
   .route("/user/:id")
-  .put(authVerify, adminController.editUser)
-  .get(authVerify, adminController.getUser)
-  .delete(authVerify, adminController.deleteUser);
+  .put(adminController.editUser)
+  .get(adminController.getUser)
+  .delete(adminController.deleteUser);
 
-adminRoute.post("/event", authVerify, adminController.createEvent);
+adminRoute.post("/event", adminController.createEvent);
+
 adminRoute
   .route("/event/:id")
-  .get(authVerify, adminController.getEvent)
-  .put(authVerify, adminController.editEvent)
-  .delete(authVerify, adminController.deleteEvent);
+  .get(adminController.getEvent)
+  .put(adminController.editEvent)
+  .delete(adminController.deleteEvent);
 
 module.exports = adminRoute;
