@@ -157,6 +157,25 @@
  *         description: Bad request
  *       404:
  *         description: Admin not found
+ *   get:
+ *     summary: Get a Admin by id
+ *     description: API endpoint to get an existing admin
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the admin to retrieve
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Admin found
+ *       404:
+ *         description: Admin not found
  *   delete:
  *     summary: Delete an admin
  *     description: API endpoint to delete an existing admin

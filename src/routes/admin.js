@@ -8,8 +8,11 @@ adminRoute
   .post(authVerify, adminController.createAdmin)
   .get(authVerify, adminController.getAdmin);
 
-adminRoute.put("/admin/:id", authVerify, adminController.editAdmin);
-adminRoute.delete("/admin/:id", authVerify, adminController.deleteAdmin);
+adminRoute
+  .route("/:id")
+  .put(authVerify, adminController.editAdmin)
+  .get(authVerify, adminController.getAdminById)
+  .delete(authVerify, adminController.deleteAdmin);
 
 adminRoute.post("/login", adminController.loginAdmin);
 

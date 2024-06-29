@@ -192,14 +192,35 @@ exports.getAdmin = async (req, res) => {
     if (!id) {
       return responseHandler(res, 400, "Admin ID is required");
     }
-    const findAdmin = await Admin.findById(id).populate(
-      "role",
-      "permissions locationAccess"
-    ).lean();
+    const findAdmin = await Admin.findById(id)
+      .populate("role", "permissions locationAccess")
+      .lean();
     const mappedData = {
       ...findAdmin,
       createdAt: moment(findAdmin.createdAt).format("MMM DD YYYY"),
+    };
+    if (!findAdmin) {
+      return responseHandler(res, 404, "Admin not found");
     }
+    return responseHandler(res, 200, "Admin found", mappedData);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The `exports.getAdminById` function is responsible for retrieving a admin's information based on the
+provided ID. Here is a breakdown of what the function is doing: */
+exports.getAdminById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Admin ID is required");
+    }
+    const findAdmin = await Admin.findById(id).lean();
+    const mappedData = {
+      ...findAdmin,
+      createdAt: moment(findAdmin.createdAt).format("MMM DD YYYY"),
+    };
     if (!findAdmin) {
       return responseHandler(res, 404, "Admin not found");
     }
@@ -640,7 +661,7 @@ exports.getTier = async (req, res) => {
       ...findTier,
       activationDate: moment(findTier.activationDate).format("MMM DD YYYY"),
       createdAt: moment(findTier.createdAt).format("MMM DD YYYY"),
-    }
+    };
     if (!findTier) {
       return responseHandler(res, 404, "Tier not found");
     }
@@ -750,7 +771,7 @@ exports.getUser = async (req, res) => {
     const mappedData = {
       ...findUser,
       createdAt: moment(findUser.createdAt).format("MMM DD YYYY"),
-    }
+    };
     if (!findUser) {
       return responseHandler(res, 404, "User not found");
     }
