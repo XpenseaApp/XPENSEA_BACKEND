@@ -768,9 +768,10 @@ exports.getUser = async (req, res) => {
       );
     }
 
-    const findUser = await User.findById(id).lean();
+    const findUser = await User.findById(id).populate("tier").lean();
     const mappedData = {
       ...findUser,
+      tierName: findUser.tier && findUser.tier.title,
       createdAt: moment(findUser.createdAt).format("MMM DD YYYY"),
     };
     if (!findUser) {
@@ -845,7 +846,6 @@ exports.createEvent = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
-
 
 /* The `exports.editEvent` function is responsible for updating an existing event in the system. Here is
 a breakdown of what the function is doing: */
