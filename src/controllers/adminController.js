@@ -370,7 +370,7 @@ exports.deleteRole = async (req, res) => {
 the `type` parameter provided in the request query. Here's a breakdown of what the code is doing: */
 exports.listController = async (req, res) => {
   try {
-    const { type, pageNo = 1 } = req.query;
+    const { type, pageNo = 1, limit = 10 } = req.query;
     const skipCount = 10 * (pageNo - 1);
     const filter = {};
 
@@ -397,7 +397,7 @@ exports.listController = async (req, res) => {
       const fetchAdmins = await Admin.find(filter)
         .select("-password")
         .skip(skipCount)
-        .limit(10)
+        .limit(limit)
         .lean();
       const mappedData = fetchAdmins.map((data) => {
         return {
@@ -423,7 +423,7 @@ exports.listController = async (req, res) => {
       const totalCount = await Role.countDocuments(filter);
       const fetchRoles = await Role.find(filter)
         .skip(skipCount)
-        .limit(10)
+        .limit(limit)
         .lean();
       const mappedData = fetchRoles.map((data) => {
         return {
@@ -450,7 +450,7 @@ exports.listController = async (req, res) => {
       const totalCount = await Tier.countDocuments(filter);
       const fetchTiers = await Tier.find(filter)
         .skip(skipCount)
-        .limit(10)
+        .limit(limit)
         .lean();
       const mappedData = fetchTiers.map((data) => {
         return {
@@ -477,7 +477,7 @@ exports.listController = async (req, res) => {
       const totalCount = await User.countDocuments(filter);
       const fetchUsers = await User.find(filter)
         .skip(skipCount)
-        .limit(10)
+        .limit(limit)
         .lean();
       const mappedData = fetchUsers.map((data) => {
         return {
@@ -503,7 +503,7 @@ exports.listController = async (req, res) => {
       const totalCount = await Event.countDocuments(filter);
       const fetchEvents = await Event.find(filter)
         .skip(skipCount)
-        .limit(10)
+        .limit(limit)
         .lean();
       const mappedData = fetchEvents.map((data) => {
         return {
