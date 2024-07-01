@@ -452,9 +452,20 @@ exports.listController = async (req, res) => {
         .skip(skipCount)
         .limit(limit)
         .lean();
+      const tierIds = fetchTiers.map((tier) => tier._id);
+
+      const userCounts = await User.aggregate([
+        { $match: { tier: { $in: tierIds } } },
+        { $group: { _id: "$tier", userCount: { $sum: 1 } } },
+      ]);
+
       const mappedData = fetchTiers.map((data) => {
         return {
           ...data,
+          noOfEmployees:
+            userCounts.find(
+              (count) => count._id.toString() === data._id.toString()
+            )?.userCount || 0,
           activationDate: moment(data.activationDate).format("MMM DD YYYY"),
           createdAt: moment(data.createdAt).format("MMM DD YYYY"),
         };
