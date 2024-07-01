@@ -448,32 +448,44 @@ exports.listController = async (req, res) => {
       }
 
       const totalCount = await Tier.countDocuments(filter);
-      const fetchTiers = await Tier.find(filter)
-        .skip(skipCount)
-        .limit(limit)
-        .lean();
-      const tierIds = fetchTiers.map((tier) => tier._id);
-
-      const userCounts = await User.aggregate([
-        { $match: { tier: { $in: tierIds } } },
-        { $group: { _id: "$tier", userCount: { $sum: 1 } } },
+      const fetchTiers = await Tier.aggregate([
+        { $match: filter },
+        { $skip: skipCount },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: "users",
+            localField: "_id",
+            foreignField: "tier",
+            as: "users",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            title: 1,
+            categories: 1,
+            totalAmount: 1,
+            activationDate: {
+              $dateToString: { format: "%b %d %Y", date: "$activationDate" },
+            },
+            status: 1,
+            updatedAt: {
+              $dateToString: { format: "%b %d %Y", date: "$updatedAt" },
+            },
+            createdAt: {
+              $dateToString: { format: "%b %d %Y", date: "$createdAt" },
+            },
+            noOfEmployees: { $size: "$users" },
+          },
+        },
       ]);
 
-      const mappedData = fetchTiers.map((data) => {
-        return {
-          ...data,
-          noOfEmployees:
-            userCounts.find(
-              (count) => count._id.toString() === data._id.toString()
-            )?.userCount || 0,
-          activationDate: moment(data.activationDate).format("MMM DD YYYY"),
-          createdAt: moment(data.createdAt).format("MMM DD YYYY"),
-        };
-      });
       if (!fetchTiers || fetchTiers.length === 0) {
         return responseHandler(res, 404, "No Tiers found");
       }
-      return responseHandler(res, 200, "Tiers found", mappedData, totalCount);
+
+      return responseHandler(res, 200, "Tiers found", fetchTiers, totalCount);
     } else if (type === "users") {
       const check = await checkAccess(req.roleId, "permissions");
 
