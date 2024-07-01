@@ -24,6 +24,7 @@ exports.createRoleSchema = Joi.object({
   description: Joi.string(),
   permissions: Joi.array(),
   locationAccess: Joi.array(),
+  status: Joi.boolean(),
 });
 
 exports.editRoleSchema = Joi.object({
