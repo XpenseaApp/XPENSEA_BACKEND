@@ -12,6 +12,7 @@ const {
   createExpenseSchema,
   createReportSchema,
   problemSchema,
+  createUserEventSchema,
 } = require("../validations");
 const Problem = require("../models/problemModel");
 const Event = require("../models/eventModel");
@@ -567,6 +568,38 @@ exports.reportProblem = async (req, res) => {
     const report = Problem(req.body);
     if (!report) return responseHandler(res, 400, `Report creation failed`);
     return responseHandler(res, 200, "Reported added successfully");
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is a JavaScript function that handles the creation of an event. Here is a breakdown
+of what the code does: */
+exports.createEvent = async (req, res) => {
+  try {
+    const createEventValidator = createUserEventSchema.validate(req.body, {
+      abortEarly: true,
+    });
+    if (createEventValidator.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${createEventValidator.error}`
+      );
+    }
+    req.body.type = "user";
+    req.body.staffs[0] = req.userId;
+    const newEvent = await Event.create(req.body);
+    if (newEvent) {
+      return responseHandler(
+        res,
+        200,
+        `Event created successfully..!`,
+        newEvent
+      );
+    } else {
+      return responseHandler(res, 400, `Event creation failed...!`);
+    }
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }

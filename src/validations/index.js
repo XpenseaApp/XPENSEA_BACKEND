@@ -118,6 +118,16 @@ exports.createEventSchema = Joi.object({
   staffs: Joi.array().required(),
 });
 
+exports.createUserEventSchema = Joi.object({
+  eventName: Joi.string().required(),
+  days: Joi.number().required(),
+  startDate: Joi.date().required(),
+  endDate: Joi.date().required(),
+  startTime: Joi.date().required(),
+  endTime: Joi.date().required(),
+  description: Joi.string().required(),
+});
+
 exports.editEventSchema = Joi.object({
   eventName: Joi.string(),
   days: Joi.number(),

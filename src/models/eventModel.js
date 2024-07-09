@@ -19,8 +19,12 @@ const eventSchema = mongoose.Schema(
     status: {
       type: String,
       default: "scheduled",
-      enum: ["scheduled", "inProgress", "done"],
+      enum: ["scheduled", "progress", "done"],
     },
+    type: {
+      type: String,
+      enum: ["user", "admin"],
+    }
   },
   { timestamps: true }
 );
