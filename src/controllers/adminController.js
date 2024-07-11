@@ -562,6 +562,7 @@ exports.listController = async (req, res) => {
         .lean();
       const mappedData = fetchReports.map((data) => {
         return {
+          _id: data._id,
           title: data.title,
           user: data.user.name,
           expenseCount: data.expenses.length,
