@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 
 const subSchema = new mongoose.Schema({
-  title: { type: String },
+  title: {
+    type: String,
+    set: (v) => v.toLowerCase(),
+  },
   maxAmount: { type: Number },
   status: {
     type: Boolean,

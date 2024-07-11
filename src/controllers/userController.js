@@ -173,8 +173,45 @@ exports.createReport = async (req, res) => {
     // Fetch user and populate tier information
     const user = await User.findOne({ _id: userId }).populate("tier");
 
+    // Function to create a new report and send notification
+    const createNewReport = async () => {
+      req.body.user = req.userId;
+      const newReport = await Report.create(req.body);
+      if (newReport) {
+        const data = {
+          content: newReport._id,
+          user: req.userId,
+          status: newReport.status,
+        };
+        await Notification.create(data);
+        return responseHandler(
+          res,
+          200,
+          `Report created successfully..!`,
+          newReport
+        );
+      } else {
+        return responseHandler(res, 400, `Report creation failed...!`);
+      }
+    };
+
+    // Check if it is an event created by admin
+    if (req.body.event) {
+      const event = await Event.findOne({ _id: req.body.event });
+      if (event.type === "Admin") {
+        await Expense.updateMany(
+          { _id: { $in: expenseIds } },
+          { status: "mapped" }
+        );
+        return await createNewReport();
+      }
+      if (!event) {
+        return responseHandler(res, 404, "Event not found");
+      }
+    }
+
     // Object to keep track of total amounts per category
-    const categoryTotals = [];
+    const categoryTotals = {};
 
     for (let expense of expenses) {
       if (expense.status === "mapped") {
@@ -185,34 +222,27 @@ exports.createReport = async (req, res) => {
         );
       }
 
-      // Calculate total amount per category
-      const categoryIndex = categoryTotals.findIndex(
-        (cat) => cat.title === expense.category
-      );
-      if (categoryIndex > -1) {
-        categoryTotals[categoryIndex].value += expense.amount;
+      if (categoryTotals[expense.category]) {
+        categoryTotals[expense.category] += expense.amount;
       } else {
-        categoryTotals.push({ title: expense.category, value: expense.amount });
+        categoryTotals[expense.category] = expense.amount;
       }
     }
 
     // Check if any category total exceeds the user's tier category max amount
-    for (let category of categoryTotals) {
+    for (const [title, value] of Object.entries(categoryTotals)) {
+      const lowerCaseTitle = title.toLowerCase();
       const tierCategory = user.tier.categories.find(
-        (cat) => cat.title === category.title
+        (cat) => cat.title.toLowerCase() === lowerCaseTitle
       );
       if (tierCategory && tierCategory.status === false) {
-        return responseHandler(
-          res,
-          400,
-          `Category ${category.title} is disabled.`
-        );
+        return responseHandler(res, 400, `Category ${title} is disabled.`);
       }
-      if (tierCategory && category.value > tierCategory.maxAmount) {
+      if (tierCategory && value > tierCategory.maxAmount) {
         return responseHandler(
           res,
           400,
-          `Total amount for category ${category.title} exceeds the maximum allowed.`
+          `Total amount for category ${title} exceeds the maximum allowed.`
         );
       }
     }
@@ -260,24 +290,7 @@ exports.createReport = async (req, res) => {
       { status: "mapped" }
     );
 
-    req.body.user = req.userId;
-    const newReport = await Report.create(req.body);
-    if (newReport) {
-      const data = {
-        content: newReport._id,
-        user: req.userId,
-        status: newReport.status,
-      };
-      await Notification.create(data);
-      return responseHandler(
-        res,
-        200,
-        `Report created successfully..!`,
-        newReport
-      );
-    } else {
-      return responseHandler(res, 400, `Report creation failed...!`);
-    }
+    return await createNewReport();
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
@@ -394,7 +407,7 @@ exports.listController = async (req, res) => {
     } else if (type === "events") {
       const query = {
         staffs: { $in: [req.userId] },
-      }
+      };
       const totalCount = await Event.countDocuments(query);
       const fetchEvents = await Event.find(query)
         .skip(skipCount)
