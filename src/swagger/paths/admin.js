@@ -204,7 +204,7 @@
  * /admin/list:
  *   get:
  *     summary: Get admins, roles, tiers, users or events
- *     description: API endpoint to get existing admins, roles, tiers, users or events based on query type
+ *     description: API endpoint to get existing admins, roles, tiers, users, approvals or events based on query type
  *     tags:
  *       - List
  *     security:
@@ -215,7 +215,7 @@
  *         schema:
  *           type: string
  *         required: true
- *         description: Type of data to retrieve (admins, roles, tiers, users or events)
+ *         description: Type of data to retrieve (admins, roles, tiers, users, approvals or events)
  *     responses:
  *       200:
  *         description: Data retrieved successfully

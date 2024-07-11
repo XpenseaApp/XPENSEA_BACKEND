@@ -20,6 +20,7 @@ const {
   editEventSchema,
 } = require("../validations");
 const moment = require("moment-timezone");
+const Report = require("../models/reportModel");
 
 exports.loginAdmin = async (req, res) => {
   try {
@@ -380,6 +381,7 @@ exports.listController = async (req, res) => {
       tiers: "tierManagement_view",
       events: "eventManagement_view",
       users: "userManagement_view",
+      approvals: "approvalManagement_view",
     };
 
     if (type === "admins") {
@@ -540,6 +542,35 @@ exports.listController = async (req, res) => {
         return responseHandler(res, 404, "No Events found");
       }
       return responseHandler(res, 200, "Events found", mappedData, totalCount);
+    } else if (type === "approvals") {
+      const check = await checkAccess(req.roleId, "permissions");
+
+      if (!check || !check.includes(accessPermissions[type])) {
+        return responseHandler(
+          res,
+          403,
+          "You don't have permission to perform this action"
+        );
+      }
+
+      filter.status = "pending";
+
+      const totalCount = await Report.countDocuments(filter);
+      const fetchReports = await Report.find(filter)
+        .skip(skipCount)
+        .limit(limit)
+        .lean();
+      const mappedData = fetchReports.map((data) => {
+        return {
+          ...data,
+          createdAt: moment(data.createdAt).format("MMM DD YYYY"),
+          updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
+        };
+      });
+      if (!fetchReports || fetchReports.length === 0) {
+        return responseHandler(res, 404, "No Approvals found");
+      }
+      return responseHandler(res, 200, "Approvals found", mappedData, totalCount);
     } else {
       return responseHandler(res, 404, "Invalid type..!");
     }

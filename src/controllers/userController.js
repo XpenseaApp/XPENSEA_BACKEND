@@ -16,6 +16,7 @@ const {
 } = require("../validations");
 const Problem = require("../models/problemModel");
 const Event = require("../models/eventModel");
+const mongoose = require("mongoose");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -438,6 +439,68 @@ exports.listController = async (req, res) => {
         mappedData,
         totalCount
       );
+    } else if (type === "approvals") {
+      const userId = new mongoose.Types.ObjectId(req.userId);
+  
+      const pipeline = [
+        {
+          $match: { status: "pending" }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user',
+            foreignField: '_id',
+            as: 'userDetails'
+          }
+        },
+        {
+          $unwind: '$userDetails'
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userDetails.approver',
+            foreignField: '_id',
+            as: 'approverDetails'
+          }
+        },
+        {
+          $unwind: '$approverDetails'
+        },
+        {
+          $match: {
+            'approverDetails._id': userId
+          }
+        },
+        {
+          $facet: {
+            metadata: [{ $count: "total" }],
+            data: [
+              { $skip: parseInt(skipCount) },
+              { $limit: parseInt(limit) }
+            ]
+          }
+        }
+      ];
+  
+      const result = await Report.aggregate(pipeline);
+      const totalCount = result[0]?.metadata[0]?.total || 0;
+      const fetchReports = result[0]?.data || [];
+  
+      const mappedData = fetchReports.map((data) => {
+        return {
+          ...data,
+          createdAt: moment(data.createdAt).format("MMM DD YYYY"),
+          updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
+        };
+      });
+  
+      if (!fetchReports.length) {
+        return responseHandler(res, 404, "No Approvals found");
+      }
+  
+      return responseHandler(res, 200, "Approvals found", mappedData, totalCount);
     } else {
       return responseHandler(res, 404, "Invalid type..!");
     }
