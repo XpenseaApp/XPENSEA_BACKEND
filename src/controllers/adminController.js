@@ -1075,6 +1075,7 @@ exports.getApproval = async (req, res) => {
           location: expense.location,
           status: expense.status,
           category: expense.category,
+          image: expense.image,
         };
       }),
       reportDate: moment(fetchReport.reportDate).format("MMM DD YYYY"),
