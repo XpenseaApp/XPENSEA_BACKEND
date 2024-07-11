@@ -42,6 +42,7 @@ exports.createTierSchema = Joi.object({
   categories: Joi.array(),
   status: Joi.boolean(),
   totalAmount: Joi.number(),
+  level: Joi.number().required(),
 });
 
 exports.editTierSchema = Joi.object({
@@ -50,6 +51,7 @@ exports.editTierSchema = Joi.object({
   categories: Joi.array(),
   status: Joi.boolean(),
   totalAmount: Joi.number(),
+  level: Joi.number(),
 });
 
 exports.createUserSchema = Joi.object({

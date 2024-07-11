@@ -22,6 +22,7 @@ const tierSchema = mongoose.Schema(
       default: false,
     },
     totalAmount: { type: Number },
+    level: { type: Number },
   },
   { timestamps: true }
 );
