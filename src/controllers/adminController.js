@@ -556,13 +556,19 @@ exports.listController = async (req, res) => {
       filter.status = "pending";
 
       const totalCount = await Report.countDocuments(filter);
-      const fetchReports = await Report.find(filter)
+      const fetchReports = await Report.find(filter).populate("user", "name").populate("expenses")
         .skip(skipCount)
         .limit(limit)
         .lean();
       const mappedData = fetchReports.map((data) => {
         return {
-          ...data,
+          title: data.title,
+          user: data.user.name,
+          expenseCount: data.expenses.length,
+          totalAmount: data.expenses.reduce((acc, curr) => acc + curr.amount, 0),
+          location: data.location,
+          status: data.status,
+          reportDate: moment(data.reportDate).format("MMM DD YYYY"),
           createdAt: moment(data.createdAt).format("MMM DD YYYY"),
           updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
         };
