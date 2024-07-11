@@ -21,6 +21,8 @@
  *     description: Category related endpoints
  *   - name: Problem
  *     description: User Problem related endpoints
+ *   - name: Approval
+ *     description: User Approval related endpoints
  */
 
 /**
@@ -818,6 +820,34 @@
  *         description: You don't have permission to perform this action
  *       404:
  *         description: Event not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /admin/approval/{id}:
+ *   get:
+ *     summary: Get approval details
+ *     description: API endpoint for fetching approval details based on approval ID
+ *     tags:
+ *       - Approval
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the event to delete
+ *     responses:
+ *       200:
+ *         description: Approval details retrieved successfully
+ *       400:
+ *         description: Approval ID is required
+ *       403:
+ *         description: You don't have permission to perform this action
+ *       404:
+ *         description: Report not found
  *       500:
  *         description: Internal Server Error
  */

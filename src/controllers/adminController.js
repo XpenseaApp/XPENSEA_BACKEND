@@ -556,7 +556,9 @@ exports.listController = async (req, res) => {
       filter.status = "pending";
 
       const totalCount = await Report.countDocuments(filter);
-      const fetchReports = await Report.find(filter).populate("user", "name").populate("expenses")
+      const fetchReports = await Report.find(filter)
+        .populate("user", "name")
+        .populate("expenses")
         .skip(skipCount)
         .limit(limit)
         .lean();
@@ -566,7 +568,10 @@ exports.listController = async (req, res) => {
           title: data.title,
           user: data.user.name,
           expenseCount: data.expenses.length,
-          totalAmount: data.expenses.reduce((acc, curr) => acc + curr.amount, 0),
+          totalAmount: data.expenses.reduce(
+            (acc, curr) => acc + curr.amount,
+            0
+          ),
           location: data.location,
           status: data.status,
           reportDate: moment(data.reportDate).format("MMM DD YYYY"),
@@ -577,7 +582,13 @@ exports.listController = async (req, res) => {
       if (!fetchReports || fetchReports.length === 0) {
         return responseHandler(res, 404, "No Approvals found");
       }
-      return responseHandler(res, 200, "Approvals found", mappedData, totalCount);
+      return responseHandler(
+        res,
+        200,
+        "Approvals found",
+        mappedData,
+        totalCount
+      );
     } else {
       return responseHandler(res, 404, "Invalid type..!");
     }
@@ -1011,6 +1022,66 @@ exports.deleteEvent = async (req, res) => {
     } else {
       return responseHandler(res, 400, `Event deletion failed...!`);
     }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is an asynchronous function in a Node.js environment that handles fetching approval
+data based on the provided ID. Here is a breakdown of the code: */
+exports.getApproval = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Approval ID is required");
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("approvalManagement_view")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const fetchReport = await Report.findById(id)
+      .populate({
+        path: "user",
+        populate: { path: "tier" },
+      })
+      .populate("expenses")
+      .lean();
+
+    if (!fetchReport) {
+      return responseHandler(res, 404, "Report not found");
+    }
+
+    const mappedData = {
+      _id: fetchReport._id,
+      user: fetchReport.user.name,
+      employeeId: fetchReport.user.employeeId,
+      tier: fetchReport.user.tier.title,
+      reportId: fetchReport.reportId,
+      title: fetchReport.title,
+      description: fetchReport.description,
+      location: fetchReport.location,
+      expenses: fetchReport.expenses.map((expense) => {
+        return {
+          _id: expense._id,
+          title: expense.title,
+          amount: expense.amount,
+          createdAt: moment(expense.createdAt).format("MMM DD YYYY"),
+          location: expense.location,
+          status: expense.status,
+          category: expense.category,
+        };
+      }),
+      reportDate: moment(fetchReport.reportDate).format("MMM DD YYYY"),
+      createdAt: moment(fetchReport.createdAt).format("MMM DD YYYY"),
+      updatedAt: moment(fetchReport.updatedAt).format("MMM DD YYYY"),
+    };
+    return responseHandler(res, 200, "Report found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
