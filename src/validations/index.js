@@ -60,6 +60,7 @@ exports.createUserSchema = Joi.object({
   tier: Joi.string().required(),
   userType: Joi.string().required(),
   location: Joi.string().required(),
+  approver: Joi.string(),
 });
 
 exports.editUserSchema = Joi.object({
@@ -144,4 +145,4 @@ exports.editEventSchema = Joi.object({
 exports.problemSchema = Joi.object({
   description: Joi.string().required(),
   to: Joi.string().required(),
-})
+});

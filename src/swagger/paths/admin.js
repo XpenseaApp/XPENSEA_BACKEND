@@ -537,6 +537,9 @@
  *               location:
  *                 type: string
  *                 example: "Kochi"
+ *               approver:
+ *                 type: string
+ *                 example: "666c1a3895a6b176b7f2bcf7"
  *     responses:
  *       200:
  *         description: User created successfully

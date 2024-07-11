@@ -854,7 +854,8 @@ exports.createEvent = async (req, res) => {
         `Invalid input: ${createEventValidator.error}`
       );
     }
-    req.body.type = "admin";
+    req.body.type = "Admin";
+    req.body.creator = req.userId;
     const newEvent = await Event.create(req.body);
     if (newEvent) {
       return responseHandler(

@@ -23,8 +23,12 @@ const eventSchema = mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["user", "admin"],
-    }
+      enum: ["User", "Admin"],
+    },
+    creator: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: 'type'
+    },
   },
   { timestamps: true }
 );
