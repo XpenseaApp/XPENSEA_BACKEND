@@ -379,6 +379,9 @@
  *               title:
  *                 type: string
  *                 example: "Gold Tier"
+ *               level:
+ *                 type: number
+ *                 example: 4
  *               activationDate:
  *                 type: string
  *                 format: date
