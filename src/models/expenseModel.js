@@ -17,7 +17,7 @@ const expenseSchema = mongoose.Schema(
     status: {
       type: String,
       default: "draft",
-      enum: ["draft", "mapped"],
+      enum: ["draft", "mapped", "rejected", "accepted"],
     },
   },
   { timestamps: true }
