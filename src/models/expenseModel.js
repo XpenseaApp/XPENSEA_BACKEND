@@ -19,6 +19,7 @@ const expenseSchema = mongoose.Schema(
       default: "draft",
       enum: ["draft", "mapped", "rejected", "accepted"],
     },
+    reason: { type: String },
   },
   { timestamps: true }
 );
