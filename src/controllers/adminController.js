@@ -1078,6 +1078,10 @@ exports.getApproval = async (req, res) => {
           image: expense.image,
         };
       }),
+      totalAmount: fetchReport.expenses.reduce(
+        (acc, curr) => acc + curr.amount,
+        0
+      ),
       reportDate: moment(fetchReport.reportDate).format("MMM DD YYYY"),
       createdAt: moment(fetchReport.createdAt).format("MMM DD YYYY"),
       updatedAt: moment(fetchReport.updatedAt).format("MMM DD YYYY"),
