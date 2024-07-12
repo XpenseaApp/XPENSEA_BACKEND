@@ -1082,6 +1082,7 @@ exports.getApproval = async (req, res) => {
       createdAt: moment(fetchReport.createdAt).format("MMM DD YYYY"),
       updatedAt: moment(fetchReport.updatedAt).format("MMM DD YYYY"),
     };
+    
     return responseHandler(res, 200, "Report found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
