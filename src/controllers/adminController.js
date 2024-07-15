@@ -589,6 +589,52 @@ exports.listController = async (req, res) => {
         mappedData,
         totalCount
       );
+    } else if (type === "approvers") {
+      const check = await checkAccess(req.roleId, "permissions");
+
+      if (!check || !check.includes(accessPermissions["users"])) {
+        return responseHandler(
+          res,
+          403,
+          "You don't have permission to perform this action"
+        );
+      }
+
+      const filter = {
+        status: true,
+        userType: "approver",
+      };
+
+      const tier = req.query.tier;
+      
+      if(!tier){
+        return responseHandler(res, 400, "Tier is required");
+      }
+
+      const tierData = await Tier.findById(tier).select("level");
+      const tierLevel = tierData.level;
+
+      const targetTierLevel = tierLevel + 1;
+      const targetTier = await Tier.findOne({ level: targetTierLevel }).select(
+        "_id"
+      );
+
+      if (targetTier) {
+        filter.tier = targetTier._id;
+      }
+
+      const fetchApprovers = await User.find(filter).select("-mpin");
+
+      if (!fetchApprovers || fetchApprovers.length === 0) {
+        const fetchAdmins = await Admin.find({ status: true }).select("-password");
+
+        if (!fetchAdmins || fetchAdmins.length === 0) {
+          return responseHandler(res, 404, "No Approvers found");
+        }
+
+        return responseHandler(res, 200, "Approvers found", fetchAdmins);
+      }
+      return responseHandler(res, 200, "Approvers found", fetchApprovers);
     } else {
       return responseHandler(res, 404, "Invalid type..!");
     }
@@ -1086,7 +1132,7 @@ exports.getApproval = async (req, res) => {
       createdAt: moment(fetchReport.createdAt).format("MMM DD YYYY"),
       updatedAt: moment(fetchReport.updatedAt).format("MMM DD YYYY"),
     };
-    
+
     return responseHandler(res, 200, "Report found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
