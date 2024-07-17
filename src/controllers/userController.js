@@ -317,6 +317,7 @@ exports.listController = async (req, res) => {
         })
         .skip(skipCount)
         .limit(10)
+        .sort({ createdAt: -1 })
         .lean();
       if (!fetchReports || fetchReports.length === 0) {
         return responseHandler(res, 404, "No Reports found");
@@ -343,6 +344,7 @@ exports.listController = async (req, res) => {
       const fetchExpenses = await Expense.find(filter)
         .skip(skipCount)
         .limit(10)
+        .sort({ createdAt: -1 })
         .lean();
       if (!fetchExpenses || fetchExpenses.length === 0) {
         return responseHandler(res, 404, "No Expenses found");
@@ -378,6 +380,7 @@ exports.listController = async (req, res) => {
         })
         .skip(skipCount)
         .limit(10)
+        .sort({ createdAt: -1 })
         .lean();
       if (!fetchNotifications || fetchNotifications.length === 0) {
         return responseHandler(res, 404, "No Notifications found");
@@ -413,6 +416,7 @@ exports.listController = async (req, res) => {
       const fetchEvents = await Event.find(query)
         .skip(skipCount)
         .limit(10)
+        .sort({ createdAt: -1 })
         .lean();
       if (!fetchEvents || fetchEvents.length === 0) {
         return responseHandler(res, 404, "No Expenses found");
@@ -441,53 +445,50 @@ exports.listController = async (req, res) => {
       );
     } else if (type === "approvals") {
       const userId = new mongoose.Types.ObjectId(req.userId);
-  
+
       const pipeline = [
         {
-          $match: { status: "pending" }
+          $match: { status: "pending" },
         },
         {
           $lookup: {
-            from: 'users',
-            localField: 'user',
-            foreignField: '_id',
-            as: 'userDetails'
-          }
+            from: "users",
+            localField: "user",
+            foreignField: "_id",
+            as: "userDetails",
+          },
         },
         {
-          $unwind: '$userDetails'
+          $unwind: "$userDetails",
         },
         {
           $lookup: {
-            from: 'users',
-            localField: 'userDetails.approver',
-            foreignField: '_id',
-            as: 'approverDetails'
-          }
+            from: "users",
+            localField: "userDetails.approver",
+            foreignField: "_id",
+            as: "approverDetails",
+          },
         },
         {
-          $unwind: '$approverDetails'
+          $unwind: "$approverDetails",
         },
         {
           $match: {
-            'approverDetails._id': userId
-          }
+            "approverDetails._id": userId,
+          },
         },
         {
           $facet: {
             metadata: [{ $count: "total" }],
-            data: [
-              { $skip: parseInt(skipCount) },
-              { $limit: parseInt(limit) }
-            ]
-          }
-        }
+            data: [{ $skip: parseInt(skipCount) }, { $limit: parseInt(10) }],
+          },
+        },
       ];
-  
+
       const result = await Report.aggregate(pipeline);
       const totalCount = result[0]?.metadata[0]?.total || 0;
       const fetchReports = result[0]?.data || [];
-  
+
       const mappedData = fetchReports.map((data) => {
         return {
           ...data,
@@ -495,12 +496,18 @@ exports.listController = async (req, res) => {
           updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
         };
       });
-  
+
       if (!fetchReports.length) {
         return responseHandler(res, 404, "No Approvals found");
       }
-  
-      return responseHandler(res, 200, "Approvals found", mappedData, totalCount);
+
+      return responseHandler(
+        res,
+        200,
+        "Approvals found",
+        mappedData,
+        totalCount
+      );
     } else {
       return responseHandler(res, 404, "Invalid type..!");
     }
@@ -693,8 +700,7 @@ exports.updateReport = async (req, res) => {
     if (!findReport) {
       return responseHandler(res, 404, "Report not found");
     }
-    
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
-}
+};
