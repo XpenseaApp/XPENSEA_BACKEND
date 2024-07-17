@@ -53,5 +53,6 @@ adminRoute
   .delete(adminController.deleteEvent);
 
 adminRoute.get("/approval/:id", adminController.getApproval);
+adminRoute.put("/approval/:id/:action", adminController.updateApproval);
 
 module.exports = adminRoute;

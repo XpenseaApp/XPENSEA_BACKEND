@@ -21,6 +21,7 @@ const {
 } = require("../validations");
 const moment = require("moment-timezone");
 const Report = require("../models/reportModel");
+const Expense = require("../models/expenseModel");
 
 exports.loginAdmin = async (req, res) => {
   try {
@@ -606,8 +607,8 @@ exports.listController = async (req, res) => {
       };
 
       const tier = req.query.tier;
-      
-      if(!tier){
+
+      if (!tier) {
         return responseHandler(res, 400, "Tier is required");
       }
 
@@ -626,7 +627,9 @@ exports.listController = async (req, res) => {
       const fetchApprovers = await User.find(filter).select("-mpin");
 
       if (!fetchApprovers || fetchApprovers.length === 0) {
-        const fetchAdmins = await Admin.find({ status: true }).select("-password");
+        const fetchAdmins = await Admin.find({ status: true }).select(
+          "-password"
+        );
 
         if (!fetchAdmins || fetchAdmins.length === 0) {
           return responseHandler(res, 404, "No Approvers found");
@@ -1112,6 +1115,7 @@ exports.getApproval = async (req, res) => {
       title: fetchReport.title,
       description: fetchReport.description,
       location: fetchReport.location,
+      status: fetchReport.status,
       expenses: fetchReport.expenses.map((expense) => {
         return {
           _id: expense._id,
@@ -1134,6 +1138,79 @@ exports.getApproval = async (req, res) => {
     };
 
     return responseHandler(res, 200, "Report found", mappedData);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+exports.updateApproval = async (req, res) => {
+  try {
+    const { id, action } = req.params;
+    const { expenses } = req.body;
+    if (!id) {
+      return responseHandler(res, 400, "Approval ID is required");
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("approvalManagement_modify")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const findApproval = await Report.findById(id);
+    if (!findApproval) {
+      return responseHandler(res, 404, "Approval not found");
+    }
+
+    if (action === "approve") {
+      const updateApproval = await Report.findByIdAndUpdate(
+        id,
+        {
+          status: "accepted",
+        },
+        { new: true }
+      );
+      const expenseIds = findApproval.expenses.map((expense) => expense._id);
+      const updateExpenses = await Expense.updateMany(
+        { _id: { $in: expenseIds } },
+        { $set: { status: "accepted" } },
+        { new: true }
+      );
+      if (!updateApproval || !updateExpenses) {
+        return responseHandler(res, 400, "Approval approval failed");
+      }
+      return responseHandler(res, 200, "Approval approved successfully");
+    } else if (action === "reject") {
+      const updateApproval = await Report.findByIdAndUpdate(
+        id,
+        {
+          status: "rejected",
+        },
+        { new: true }
+      );
+      const expenseIds = findApproval.expenses.map((expense) => expense._id);
+      const updateAcceptedExpenses = await Expense.updateMany(
+        { _id: { $in: expenseIds } },
+        { $set: { status: "accepted" } },
+        { new: true }
+      );
+      const updateRejectedExpenses = await Expense.updateMany(
+        { _id: { $in: expenses } },
+        { $set: { status: "rejected" } },
+        { new: true }
+      );
+      if (
+        !updateApproval ||
+        !updateRejectedExpenses ||
+        !updateAcceptedExpenses
+      ) {
+        return responseHandler(res, 400, "Approval rejection failed");
+      }
+      return responseHandler(res, 200, "Approval rejected successfully");
+    }
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
