@@ -18,5 +18,6 @@ userRoute.get("/category", userController.getCategory);
 userRoute.put("/change-mpin", userController.changeMpin);
 userRoute.post("/report-problem", userController.reportProblem);
 userRoute.post("/event", userController.createEvent);
+userRoute.put("/report/:id", userController.updateReport);
 
 module.exports = userRoute;

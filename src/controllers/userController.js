@@ -681,3 +681,20 @@ exports.createEvent = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
+
+exports.updateReport = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Report ID is required");
+    }
+
+    const findReport = await Report.findById(id);
+    if (!findReport) {
+      return responseHandler(res, 404, "Report not found");
+    }
+    
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+}

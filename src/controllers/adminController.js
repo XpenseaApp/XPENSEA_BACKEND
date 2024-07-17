@@ -22,6 +22,7 @@ const {
 const moment = require("moment-timezone");
 const Report = require("../models/reportModel");
 const Expense = require("../models/expenseModel");
+const Notification = require("../models/notificationModel");
 
 exports.loginAdmin = async (req, res) => {
   try {
@@ -1143,10 +1144,14 @@ exports.getApproval = async (req, res) => {
   }
 };
 
+/* The above code is an asynchronous function in a Node.js environment that handles updating the
+approval status of a report along with associated expenses. Here is a breakdown of what the code is
+doing: */
 exports.updateApproval = async (req, res) => {
   try {
     const { id, action } = req.params;
     const { expenses } = req.body;
+
     if (!id) {
       return responseHandler(res, 400, "Approval ID is required");
     }
@@ -1165,67 +1170,56 @@ exports.updateApproval = async (req, res) => {
       return responseHandler(res, 404, "Approval not found");
     }
 
-    if (action === "approve") {
+    const isApproveAction = action === "approve";
+    const newStatus = isApproveAction ? "accepted" : "rejected";
+
+    if (isApproveAction) {
       const findApprovalExpensesIds = findApproval.expenses.map((expense) =>
         expense._id.toString()
       );
 
-      if (findApprovalExpensesIds.length !== expenses.length) {
-        return responseHandler(res, 400, "Expenses do not match in length");
-      }
-
-      const allIdsMatch = expenses.every((expenseId) =>
-        findApprovalExpensesIds.includes(expenseId.toString())
-      );
-
-      if (!allIdsMatch) {
-        return responseHandler(res, 400, "Expenses IDs do not match");
-      }
-
-      const updateApproval = await Report.findByIdAndUpdate(
-        id,
-        {
-          status: "accepted",
-        },
-        { new: true }
-      );
-      const updateExpenses = await Expense.updateMany(
-        { _id: { $in: expenses } },
-        { $set: { status: "accepted" } },
-        { new: true }
-      );
-      if (!updateApproval || !updateExpenses) {
-        return responseHandler(res, 400, "Approval approval failed");
-      }
-      return responseHandler(res, 200, "Approval approved successfully");
-    } else if (action === "reject") {
-      const updateApproval = await Report.findByIdAndUpdate(
-        id,
-        {
-          status: "rejected",
-        },
-        { new: true }
-      );
-      const expenseIds = findApproval.expenses.map((expense) => expense._id);
-      const updateAcceptedExpenses = await Expense.updateMany(
-        { _id: { $in: expenseIds } },
-        { $set: { status: "accepted" } },
-        { new: true }
-      );
-      const updateRejectedExpenses = await Expense.updateMany(
-        { _id: { $in: expenses } },
-        { $set: { status: "rejected" } },
-        { new: true }
-      );
       if (
-        !updateApproval ||
-        !updateRejectedExpenses ||
-        !updateAcceptedExpenses
+        findApprovalExpensesIds.length !== expenses.length ||
+        !expenses.every((expenseId) =>
+          findApprovalExpensesIds.includes(expenseId.toString())
+        )
       ) {
-        return responseHandler(res, 400, "Approval rejection failed");
+        return responseHandler(res, 400, "Expenses do not match");
       }
-      return responseHandler(res, 200, "Approval rejected successfully");
     }
+
+    const updateApproval = await Report.findByIdAndUpdate(
+      id,
+      { status: newStatus },
+      { new: true }
+    );
+
+    if (!updateApproval) {
+      return responseHandler(res, 400, `Approval ${newStatus} failed`);
+    }
+
+    await Notification.create({
+      content: updateApproval._id,
+      user: updateApproval.user,
+      status: updateApproval.status,
+    });
+
+    const expenseIds = findApproval.expenses.map((expense) => expense._id);
+    const updateExpenses = await Expense.updateMany(
+      { _id: { $in: isApproveAction ? expenses : expenseIds } },
+      { $set: { status: newStatus } },
+      { new: true }
+    );
+
+    if (!updateExpenses) {
+      return responseHandler(
+        res,
+        400,
+        `Expenses update failed during ${newStatus} process`
+      );
+    }
+
+    return responseHandler(res, 200, `Approval ${newStatus} successfully`);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
