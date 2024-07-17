@@ -1166,6 +1166,22 @@ exports.updateApproval = async (req, res) => {
     }
 
     if (action === "approve") {
+      const findApprovalExpensesIds = findApproval.expenses.map((expense) =>
+        expense._id.toString()
+      );
+
+      if (findApprovalExpensesIds.length !== expenses.length) {
+        return responseHandler(res, 400, "Expenses do not match in length");
+      }
+
+      const allIdsMatch = expenses.every((expenseId) =>
+        findApprovalExpensesIds.includes(expenseId.toString())
+      );
+
+      if (!allIdsMatch) {
+        return responseHandler(res, 400, "Expenses IDs do not match");
+      }
+
       const updateApproval = await Report.findByIdAndUpdate(
         id,
         {
@@ -1173,9 +1189,8 @@ exports.updateApproval = async (req, res) => {
         },
         { new: true }
       );
-      const expenseIds = findApproval.expenses.map((expense) => expense._id);
       const updateExpenses = await Expense.updateMany(
-        { _id: { $in: expenseIds } },
+        { _id: { $in: expenses } },
         { $set: { status: "accepted" } },
         { new: true }
       );
