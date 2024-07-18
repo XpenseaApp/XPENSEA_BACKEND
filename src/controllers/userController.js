@@ -239,6 +239,9 @@ exports.createReport = async (req, res) => {
       const tierCategory = user.tier.categories.find(
         (cat) => cat.title.toLowerCase() === lowerCaseTitle
       );
+      if(!tierCategory) {
+        return responseHandler(res, 400, `Category ${title} not found.`);
+      }
       if (tierCategory && tierCategory.status === false) {
         return responseHandler(res, 400, `Category ${title} is disabled.`);
       }
