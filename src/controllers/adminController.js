@@ -501,8 +501,8 @@ exports.listController = async (req, res) => {
         );
       }
 
-      if(status){
-        filter.status = status
+      if (status) {
+        filter.status = status;
       }
 
       const totalCount = await User.countDocuments(filter);
@@ -531,8 +531,8 @@ exports.listController = async (req, res) => {
         );
       }
 
-      if(status){
-        filter.status = status
+      if (status) {
+        filter.status = status;
       }
 
       const totalCount = await Event.countDocuments(filter);
@@ -563,8 +563,8 @@ exports.listController = async (req, res) => {
         );
       }
 
-      if(status){
-        filter.status = status
+      if (status) {
+        filter.status = status;
       }
 
       const totalCount = await Report.countDocuments(filter);
@@ -1214,18 +1214,27 @@ exports.updateApproval = async (req, res) => {
       status: updateApproval.status,
     });
 
-    const expenseIds = findApproval.expenses.map((expense) => expense._id);
-    const updateExpenses = await Expense.updateMany(
-      { _id: { $in: isApproveAction ? expenses : expenseIds } },
-      { $set: { status: newStatus } },
-      { new: true }
-    );
+    if (isApproveAction) {
+      await Expense.updateMany(
+        { _id: { $in: expenses } },
+        { $set: { status: newStatus } },
+        { new: true }
+      );
+    } else {
+      await Expense.updateMany(
+        { _id: { $in: expenses } },
+        { $set: { status: "rejected" } },
+        { new: true }
+      );
 
-    if (!updateExpenses) {
-      return responseHandler(
-        res,
-        400,
-        `Expenses update failed during ${newStatus} process`
+      const remainingExpenses = findApproval.expenses
+        .map((expense) => expense._id.toString())
+        .filter((id) => !expenses.includes(id));
+
+      await Expense.updateMany(
+        { _id: { $in: remainingExpenses } },
+        { $set: { status: "accepted" } },
+        { new: true }
       );
     }
 
