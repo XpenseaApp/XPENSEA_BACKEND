@@ -320,7 +320,7 @@ exports.listController = async (req, res) => {
         .sort({ createdAt: -1 })
         .lean();
       if (!fetchReports || fetchReports.length === 0) {
-        return responseHandler(res, 404, "No Reports found");
+        return responseHandler(res, 404, "No Reports found", fetchReports);
       }
 
       const mappedData = fetchReports.map((item) => {
@@ -347,7 +347,7 @@ exports.listController = async (req, res) => {
         .sort({ createdAt: -1 })
         .lean();
       if (!fetchExpenses || fetchExpenses.length === 0) {
-        return responseHandler(res, 404, "No Expenses found");
+        return responseHandler(res, 404, "No Expenses found", fetchExpenses);
       }
 
       const mappedData = fetchExpenses.map((item) => {
@@ -383,7 +383,7 @@ exports.listController = async (req, res) => {
         .sort({ createdAt: -1 })
         .lean();
       if (!fetchNotifications || fetchNotifications.length === 0) {
-        return responseHandler(res, 404, "No Notifications found");
+        return responseHandler(res, 404, "No Notifications found", fetchNotifications);
       }
 
       const mappedData = fetchNotifications.map((item) => {
@@ -419,7 +419,7 @@ exports.listController = async (req, res) => {
         .sort({ createdAt: -1 })
         .lean();
       if (!fetchEvents || fetchEvents.length === 0) {
-        return responseHandler(res, 404, "No Expenses found");
+        return responseHandler(res, 404, "No Expenses found", fetchEvents);
       }
 
       const mappedData = fetchEvents.map((item) => {
@@ -498,7 +498,7 @@ exports.listController = async (req, res) => {
       });
 
       if (!fetchReports.length) {
-        return responseHandler(res, 404, "No Approvals found");
+        return responseHandler(res, 404, "No Approvals found", fetchReports);
       }
 
       return responseHandler(
