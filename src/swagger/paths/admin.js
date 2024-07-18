@@ -902,3 +902,31 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /admin/user/reports/{id}:
+ *   get:
+ *     summary: Get user reports
+ *     description: API endpoint to fetch reports for a specific user
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user to fetch reports
+ *     responses:
+ *       200:
+ *         description: Reports found
+ *       400:
+ *         description: User ID is required
+ *       403:
+ *         description: You don't have permission to perform this action
+ *       404:
+ *         description: Reports not found
+ *       500:
+ *         description: Internal Server Error
+ */

@@ -1243,3 +1243,60 @@ exports.updateApproval = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
+
+exports.getUserReports = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { status } = req.query;
+
+    const filter = {
+      user: id,
+    };
+
+    if (status) {
+      filter.status = status;
+    }
+
+    if (!id) {
+      return responseHandler(res, 400, "User ID is required");
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("userManagement_view")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const fetchReports = await Report.find(filter)
+      .populate("user", "name")
+      .populate("expenses")
+      .lean();
+
+    if (!fetchReports) {
+      return responseHandler(res, 404, "Reports not found");
+    }
+
+    const mappedData = fetchReports.map((data) => {
+      return {
+        _id: data._id,
+        title: data.title,
+        user: data.user.name,
+        expenseCount: data.expenses.length,
+        totalAmount: data.expenses.reduce((acc, curr) => acc + curr.amount, 0),
+        location: data.location,
+        status: data.status,
+        reportDate: moment(data.reportDate).format("MMM DD YYYY"),
+        createdAt: moment(data.createdAt).format("MMM DD YYYY"),
+        updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
+      };
+    });
+
+    return responseHandler(res, 200, "Reports found", mappedData);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};

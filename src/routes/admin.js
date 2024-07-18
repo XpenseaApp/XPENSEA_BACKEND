@@ -54,5 +54,6 @@ adminRoute
 
 adminRoute.get("/approval/:id", adminController.getApproval);
 adminRoute.put("/approval/:id/:action", adminController.updateApproval);
+adminRoute.get("/user/reports/:id", adminController.getUserReports);
 
 module.exports = adminRoute;
