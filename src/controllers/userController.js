@@ -99,7 +99,10 @@ exports.mpinHandler = async (req, res) => {
       }
 
       const token = generateToken(user._id, user.userType);
-      return responseHandler(res, 200, "Login successfull..!", token);
+      return responseHandler(res, 200, "Login successfull..!", {
+        token,
+        userType: user.userType,
+      });
     }
 
     const hashedPassword = await hashPassword(mpin);
@@ -239,7 +242,7 @@ exports.createReport = async (req, res) => {
       const tierCategory = user.tier.categories.find(
         (cat) => cat.title.toLowerCase() === lowerCaseTitle
       );
-      if(!tierCategory) {
+      if (!tierCategory) {
         return responseHandler(res, 400, `Category ${title} not found.`);
       }
       if (tierCategory && tierCategory.status === false) {
