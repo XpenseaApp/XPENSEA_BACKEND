@@ -373,7 +373,7 @@ exports.deleteRole = async (req, res) => {
 the `type` parameter provided in the request query. Here's a breakdown of what the code is doing: */
 exports.listController = async (req, res) => {
   try {
-    const { type, pageNo = 1, limit = 10 } = req.query;
+    const { type, pageNo = 1, limit = 10, status } = req.query;
     const skipCount = 10 * (pageNo - 1);
     const filter = {};
 
@@ -555,7 +555,9 @@ exports.listController = async (req, res) => {
         );
       }
 
-      filter.status = "pending";
+      if(status){
+        filter.status = status
+      }
 
       const totalCount = await Report.countDocuments(filter);
       const fetchReports = await Report.find(filter)
