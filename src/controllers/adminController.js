@@ -501,6 +501,10 @@ exports.listController = async (req, res) => {
         );
       }
 
+      if(status){
+        filter.status = status
+      }
+
       const totalCount = await User.countDocuments(filter);
       const fetchUsers = await User.find(filter)
         .skip(skipCount)
