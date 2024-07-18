@@ -458,12 +458,26 @@ exports.listController = async (req, res) => {
         totalCount
       );
     } else if (type === "approvals") {
-      const userId = new mongoose.Types.ObjectId(req.userId);
+      const user = await User.findById(req.userId).populate("tier");
 
-      const pipeline = [
-        {
-          $match: { status: "pending" },
-        },
+      if (!user) {
+        return responseHandler(res, 404, "User not found");
+      }
+
+      if (user.userType !== "approver") {
+        return responseHandler(
+          res,
+          404,
+          "You don't have permission to perform this action"
+        );
+      }
+
+      let level = 0;
+      if (user.tier) {
+        level = user.tier.level;
+      }
+
+      const result = await Report.aggregate([
         {
           $lookup: {
             from: "users",
@@ -472,56 +486,34 @@ exports.listController = async (req, res) => {
             as: "userDetails",
           },
         },
-        {
-          $unwind: "$userDetails",
-        },
+        { $unwind: "$userDetails" },
         {
           $lookup: {
-            from: "users",
-            localField: "userDetails.approver",
+            from: "tiers",
+            localField: "userDetails.tier",
             foreignField: "_id",
-            as: "approverDetails",
+            as: "tierDetails",
           },
         },
-        {
-          $unwind: "$approverDetails",
-        },
+        { $unwind: "$tierDetails" },
         {
           $match: {
-            "approverDetails._id": userId,
+            "tierDetails.level": { $lt: level },
           },
         },
         {
           $facet: {
-            metadata: [{ $count: "total" }],
-            data: [{ $skip: parseInt(skipCount) }, { $limit: parseInt(10) }],
+            reports: [{ $match: {} }],
+            totalCount: [{ $count: "count" }],
           },
         },
-      ];
+      ]);
 
-      const result = await Report.aggregate(pipeline);
-      const totalCount = result[0]?.metadata[0]?.total || 0;
-      const fetchReports = result[0]?.data || [];
-
-      const mappedData = fetchReports.map((data) => {
-        return {
-          ...data,
-          createdAt: moment(data.createdAt).format("MMM DD YYYY"),
-          updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
-        };
-      });
-
-      if (!fetchReports.length) {
-        return responseHandler(res, 404, "No Approvals found", fetchReports);
-      }
-
-      return responseHandler(
-        res,
-        200,
-        "Approvals found",
-        mappedData,
-        totalCount
-      );
+      const reports = result[0].reports;
+      const totalCount = result[0].totalCount[0]
+        ? result[0].totalCount[0].count
+        : 0;
+      return responseHandler(res, 200, "Approvals found", reports, totalCount);
     } else {
       return responseHandler(res, 404, "Invalid type..!");
     }

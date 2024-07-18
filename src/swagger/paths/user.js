@@ -344,3 +344,52 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /user/event:
+ *   post:
+ *     summary: Create a new event
+ *     description: API endpoint to create a new user event
+ *     tags:
+ *       - Event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               eventName:
+ *                 type: string
+ *                 example: "Team Meeting"
+ *               days:
+ *                 type: integer
+ *                 example: 2
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-07-20"
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-07-21"
+ *               startTime:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2024-07-20T10:00:00Z"
+ *               endTime:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2024-07-21T18:00:00Z"
+ *               description:
+ *                 type: string
+ *                 example: "Discuss project updates"
+ *     responses:
+ *       200:
+ *         description: Event created successfully
+ *       400:
+ *         description: Invalid input or Event creation failed
+ *       500:
+ *         description: Internal Server Error
+ */
