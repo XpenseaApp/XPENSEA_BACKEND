@@ -26,10 +26,6 @@ const userSchema = mongoose.Schema(
       default: false,
     },
     location: { type: String },
-    approver: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
   },
   { timestamps: true }
 );

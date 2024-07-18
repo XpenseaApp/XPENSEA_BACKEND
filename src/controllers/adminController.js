@@ -1162,6 +1162,10 @@ exports.updateApproval = async (req, res) => {
     const { id, action } = req.params;
     const { expenses } = req.body;
 
+    if(expenses.length === 0) {
+      return responseHandler(res, 400, "Expenses are required");
+    }
+
     if (!id) {
       return responseHandler(res, 400, "Approval ID is required");
     }
@@ -1178,6 +1182,10 @@ exports.updateApproval = async (req, res) => {
     const findApproval = await Report.findById(id);
     if (!findApproval) {
       return responseHandler(res, 404, "Approval not found");
+    }
+
+    if(findApproval.status !== "pending"){
+      return responseHandler(res, 404, "Approval has already done");
     }
 
     const isApproveAction = action === "approve";
