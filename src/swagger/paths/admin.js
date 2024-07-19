@@ -954,3 +954,44 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /admin/users/filtered:
+ *   get:
+ *     summary: Get filtered users
+ *     description: API endpoint to retrieve users based on filters like tier, role, and location
+ *     tags:
+ *       - Admin
+ *     parameters:
+ *       - name: tier
+ *         in: query
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: Tier(s) of the user
+ *       - name: role
+ *         in: query
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: Role(s) of the user
+ *       - name: location
+ *         in: query
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: Location(s) of the user
+ *     responses:
+ *       200:
+ *         description: Users found
+ *       403:
+ *         description: You don't have permission to perform this action
+ *       404:
+ *         description: Users not found
+ *       500:
+ *         description: Internal Server Error
+ */

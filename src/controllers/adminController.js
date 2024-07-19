@@ -1381,3 +1381,48 @@ exports.reimburseReport = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
+
+exports.getFilteredUsers = async (req, res) => {
+  try {
+    const { tier, role, location } = req.query;
+    const filter = {};
+
+    if (tier) {
+      filter.tier = { $in: tier };
+    }
+
+    if (role) {
+      filter.userType = { $in: role };
+    }
+
+    if (location) {
+      filter.location = { $in: location };
+    }
+
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("userManagement_view")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+
+    const fetchUsers = await User.find(filter).populate("tier").lean();
+
+    if (!fetchUsers) {
+      return responseHandler(res, 404, "Users not found");
+    }
+
+    const mappedData = fetchUsers.map((data) => {
+      return {
+        _id: data._id,
+        name: data.name,
+      };
+    });
+
+    return responseHandler(res, 200, "Users found", mappedData);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
