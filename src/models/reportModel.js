@@ -15,7 +15,7 @@ const reportModel = mongoose.Schema(
     status: {
       type: String,
       default: "pending",
-      enum: ["drafted", "pending", "approved", "reimbursed", "rejected"],
+      enum: ["drafted", "pending", "accepted", "reimbursed", "rejected"],
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

@@ -204,8 +204,8 @@
 /** * @swagger
  * /admin/list:
  *   get:
- *     summary: Get admins, roles, tiers, users, or events
- *     description: API endpoint to get existing admins, roles, tiers, users, approvals, approvers, or events based on query type
+ *     summary: Get admins, roles, tiers, users, approvals, approvers, finances, or events
+ *     description: API endpoint to get existing admins, roles, tiers, users, approvals, approvers, finances, or events based on query type
  *     tags:
  *       - List
  *     security:
@@ -927,6 +927,30 @@
  *         description: You don't have permission to perform this action
  *       404:
  *         description: Reports not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /admin/reimburse/{id}:
+ *   put:
+ *     summary: Reimburse a report
+ *     description: API endpoint to update a report's status to reimbursed
+ *     tags:
+ *       - Approval
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the report to reimburse
+ *     responses:
+ *       200:
+ *         description: Reimbursed successfully
+ *       400:
+ *         description: Approval ID is required or Reimbursed failed
  *       500:
  *         description: Internal Server Error
  */

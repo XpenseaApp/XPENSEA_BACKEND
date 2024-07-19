@@ -384,6 +384,7 @@ exports.listController = async (req, res) => {
       events: "eventManagement_view",
       users: "userManagement_view",
       approvals: "approvalManagement_view",
+      finances: "financeManagement_view",
     };
 
     if (type === "admins") {
@@ -649,6 +650,56 @@ exports.listController = async (req, res) => {
         return responseHandler(res, 200, "Approvers found", fetchAdmins);
       }
       return responseHandler(res, 200, "Approvers found", fetchApprovers);
+    } else if (type === "finances") {
+      const check = await checkAccess(req.roleId, "permissions");
+
+      if (!check || !check.includes(accessPermissions[type])) {
+        return responseHandler(
+          res,
+          403,
+          "You don't have permission to perform this action"
+        );
+      }
+      filter.status = { $in: ["approved", "reimbursed"] };
+
+      if (status) {
+        filter.status = status;
+      }
+
+      const totalCount = await Report.countDocuments(filter);
+      const fetchReports = await Report.find(filter)
+        .populate("user", "name")
+        .populate("expenses")
+        .skip(skipCount)
+        .limit(limit)
+        .lean();
+      const mappedData = fetchReports.map((data) => {
+        return {
+          _id: data._id,
+          title: data.title,
+          user: data.user.name,
+          expenseCount: data.expenses.length,
+          totalAmount: data.expenses.reduce(
+            (acc, curr) => acc + curr.amount,
+            0
+          ),
+          location: data.location,
+          status: data.status,
+          reportDate: moment(data.reportDate).format("MMM DD YYYY"),
+          createdAt: moment(data.createdAt).format("MMM DD YYYY"),
+          updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
+        };
+      });
+      if (!fetchReports || fetchReports.length === 0) {
+        return responseHandler(res, 404, "No Approvals found");
+      }
+      return responseHandler(
+        res,
+        200,
+        "Approvals found",
+        mappedData,
+        totalCount
+      );
     } else {
       return responseHandler(res, 404, "Invalid type..!");
     }
@@ -1162,7 +1213,7 @@ exports.updateApproval = async (req, res) => {
     const { id, action } = req.params;
     const { expenses } = req.body;
 
-    if(expenses.length === 0) {
+    if (expenses.length === 0) {
       return responseHandler(res, 400, "Expenses are required");
     }
 
@@ -1184,12 +1235,12 @@ exports.updateApproval = async (req, res) => {
       return responseHandler(res, 404, "Approval not found");
     }
 
-    if(findApproval.status !== "pending"){
+    if (findApproval.status !== "pending") {
       return responseHandler(res, 404, "Approval has already done");
     }
 
     const isApproveAction = action === "approve";
-    const newStatus = isApproveAction ? "accepted" : "rejected";
+    const newStatus = isApproveAction ? "approved" : "rejected";
 
     if (isApproveAction) {
       const findApprovalExpensesIds = findApproval.expenses.map((expense) =>
@@ -1304,6 +1355,28 @@ exports.getUserReports = async (req, res) => {
     });
 
     return responseHandler(res, 200, "Reports found", mappedData);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+exports.reimburseReport = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return responseHandler(res, 400, "Approval ID is required");
+    }
+
+    const reimburse = await Report.findByIdAndUpdate(
+      id,
+      { status: "reimbursed" },
+      { new: true }
+    );
+
+    if (!reimburse) return responseHandler(res, 400, "Reimbursed failed");
+
+    return responseHandler(res, 200, `Reimbursed successfully`);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
