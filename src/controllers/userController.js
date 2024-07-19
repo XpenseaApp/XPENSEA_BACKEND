@@ -707,16 +707,46 @@ exports.updateReport = async (req, res) => {
       return responseHandler(res, 404, "Report not found");
     }
 
-    const updateReport = await Report.findByIdAndUpdate(id, req.body, {
+    const reportExpenses = (findReport.expenses || []).map((expense) =>
+      expense.toString()
+    );
+    const requestExpenses = req.body.expenses || [];
+
+    if (requestExpenses.length > 0) {
+      const expensesOnlyInRequest = requestExpenses.filter(
+        (expense) => !reportExpenses.includes(expense)
+      );
+
+      const expensesOnlyInReport = reportExpenses.filter(
+        (expense) => !requestExpenses.includes(expense)
+      );
+
+      if (expensesOnlyInRequest.length > 0) {
+        await Expense.updateMany(
+          { _id: { $in: expensesOnlyInRequest } },
+          { status: "mapped" }
+        );
+      }
+
+      if (expensesOnlyInReport.length > 0) {
+        await Expense.updateMany(
+          { _id: { $in: expensesOnlyInReport } },
+          { status: "draft" }
+        );
+      }
+    }
+
+    const updatedReport = await Report.findByIdAndUpdate(id, req.body, {
       new: true,
     });
+
     return responseHandler(
       res,
       200,
       "Report updated successfully",
-      updateReport
+      updatedReport
     );
   } catch (error) {
-    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
