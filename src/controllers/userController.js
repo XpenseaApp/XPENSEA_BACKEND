@@ -706,6 +706,16 @@ exports.updateReport = async (req, res) => {
     if (!findReport) {
       return responseHandler(res, 404, "Report not found");
     }
+
+    const updateReport = await Report.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    return responseHandler(
+      res,
+      200,
+      "Report updated successfully",
+      updateReport
+    );
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }

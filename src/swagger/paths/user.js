@@ -393,3 +393,40 @@
  *       500:
  *         description: Internal Server Error
  */
+
+
+/**
+ * @swagger
+ * /user/report/{id}:
+ *   put:
+ *     summary: Update a report
+ *     description: API endpoint to update a report's details
+ *     tags:
+ *       - Report
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the report to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             additionalProperties: true
+ *             example:
+ *               title: "Updated Report Title"
+ *               description: "Updated report description"
+ *     responses:
+ *       200:
+ *         description: Report updated successfully
+ *       400:
+ *         description: Report ID is required
+ *       404:
+ *         description: Report not found
+ *       500:
+ *         description: Internal Server Error
+ */
