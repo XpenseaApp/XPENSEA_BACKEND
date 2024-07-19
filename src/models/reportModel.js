@@ -37,7 +37,6 @@ const reportModel = mongoose.Schema(
     },
     approverModel: {
       type: String,
-      required: true,
       enum: ["User", "Admin"],
     },
   },
