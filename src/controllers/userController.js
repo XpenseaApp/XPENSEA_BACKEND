@@ -678,7 +678,7 @@ exports.createEvent = async (req, res) => {
     }
     req.body.type = "User";
     req.body.creator = req.userId;
-    req.body.staffs[0] = req.userId;
+    req.body.staffs = [req.userId];
     const newEvent = await Event.create(req.body);
     if (newEvent) {
       return responseHandler(
