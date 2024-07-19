@@ -1211,7 +1211,7 @@ doing: */
 exports.updateApproval = async (req, res) => {
   try {
     const { id, action } = req.params;
-    const { expenses } = req.body;
+    const { expenses, reason } = req.body;
 
     if (expenses.length === 0) {
       return responseHandler(res, 400, "Expenses are required");
@@ -1259,7 +1259,12 @@ exports.updateApproval = async (req, res) => {
 
     const updateApproval = await Report.findByIdAndUpdate(
       id,
-      { status: newStatus },
+      {
+        status: newStatus,
+        approverModel: "Admin",
+        approver: req.userId,
+        $push: { reason: reason },
+      },
       { new: true }
     );
 

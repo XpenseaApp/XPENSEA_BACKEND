@@ -30,6 +30,16 @@ const reportModel = mongoose.Schema(
       ref: "Event",
     },
     location: { type: String },
+    reason: [{ type: String }],
+    approver: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "approverModel",
+    },
+    approverModel: {
+      type: String,
+      required: true,
+      enum: ["User", "Admin"],
+    },
   },
   { timestamps: true }
 );
