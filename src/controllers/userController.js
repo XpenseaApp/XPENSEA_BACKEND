@@ -294,11 +294,11 @@ exports.createReport = async (req, res) => {
       );
     }
 
-    const today = moment().startOf("day");
-    const thirtyDaysAgo = moment().subtract(30, "days").startOf("day");
+    const startOfMonth = moment().startOf('month');
+    const endOfMonth = moment().endOf('month');
 
     const existingReports = await Report.find({
-      reportDate: { $gte: thirtyDaysAgo.toDate(), $lte: today.toDate() },
+      reportDate: { $gte: startOfMonth.toDate(), $lte: endOfMonth.toDate() },
       status: { $in: ["approved", "reimbursed"] },
     });
 
@@ -776,3 +776,41 @@ exports.updateReport = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
+
+exports.getWalletUsed = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).populate("tier");
+    if (!user) return responseHandler(res, 404, "User not found");
+    const totalAmount = user.tier.totalAmount;
+
+    const startOfMonth = moment().startOf('month');
+    const endOfMonth = moment().endOf('month');
+
+    const expenses = await Expense.find({
+      createdAt: { $gte: startOfMonth.toDate(), $lte: endOfMonth.toDate() },
+      status: { $in: ["mapped", "accepted"] },
+      user: req.userId,
+    });
+
+    const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
+
+    const mappedData = expenses.map((exp)=>{
+      return {
+        _id: exp._id,
+        category: exp.category,
+        amount: exp.amount,
+        image: exp.image,
+        title: exp.title,
+      }
+    })
+
+    return responseHandler(res, 200, "Wallet used successfully", {
+      totalAmount,
+      totalExpenses,
+      expenses: mappedData,
+    });
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+

@@ -430,3 +430,20 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+* /user/wallet-used:
+*   get:
+*     summary: Get Wallet
+*     description: API endpoint to get wallet report
+*     tags:
+*       - Expense
+*     responses:
+*       200:
+*         description: Report retrieved successfully
+*       404:
+*         description: Report not found
+*       500:
+*         description: Internal Server Error
+*/
