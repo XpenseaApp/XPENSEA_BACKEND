@@ -102,6 +102,7 @@ exports.mpinHandler = async (req, res) => {
       return responseHandler(res, 200, "Login successfull..!", {
         token,
         userType: user.userType,
+        username: user.name,
       });
     }
 
@@ -113,6 +114,29 @@ exports.mpinHandler = async (req, res) => {
       return responseHandler(res, 200, "User MPIN added successfully..!");
     } else {
       return responseHandler(res, 400, "User MPIN update failed...!");
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+/* The above code is a JavaScript function that checks if a user with a specific phone number is
+verified. It first retrieves the phone number from the request parameters, then queries the database
+to find a user with that phone number. If the user is not found, it returns a 404 status code with
+the message "User not found". If the user is found, it checks if the user is verified or not. If the
+user is verified, it returns a 200 status code with the message "User is verified" and the value of
+the isVerified property from the user object. If the user is */
+exports.checkVerified = async (req, res) => {
+  try {
+    const { phone } = req.params;
+    const user = await User.findOne({ mobile: phone });
+    if (!user) {
+      return responseHandler(res, 404, "User not found");
+    }
+    if (user.isVerified) {
+      return responseHandler(res, 200, "User is verified", user.isVerified);
+    } else {
+      return responseHandler(res, 400, "User is not verified", user.isVerified);
     }
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);

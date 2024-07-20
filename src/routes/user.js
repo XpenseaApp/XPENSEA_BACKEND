@@ -6,6 +6,7 @@ const userRoute = express.Router();
 userRoute.post("/send-otp", userController.sendOtp);
 userRoute.post("/verify", userController.verifyUser);
 userRoute.post("/mpin", userController.mpinHandler);
+userRoute.get("/verified/:phone", userController.checkVerified);
 
 userRoute.use(authVerify);
 
