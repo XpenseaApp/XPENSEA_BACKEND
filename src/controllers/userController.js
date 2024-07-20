@@ -103,6 +103,7 @@ exports.mpinHandler = async (req, res) => {
         token,
         userType: user.userType,
         username: user.name,
+        employeeId: user.employeeId,
       });
     }
 
