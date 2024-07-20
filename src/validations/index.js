@@ -15,7 +15,6 @@ exports.editAdminSchema = Joi.object({
   designation: Joi.string(),
   email: Joi.string(),
   mobile: Joi.string(),
-  password: Joi.string(),
   role: Joi.string(),
   status: Joi.boolean(),
 });
