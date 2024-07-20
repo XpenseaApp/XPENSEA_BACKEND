@@ -604,6 +604,7 @@ exports.getReport = async (req, res) => {
         status: expense.status,
       })),
       date: moment(report.reportDate).format("MMM DD YYYY"),
+      reason: report.reason,
     };
 
     return responseHandler(res, 200, "Report found", mappedData);
