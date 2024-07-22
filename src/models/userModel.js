@@ -26,9 +26,18 @@ const userSchema = mongoose.Schema(
       default: false,
     },
     location: { type: String },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
+
+userSchema.index({ deletedAt: 1 }, { expireAfterSeconds: 2592000 }); // 30 days
 
 const User = mongoose.model("User", userSchema);
 

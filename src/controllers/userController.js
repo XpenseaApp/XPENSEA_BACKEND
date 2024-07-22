@@ -337,7 +337,7 @@ data based on the specified type (reports, expenses, notifications) and page num
 breakdown of what the code is doing: */
 exports.listController = async (req, res) => {
   try {
-    const { type, pageNo = 1 } = req.query;
+    const { type, pageNo = 1, status } = req.query;
     const skipCount = 10 * (pageNo - 1);
     const filter = {
       user: req.userId,
@@ -452,6 +452,9 @@ exports.listController = async (req, res) => {
       const query = {
         staffs: { $in: [req.userId] },
       };
+      if (status) {
+        query.status = status;
+      }
       const totalCount = await Event.countDocuments(query);
       const fetchEvents = await Event.find(query)
         .skip(skipCount)
@@ -473,6 +476,7 @@ exports.listController = async (req, res) => {
           description: item.description,
           location: item.location,
           status: item.status,
+          type: item.type,
         };
       });
 

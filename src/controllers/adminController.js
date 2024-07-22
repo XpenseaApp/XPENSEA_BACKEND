@@ -177,7 +177,11 @@ exports.deleteAdmin = async (req, res) => {
       return responseHandler(res, 404, "Admin not found");
     }
 
-    const deleteAdmin = await Admin.findByIdAndDelete(id);
+    const deleteAdmin = await Admin.findByIdAndUpdate(
+      id,
+      { isDeleted: true, deletedAt: new Date() },
+      { new: true }
+    );
     if (deleteAdmin) {
       return responseHandler(res, 200, `Admin deleted successfully..!`);
     } else {
@@ -373,7 +377,7 @@ exports.deleteRole = async (req, res) => {
 the `type` parameter provided in the request query. Here's a breakdown of what the code is doing: */
 exports.listController = async (req, res) => {
   try {
-    const { type, pageNo = 1, limit = 10, status } = req.query;
+    const { type, pageNo = 1, limit = 10, status, isDeleted } = req.query;
     const skipCount = 10 * (pageNo - 1);
     const filter = {};
 
@@ -396,6 +400,12 @@ exports.listController = async (req, res) => {
           403,
           "You don't have permission to perform this action"
         );
+      }
+
+      if (isDeleted) {
+        filter.isDeleted = isDeleted;
+      } else {
+        filter.isDeleted = false;
       }
 
       const totalCount = await Admin.countDocuments(filter);
@@ -504,6 +514,12 @@ exports.listController = async (req, res) => {
 
       if (status) {
         filter.status = status;
+      }
+
+      if (isDeleted) {
+        filter.isDeleted = isDeleted;
+      } else {
+        filter.isDeleted = false;
       }
 
       const totalCount = await User.countDocuments(filter);
@@ -989,7 +1005,11 @@ exports.deleteUser = async (req, res) => {
       return responseHandler(res, 404, "User not found");
     }
 
-    const deleteUser = await User.findByIdAndDelete(id);
+    const deleteUser = await User.findByIdAndUpdate(
+      id,
+      { isDeleted: false, deletedAt: new Date() },
+      { new: true }
+    );
     if (deleteUser) {
       return responseHandler(res, 200, "User deleted successfully..!");
     } else {
