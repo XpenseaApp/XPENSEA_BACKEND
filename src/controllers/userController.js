@@ -462,7 +462,7 @@ exports.listController = async (req, res) => {
         .sort({ createdAt: -1 })
         .lean();
       if (!fetchEvents || fetchEvents.length === 0) {
-        return responseHandler(res, 404, "No Expenses found", fetchEvents);
+        return responseHandler(res, 404, "No Event found", fetchEvents);
       }
 
       const mappedData = fetchEvents.map((item) => {
@@ -809,10 +809,13 @@ exports.getWalletUsed = async (req, res) => {
       };
     });
 
+    const categories = user.tier.categories
+
     return responseHandler(res, 200, "Wallet used successfully", {
       totalAmount,
       totalExpenses,
       expenses: mappedData,
+      categories
     });
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
