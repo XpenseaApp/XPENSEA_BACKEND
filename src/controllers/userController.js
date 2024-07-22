@@ -469,8 +469,8 @@ exports.listController = async (req, res) => {
         return {
           _id: item._id,
           eventName: item.eventName,
-          startDate: moment(item.startDate).format("MMM DD YYYY"),
-          endDate: moment(item.endDate).format("MMM DD YYYY"),
+          startDate: moment(item.startDate).format("YYYY MM DD"),
+          endDate: moment(item.endDate).format("YYYY MM DD"),
           startTime: moment(item.startTime).format("hh:mm A"),
           endTime: moment(item.endTime).format("hh:mm A"),
           description: item.description,
