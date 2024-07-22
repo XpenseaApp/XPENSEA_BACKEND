@@ -394,7 +394,6 @@
  *         description: Internal Server Error
  */
 
-
 /**
  * @swagger
  * /user/report/{id}:
@@ -433,17 +432,68 @@
 
 /**
  * @swagger
-* /user/wallet-used:
-*   get:
-*     summary: Get Wallet
-*     description: API endpoint to get wallet report
-*     tags:
-*       - Expense
-*     responses:
-*       200:
-*         description: Report retrieved successfully
-*       404:
-*         description: Report not found
-*       500:
-*         description: Internal Server Error
-*/
+ * /user/wallet-used:
+ *   get:
+ *     summary: Get Wallet
+ *     description: API endpoint to get wallet report
+ *     tags:
+ *       - Expense
+ *     responses:
+ *       200:
+ *         description: Report retrieved successfully
+ *       404:
+ *         description: Report not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /user/event/{id}:
+ *   put:
+ *     summary: Update an event
+ *     description: API endpoint to update an event's details
+ *     tags:
+ *       - Event
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the event to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               eventName:
+ *                 type: string
+ *               days:
+ *                 type: number
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *               startTime:
+ *                 type: string
+ *                 format: time
+ *               endTime:
+ *                 type: string
+ *                 format: time
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Event updated successfully
+ *       400:
+ *         description: Invalid input or Event ID is required
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Internal Server Error
+ */

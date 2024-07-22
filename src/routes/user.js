@@ -21,5 +21,6 @@ userRoute.post("/report-problem", userController.reportProblem);
 userRoute.post("/event", userController.createEvent);
 userRoute.put("/report/:id", userController.updateReport);
 userRoute.get("/wallet-used", userController.getWalletUsed);
+userRoute.put("/event/:id", userController.updateEvent);
 
 module.exports = userRoute;

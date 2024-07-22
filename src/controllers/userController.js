@@ -13,6 +13,7 @@ const {
   createReportSchema,
   problemSchema,
   createUserEventSchema,
+  createUserEventEditSchema,
 } = require("../validations");
 const Problem = require("../models/problemModel");
 const Event = require("../models/eventModel");
@@ -294,8 +295,8 @@ exports.createReport = async (req, res) => {
       );
     }
 
-    const startOfMonth = moment().startOf('month');
-    const endOfMonth = moment().endOf('month');
+    const startOfMonth = moment().startOf("month");
+    const endOfMonth = moment().endOf("month");
 
     const existingReports = await Report.find({
       reportDate: { $gte: startOfMonth.toDate(), $lte: endOfMonth.toDate() },
@@ -783,8 +784,8 @@ exports.getWalletUsed = async (req, res) => {
     if (!user) return responseHandler(res, 404, "User not found");
     const totalAmount = user.tier.totalAmount;
 
-    const startOfMonth = moment().startOf('month');
-    const endOfMonth = moment().endOf('month');
+    const startOfMonth = moment().startOf("month");
+    const endOfMonth = moment().endOf("month");
 
     const expenses = await Expense.find({
       createdAt: { $gte: startOfMonth.toDate(), $lte: endOfMonth.toDate() },
@@ -794,15 +795,15 @@ exports.getWalletUsed = async (req, res) => {
 
     const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
 
-    const mappedData = expenses.map((exp)=>{
+    const mappedData = expenses.map((exp) => {
       return {
         _id: exp._id,
         category: exp.category,
         amount: exp.amount,
         image: exp.image,
         title: exp.title,
-      }
-    })
+      };
+    });
 
     return responseHandler(res, 200, "Wallet used successfully", {
       totalAmount,
@@ -814,3 +815,39 @@ exports.getWalletUsed = async (req, res) => {
   }
 };
 
+exports.updateEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Event ID is required");
+    }
+    const createEventValidator = createUserEventEditSchema.validate(req.body, {
+      abortEarly: true,
+    });
+    if (createEventValidator.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${createEventValidator.error}`
+      );
+    }
+
+    const findEvent = await Event.findById(id);
+    if (!findEvent) {
+      return responseHandler(res, 404, "Event not found");
+    }
+
+    const updatedEvent = await Event.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+
+    return responseHandler(
+      res,
+      200,
+      "Event updated successfully",
+      updatedEvent
+    );
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
