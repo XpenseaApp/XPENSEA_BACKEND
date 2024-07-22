@@ -705,7 +705,7 @@
 
 /**
  * @swagger
- * /admin/events/{id}:
+ * /admin/event/{id}:
  *   put:
  *     summary: Edit an event
  *     description: API endpoint for editing an event
@@ -776,7 +776,7 @@
 
 /**
  * @swagger
- * /admin/events/{id}:
+ * /admin/event/{id}:
  *   get:
  *     summary: Get event details
  *     description: API endpoint for retrieving event details
@@ -802,7 +802,7 @@
 
 /**
  * @swagger
- * /admin/events/{id}:
+ * /admin/event/{id}:
  *   delete:
  *     summary: Delete an event
  *     description: API endpoint for deleting an event
