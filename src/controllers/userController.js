@@ -604,6 +604,7 @@ exports.getReport = async (req, res) => {
       totalAmount: report.expenses.reduce((acc, exp) => acc + exp.amount, 0),
       expenseCount: report.expenses.length,
       expenses: report.expenses.map((expense) => ({
+        _id: expense._id,
         title: expense.title,
         amount: expense.amount,
         date: moment(expense.date).format("MMM DD YYYY"),
