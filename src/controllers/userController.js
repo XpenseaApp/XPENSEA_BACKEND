@@ -810,13 +810,13 @@ exports.getWalletUsed = async (req, res) => {
       };
     });
 
-    const categories = user.tier.categories
+    const categories = user.tier.categories;
 
     return responseHandler(res, 200, "Wallet used successfully", {
       totalAmount,
       totalExpenses,
       expenses: mappedData,
-      categories
+      categories,
     });
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
@@ -828,16 +828,6 @@ exports.updateEvent = async (req, res) => {
     const { id } = req.params;
     if (!id) {
       return responseHandler(res, 400, "Event ID is required");
-    }
-    const createEventValidator = createUserEventEditSchema.validate(req.body, {
-      abortEarly: true,
-    });
-    if (createEventValidator.error) {
-      return responseHandler(
-        res,
-        400,
-        `Invalid input: ${createEventValidator.error}`
-      );
     }
 
     const findEvent = await Event.findById(id);

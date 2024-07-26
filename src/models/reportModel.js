@@ -39,6 +39,7 @@ const reportModel = mongoose.Schema(
       type: String,
       enum: ["User", "Admin"],
     },
+    descriptionFinance: { type: String },
   },
   { timestamps: true }
 );

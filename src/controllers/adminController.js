@@ -1388,14 +1388,14 @@ exports.getUserReports = async (req, res) => {
 exports.reimburseReport = async (req, res) => {
   try {
     const { id } = req.params;
-
+    const { descriptionFinance } = req.body;
     if (!id) {
       return responseHandler(res, 400, "Approval ID is required");
     }
 
     const reimburse = await Report.findByIdAndUpdate(
       id,
-      { status: "reimbursed" },
+      { status: "reimbursed", descriptionFinance },
       { new: true }
     );
 
