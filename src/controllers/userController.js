@@ -634,7 +634,7 @@ exports.getCategory = async (req, res) => {
     const mappedData = user.tier.categories
       .filter((item) => item.status)
       .map((item) => ({
-        title: item.title,
+        title: item.title.charAt(0).toUpperCase() + item.title.slice(1),
       }));
 
     return responseHandler(res, 200, "Categories found", mappedData);
