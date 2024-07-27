@@ -522,13 +522,15 @@ exports.listController = async (req, res) => {
         );
       }
 
-      if (status) {
-        filter.status = status;
+      if (status == "true") {
+        filter.status = true;
+      } else if (status == "false") {
+        filter.status = false;
       }
 
-      if (isDeleted) {
-        filter.isDeleted = isDeleted;
-      } else {
+      if (isDeleted == "true") {
+        filter.isDeleted = true;
+      } else if (isDeleted == "false") {
         filter.isDeleted = false;
       }
 
