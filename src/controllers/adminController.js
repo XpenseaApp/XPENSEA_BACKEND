@@ -1203,7 +1203,7 @@ exports.getApproval = async (req, res) => {
       description: fetchReport.description,
       location: fetchReport.location,
       status: fetchReport.status,
-      approver: fetchReport.approver.name,
+      approver: fetchReport?.approver?.name,
       expenses: fetchReport.expenses.map((expense) => {
         return {
           _id: expense._id,
@@ -1499,7 +1499,7 @@ exports.getFinance = async (req, res) => {
       description: fetchReport.description,
       location: fetchReport.location,
       status: fetchReport.status,
-      approver: fetchReport.approver.name,
+      approver: fetchReport?.approver?.name,
       expenses: fetchReport.expenses.map((expense) => {
         return {
           _id: expense._id,
