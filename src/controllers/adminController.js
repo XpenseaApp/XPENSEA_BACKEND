@@ -832,7 +832,13 @@ exports.deleteTier = async (req, res) => {
       return responseHandler(res, 404, "Tier not found");
     }
 
-    const deleteTier = await Tier.findByIdAndDelete(id);
+    const deleteTier = await Tier.findByIdAndUpdate(
+      id,
+      { status: false },
+      {
+        new: true,
+      }
+    );
     if (deleteTier) {
       return responseHandler(res, 200, `Tier deleted successfully..!`);
     } else {
