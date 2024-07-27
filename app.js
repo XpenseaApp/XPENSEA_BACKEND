@@ -36,6 +36,8 @@ const startServer = async () => {
     const BASE_PATH = `/api/${API_VERSION}`;
     //* Import database connection module
     require("./src/helpers/connection");
+    //* Start the cron job
+    require("./src/jobs/updateEventStatus"); 
 
     //* Swagger setup
     app.use(
