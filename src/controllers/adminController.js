@@ -201,6 +201,7 @@ exports.getAdmin = async (req, res) => {
       return responseHandler(res, 400, "Admin ID is required");
     }
     const findAdmin = await Admin.findById(id)
+      .select("-password")
       .populate("role", "permissions locationAccess")
       .lean();
     const mappedData = {
