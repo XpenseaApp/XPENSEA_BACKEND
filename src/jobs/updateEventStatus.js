@@ -18,7 +18,7 @@ cron.schedule("* * * * *", async () => {
       },
       { status: "progress" }
     );
-    console.log(`Updated ${events.nModified} events to progress`);
+    console.log(`Updated ${events.eventName} events to progress`);
   } catch (err) {
     console.error("Error updating events:", err);
   }
