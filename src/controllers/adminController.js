@@ -1182,6 +1182,7 @@ exports.getApproval = async (req, res) => {
         populate: { path: "tier" },
       })
       .populate("expenses")
+      .populate("approver", "name")
       .lean();
 
     if (!fetchReport) {
@@ -1198,6 +1199,7 @@ exports.getApproval = async (req, res) => {
       description: fetchReport.description,
       location: fetchReport.location,
       status: fetchReport.status,
+      approver: fetchReport.approver.name,
       expenses: fetchReport.expenses.map((expense) => {
         return {
           _id: expense._id,
@@ -1358,6 +1360,7 @@ exports.getUserReports = async (req, res) => {
     const fetchReports = await Report.find(filter)
       .populate("user", "name")
       .populate("expenses")
+      .populate("approver", "name")
       .lean();
 
     if (!fetchReports) {
@@ -1373,6 +1376,7 @@ exports.getUserReports = async (req, res) => {
         totalAmount: data.expenses.reduce((acc, curr) => acc + curr.amount, 0),
         location: data.location,
         status: data.status,
+        approver: data.approver.name,
         reportDate: moment(data.reportDate).format("MMM DD YYYY"),
         createdAt: moment(data.createdAt).format("MMM DD YYYY"),
         updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
@@ -1474,6 +1478,7 @@ exports.getFinance = async (req, res) => {
         populate: { path: "tier" },
       })
       .populate("expenses")
+      .populate("approver", "name")
       .lean();
 
     if (!fetchReport) {
@@ -1490,6 +1495,7 @@ exports.getFinance = async (req, res) => {
       description: fetchReport.description,
       location: fetchReport.location,
       status: fetchReport.status,
+      approver: fetchReport.approver.name,
       expenses: fetchReport.expenses.map((expense) => {
         return {
           _id: expense._id,

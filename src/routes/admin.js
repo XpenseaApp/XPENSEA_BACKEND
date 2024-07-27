@@ -55,7 +55,7 @@ adminRoute
 adminRoute.get("/approval/:id", adminController.getApproval);
 adminRoute.put("/approval/:id/:action", adminController.updateApproval);
 adminRoute.get("/user/reports/:id", adminController.getUserReports);
-adminRoute.put("/reimburse/:id", adminController.reimburseReport)
+adminRoute.put("/reimburse/:id", adminController.reimburseReport);
 adminRoute.get("/users/filtered", adminController.getFilteredUsers);
 adminRoute.get("/finance/:id", adminController.getFinance);
 

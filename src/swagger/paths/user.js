@@ -525,3 +525,102 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /user/approval/{id}/{action}:
+ *   put:
+ *     summary: Update approval status
+ *     description: API endpoint for updating the approval status of a report and associated expenses
+ *     tags:
+ *       - Approval
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the approval to update
+ *       - name: action
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [approve, reject]
+ *         description: Action to perform (approve or reject)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               expenses:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   example: "667275cda0521a39e214cd6c"
+ *     responses:
+ *       200:
+ *         description: Approval updated successfully
+ *       400:
+ *         description: Approval ID is required or Approval update failed
+ *       403:
+ *         description: You don't have permission to perform this action
+ *       404:
+ *         description: Approval not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /user/reimburse/{id}:
+ *   put:
+ *     summary: Reimburse a report
+ *     description: API endpoint to update a report's status to reimbursed
+ *     tags:
+ *       - Approval
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the report to reimburse
+ *     responses:
+ *       200:
+ *         description: Reimbursed successfully
+ *       400:
+ *         description: Approval ID is required or Reimbursed failed
+ *       500:
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /user/finance/{id}:
+ *   get:
+ *     summary: Get approval details
+ *     description: API endpoint for fetching approval details based on approval ID
+ *     tags:
+ *       - Approval
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the event to retrieve
+ *     responses:
+ *       200:
+ *         description: Approval details retrieved successfully
+ *       400:
+ *         description: Approval ID is required
+ *       403:
+ *         description: You don't have permission to perform this action
+ *       404:
+ *         description: Report not found
+ *       500:
+ *         description: Internal Server Error
+ */

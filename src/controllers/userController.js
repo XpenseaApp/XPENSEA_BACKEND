@@ -850,7 +850,6 @@ exports.updateEvent = async (req, res) => {
   }
 };
 
-
 exports.getApproval = async (req, res) => {
   try {
     const { id } = req.params;
@@ -864,6 +863,7 @@ exports.getApproval = async (req, res) => {
         populate: { path: "tier" },
       })
       .populate("expenses")
+      .populate("approver", "name")
       .lean();
 
     if (!fetchReport) {
@@ -880,6 +880,7 @@ exports.getApproval = async (req, res) => {
       description: fetchReport.description,
       location: fetchReport.location,
       status: fetchReport.status,
+      approver: fetchReport.approver.name,
       expenses: fetchReport.expenses.map((expense) => {
         return {
           _id: expense._id,
@@ -902,6 +903,177 @@ exports.getApproval = async (req, res) => {
     };
 
     return responseHandler(res, 200, "Report found", mappedData);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+exports.updateApproval = async (req, res) => {
+  try {
+    const { id, action } = req.params;
+    const { expenses, reason } = req.body;
+
+    if (expenses.length === 0) {
+      return responseHandler(res, 400, "Expenses are required");
+    }
+
+    if (!id) {
+      return responseHandler(res, 400, "Approval ID is required");
+    }
+
+    const findApproval = await Report.findById(id);
+    if (!findApproval) {
+      return responseHandler(res, 404, "Approval not found");
+    }
+
+    if (findApproval.status !== "pending") {
+      return responseHandler(res, 404, "Approval has already done");
+    }
+
+    const isApproveAction = action === "approve";
+    const newStatus = isApproveAction ? "approved" : "rejected";
+
+    if (isApproveAction) {
+      const findApprovalExpensesIds = findApproval.expenses.map((expense) =>
+        expense._id.toString()
+      );
+
+      if (
+        findApprovalExpensesIds.length !== expenses.length ||
+        !expenses.every((expenseId) =>
+          findApprovalExpensesIds.includes(expenseId.toString())
+        )
+      ) {
+        return responseHandler(res, 400, "Expenses do not match");
+      }
+    }
+
+    const updateApproval = await Report.findByIdAndUpdate(
+      id,
+      {
+        status: newStatus,
+        approverModel: "User",
+        approver: req.userId,
+        $push: { reason: reason },
+      },
+      { new: true }
+    );
+
+    if (!updateApproval) {
+      return responseHandler(res, 400, `Approval ${newStatus} failed`);
+    }
+
+    await Notification.create({
+      content: updateApproval._id,
+      user: updateApproval.user,
+      status: updateApproval.status,
+    });
+
+    if (isApproveAction) {
+      await Expense.updateMany(
+        { _id: { $in: expenses } },
+        { $set: { status: newStatus } },
+        { new: true }
+      );
+    } else {
+      await Expense.updateMany(
+        { _id: { $in: expenses } },
+        { $set: { status: "rejected" } },
+        { new: true }
+      );
+
+      const remainingExpenses = findApproval.expenses
+        .map((expense) => expense._id.toString())
+        .filter((id) => !expenses.includes(id));
+
+      await Expense.updateMany(
+        { _id: { $in: remainingExpenses } },
+        { $set: { status: "accepted" } },
+        { new: true }
+      );
+    }
+
+    return responseHandler(res, 200, `Approval ${newStatus} successfully`);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+exports.getFinance = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Approval ID is required");
+    }
+
+    const fetchReport = await Report.findById(id)
+      .populate({
+        path: "user",
+        populate: { path: "tier" },
+      })
+      .populate("expenses")
+      .populate("approver", "name")
+      .lean();
+
+    if (!fetchReport) {
+      return responseHandler(res, 404, "Report not found");
+    }
+
+    const mappedData = {
+      _id: fetchReport._id,
+      user: fetchReport.user.name,
+      employeeId: fetchReport.user.employeeId,
+      tier: fetchReport.user.tier.title,
+      reportId: fetchReport.reportId,
+      title: fetchReport.title,
+      description: fetchReport.description,
+      location: fetchReport.location,
+      status: fetchReport.status,
+      approver: fetchReport.approver.name,
+      expenses: fetchReport.expenses.map((expense) => {
+        return {
+          _id: expense._id,
+          title: expense.title,
+          amount: expense.amount,
+          createdAt: moment(expense.createdAt).format("MMM DD YYYY"),
+          location: expense.location,
+          status: expense.status,
+          category: expense.category,
+          image: expense.image,
+        };
+      }),
+      totalAmount: fetchReport.expenses.reduce(
+        (acc, curr) => acc + curr.amount,
+        0
+      ),
+      reportDate: moment(fetchReport.reportDate).format("MMM DD YYYY"),
+      createdAt: moment(fetchReport.createdAt).format("MMM DD YYYY"),
+      updatedAt: moment(fetchReport.updatedAt).format("MMM DD YYYY"),
+    };
+
+    return responseHandler(res, 200, "Report found", mappedData);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+exports.reimburseReport = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { descriptionFinance } = req.body;
+    if (!id) {
+      return responseHandler(res, 400, "Approval ID is required");
+    }
+
+    const reimburse = await Report.findByIdAndUpdate(
+      id,
+      { status: "reimbursed", descriptionFinance },
+      { new: true }
+    );
+
+    if (!reimburse) return responseHandler(res, 400, "Reimbursed failed");
+
+    return responseHandler(res, 200, `Reimbursed successfully`);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }

@@ -23,5 +23,8 @@ userRoute.put("/report/:id", userController.updateReport);
 userRoute.get("/wallet-used", userController.getWalletUsed);
 userRoute.put("/event/:id", userController.updateEvent);
 userRoute.get("/approval/:id", userController.getApproval);
+userRoute.put("/approval/:id/:action", userController.updateApproval);
+userRoute.get("/finance/:id", userController.getFinance);
+userRoute.put("/reimburse/:id", userController.reimburseReport);
 
 module.exports = userRoute;
