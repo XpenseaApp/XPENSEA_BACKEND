@@ -1,11 +1,12 @@
 const cron = require("node-cron");
+const moment = require("moment-timezone");
 const Event = require("../models/eventModel");
 require("dotenv").config();
 
 cron.schedule("* * * * *", async () => {
-  const now = new Date();
-  const currentDate = now.toISOString().split("T")[0];
-  const currentTime = now.toTimeString().split(" ")[0].substr(0, 5);
+  const now = moment();
+  const currentDate = now.format("YYYY-MM-DD");
+  const currentTime = now.format("HH:mm");
 
   try {
     const events = await Event.updateMany(
@@ -13,7 +14,7 @@ cron.schedule("* * * * *", async () => {
         status: "scheduled",
         startDate: currentDate,
         startTime: {
-          $lte: new Date(`${currentDate}T${currentTime}`),
+          $lte: moment.utc(`${currentDate}T${currentTime}`).toDate(),
         },
       },
       { status: "progress" },

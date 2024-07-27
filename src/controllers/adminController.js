@@ -419,6 +419,7 @@ exports.listController = async (req, res) => {
       const mappedData = fetchAdmins.map((data) => {
         return {
           ...data,
+          roleName: data.role.roleName,
           createdAt: moment(data.createdAt).format("MMM DD YYYY"),
         };
       });
