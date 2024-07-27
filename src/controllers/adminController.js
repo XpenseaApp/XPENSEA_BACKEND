@@ -495,6 +495,7 @@ exports.listController = async (req, res) => {
               $dateToString: { format: "%b %d %Y", date: "$createdAt" },
             },
             noOfEmployees: { $size: "$users" },
+            noAllowance: { $size: "$categories" },
           },
         },
       ]);
