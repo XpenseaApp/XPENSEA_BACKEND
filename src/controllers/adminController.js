@@ -466,8 +466,10 @@ exports.listController = async (req, res) => {
         );
       }
 
-      if (status) {
-        filter.status = status;
+      if (status == "true") {
+        filter.status = true;
+      } else if (status == "false") {
+        filter.status = false;
       }
       const totalCount = await Tier.countDocuments(filter);
       const fetchTiers = await Tier.aggregate([
