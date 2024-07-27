@@ -19,7 +19,7 @@ const tierSchema = mongoose.Schema(
     categories: [subSchema],
     status: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     totalAmount: { type: Number },
     level: { type: Number },
