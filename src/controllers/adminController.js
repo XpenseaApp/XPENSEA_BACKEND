@@ -465,10 +465,10 @@ exports.listController = async (req, res) => {
           "You don't have permission to perform this action"
         );
       }
-      filter.status = true;
-      if (status) {
-        filter.status = status;
-      }
+      // filter.status = true;
+      // if (status) {
+      //   filter.status = status;
+      // }
       const totalCount = await Tier.countDocuments(filter);
       const fetchTiers = await Tier.aggregate([
         { $match: filter },
