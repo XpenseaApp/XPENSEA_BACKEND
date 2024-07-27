@@ -849,3 +849,60 @@ exports.updateEvent = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
+
+
+exports.getApproval = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "Approval ID is required");
+    }
+
+    const fetchReport = await Report.findById(id)
+      .populate({
+        path: "user",
+        populate: { path: "tier" },
+      })
+      .populate("expenses")
+      .lean();
+
+    if (!fetchReport) {
+      return responseHandler(res, 404, "Report not found");
+    }
+
+    const mappedData = {
+      _id: fetchReport._id,
+      user: fetchReport.user.name,
+      employeeId: fetchReport.user.employeeId,
+      tier: fetchReport.user.tier.title,
+      reportId: fetchReport.reportId,
+      title: fetchReport.title,
+      description: fetchReport.description,
+      location: fetchReport.location,
+      status: fetchReport.status,
+      expenses: fetchReport.expenses.map((expense) => {
+        return {
+          _id: expense._id,
+          title: expense.title,
+          amount: expense.amount,
+          createdAt: moment(expense.createdAt).format("MMM DD YYYY"),
+          location: expense.location,
+          status: expense.status,
+          category: expense.category,
+          image: expense.image,
+        };
+      }),
+      totalAmount: fetchReport.expenses.reduce(
+        (acc, curr) => acc + curr.amount,
+        0
+      ),
+      reportDate: moment(fetchReport.reportDate).format("MMM DD YYYY"),
+      createdAt: moment(fetchReport.createdAt).format("MMM DD YYYY"),
+      updatedAt: moment(fetchReport.updatedAt).format("MMM DD YYYY"),
+    };
+
+    return responseHandler(res, 200, "Report found", mappedData);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
