@@ -16,7 +16,8 @@ cron.schedule("* * * * *", async () => {
           $lte: new Date(`${currentDate}T${currentTime}`),
         },
       },
-      { status: "progress" }
+      { status: "progress" },
+      { new: true }
     );
     console.log(`Updated ${events.eventName} events to progress`);
   } catch (err) {
