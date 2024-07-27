@@ -889,7 +889,7 @@ exports.createUser = async (req, res) => {
         `Invalid input: ${createUserValidator.error}`
       );
     }
-    const checkPhone = await User.findOne({ mobile: req.body.phone });
+    const checkPhone = await User.findOne({ mobile: req.body.mobile });
     if (checkPhone) {
       return responseHandler(
         res,
