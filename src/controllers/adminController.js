@@ -534,12 +534,14 @@ exports.listController = async (req, res) => {
 
       const totalCount = await User.countDocuments(filter);
       const fetchUsers = await User.find(filter)
+        .populate("tier", "title")
         .skip(skipCount)
         .limit(limit)
         .lean();
       const mappedData = fetchUsers.map((data) => {
         return {
           ...data,
+          tier: data.tier.title,
           createdAt: moment(data.createdAt).format("MMM DD YYYY"),
         };
       });
