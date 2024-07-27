@@ -411,6 +411,8 @@ exports.listController = async (req, res) => {
       const totalCount = await Admin.countDocuments(filter);
       const fetchAdmins = await Admin.find(filter)
         .select("-password")
+        .populate("role", "roleName")
+        .sort({ createdAt: -1 })
         .skip(skipCount)
         .limit(limit)
         .lean();
