@@ -889,6 +889,22 @@ exports.createUser = async (req, res) => {
         `Invalid input: ${createUserValidator.error}`
       );
     }
+    const checkPhone = await User.findOne({ mobile: req.body.phone });
+    if (checkPhone) {
+      return responseHandler(
+        res,
+        400,
+        `User with phone number ${req.body.mobile} already exists`
+      );
+    }
+    const checkEmail = await User.findOne({ email: req.body.email });
+    if (checkEmail) {
+      return responseHandler(
+        res,
+        400,
+        `User with email ${req.body.email} already exists`
+      );
+    }
     const createUser = await User.create(req.body);
     if (createUser) {
       return responseHandler(
