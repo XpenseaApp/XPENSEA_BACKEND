@@ -572,6 +572,8 @@ exports.getExpense = async (req, res) => {
       title: expense.title,
       status: expense.status,
       amount: expense.amount,
+      category: expense.category,
+      description: expense.description,
       date: moment(expense.createdAt).format("MMM DD YYYY"),
     };
 
