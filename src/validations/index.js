@@ -151,7 +151,7 @@ exports.editEventSchema = Joi.object({
   description: Joi.string(),
   location: Joi.string(),
   staffs: Joi.array(),
-  status: Joi.boolean(),
+  status: Joi.string(),
 });
 
 exports.problemSchema = Joi.object({
