@@ -201,11 +201,12 @@
  *         description: Admin not found
  */
 
-/** * @swagger
+/**
+ * @swagger
  * /admin/list:
  *   get:
- *     summary: Get admins, roles, tiers, users, approvals, approvers, finances, or events
- *     description: API endpoint to get existing admins, roles, tiers, users, approvals, approvers, finances, or events based on query type
+ *     summary: Retrieve various data types
+ *     description: API endpoint to get existing admins, roles, tiers, users, approvals, approvers, finances, or events based on query type.
  *     tags:
  *       - List
  *     security:
@@ -216,12 +217,17 @@
  *         schema:
  *           type: string
  *         required: true
- *         description: Type of data to retrieve (admins, roles, tiers, users, approvals, approvers, or events)
+ *         description: Type of data to retrieve (e.g., admins, roles, tiers, users, approvals, approvers, finances, events)
  *       - in: query
  *         name: tier
  *         schema:
  *           type: string
- *         description: Tier id
+ *         description: Tier ID
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: Status
  *     responses:
  *       200:
  *         description: Data retrieved successfully
