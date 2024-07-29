@@ -392,6 +392,8 @@ exports.listController = async (req, res) => {
           status: item.status,
           amount: item.amount,
           category: item.category,
+          description: item.description,
+          image: item.image,
           date: moment(item.createdAt).format("MMM DD YYYY"),
         };
       });
