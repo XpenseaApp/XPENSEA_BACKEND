@@ -889,6 +889,7 @@ exports.getApproval = async (req, res) => {
       location: fetchReport.location,
       status: fetchReport.status,
       approver: fetchReport?.approver?.name,
+      reportDate: moment(fetchReport.reportDate).format("MMM DD YYYY"),
       expenses: fetchReport.expenses.map((expense) => {
         return {
           _id: expense._id,
