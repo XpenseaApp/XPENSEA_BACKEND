@@ -563,10 +563,11 @@ exports.getExpense = async (req, res) => {
     if (!id) {
       return responseHandler(res, 404, "Expense ID is required");
     }
+    let expense;
     if(user.userType === "approver") {
-      const expense = await Expense.findOne({ _id: id });
+      expense = await Expense.findOne({ _id: id });
     }else{
-      const expense = await Expense.findOne({ _id: id, user });
+      expense = await Expense.findOne({ _id: id, user });
     }
 
     if (!expense) {
