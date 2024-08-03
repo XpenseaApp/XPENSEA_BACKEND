@@ -666,8 +666,9 @@ exports.changeMpin = async (req, res) => {
       return responseHandler(res, 404, "User not found");
     }
 
-    if (user.mpin !== hashPassword(oldmpin)) {
-      return responseHandler(res, 400, user.mpin+" Invalid old MPIN");
+    const comparePassword = await comparePasswords(oldmpin, user.mpin);
+    if (!comparePassword) {
+      return responseHandler(res, 401, "Invalid MPIN");
     }
     // user.otp = null;
     const hashedPassword = await hashPassword(mpin);
