@@ -588,7 +588,7 @@ exports.getExpense = async (req, res) => {
       date: moment(expense.createdAt).format("MMM DD YYYY"),
     };
 
-    return responseHandler(res, 200, "Expense found", mappedData);
+    return responseHandler(res, 200, user.userType+"Expense found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
