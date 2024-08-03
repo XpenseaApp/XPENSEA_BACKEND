@@ -597,13 +597,35 @@ exports.getExpense = async (req, res) => {
 /* The `exports.getReport` function is responsible for fetching a specific report record based on the
 provided report ID. Here is a breakdown of what the function is doing: */
 exports.getReport = async (req, res) => {
+  //test
   try {
-    const { id } = req.params;
+    const { id, isEvent } = req.params;
     const user = req.userId;
     if (!id) {
       return responseHandler(res, 404, "Report ID is required");
     }
-    const report = await Report.findOne({ _id: id, user }).populate("expenses");
+    let report;
+
+    if(!isEvent) {
+       report = await Report.findOne({ _id: id, user }).populate("expenses");
+
+    }else{
+      report = await Report.findOne({ event: id, user }).populate("expenses");
+      if (!report) {
+
+        const event = Event.findOne({ _id: id, staffs: { $in: [user] } });
+        report  = Report.createReport({
+          user: user,
+          event: id,
+          expenses: [],
+          title: event.eventName,
+          description: event.description,
+          location: "Event Location",
+          status: "draft",
+          reportDate: new Date(),
+        });
+      }
+    }
 
     if (!report) {
       return responseHandler(res, 404, "Report not found");
@@ -616,6 +638,7 @@ exports.getReport = async (req, res) => {
       status: report.status,
       totalAmount: report.expenses.reduce((acc, exp) => acc + exp.amount, 0),
       expenseCount: report.expenses.length,
+      Event: report.event,
       expenses: report.expenses.map((expense) => ({
         _id: expense._id,
         title: expense.title,
@@ -745,6 +768,7 @@ exports.createEvent = async (req, res) => {
 };
 
 exports.updateReport = async (req, res) => {
+  //test
   try {
     const { id } = req.params;
     if (!id) {
