@@ -628,7 +628,7 @@ exports.getReport = async (req, res) => {
     }
 
     if (!report) {
-      return responseHandler(res, 404, "Report not found");
+      return responseHandler(res, 404, isEvent+"Report not found");
     }
 
     const mappedData = {
