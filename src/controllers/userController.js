@@ -558,6 +558,7 @@ exports.listController = async (req, res) => {
 provided expense ID. Here is a breakdown of what the function is doing: */
 exports.getExpense = async (req, res) => {
   try {
+    // test
     const { id } = req.params;
     const user = req.userId;
     if (!id) {
@@ -567,7 +568,7 @@ exports.getExpense = async (req, res) => {
     if(user.userType === "approver") {
       expense = await Expense.findOne({ _id: id });
     }else{
-      expense = await Expense.findOne({ _id: id, user });
+      expense = await Expense.findOne({ _id: id });
     }
 
     if (!expense) {
