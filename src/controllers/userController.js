@@ -606,7 +606,7 @@ exports.getReport = async (req, res) => {
     }
     let report;
 
-    if(!isEvent) {
+    if(isEvent === null) {
        report = await Report.findOne({ _id: id, user }).populate("expenses");
 
     }else{
