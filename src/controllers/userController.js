@@ -597,7 +597,6 @@ exports.getExpense = async (req, res) => {
 /* The `exports.getReport` function is responsible for fetching a specific report record based on the
 provided report ID. Here is a breakdown of what the function is doing: */
 exports.getReport = async (req, res) => {
-  //test
   try {
     const { id } = req.params;
     const{ isEvent } = req.query;
@@ -769,7 +768,6 @@ exports.createEvent = async (req, res) => {
 };
 
 exports.updateReport = async (req, res) => {
-  //test
   try {
     const { id } = req.params;
     if (!id) {
