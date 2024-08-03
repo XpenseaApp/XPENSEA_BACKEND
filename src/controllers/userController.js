@@ -606,25 +606,25 @@ exports.getReport = async (req, res) => {
     }
     let report;
 
-    if(isEvent == null) {
-       report = await Report.findOne({ _id: id, user }).populate("expenses");
-
-    }else{
+    if (isEvent == null) {
+      report = await Report.findOne({ _id: id, user }).populate("expenses");
+    } else if (isEvent) {
       report = await Report.findOne({ event: id, user }).populate("expenses");
       if (!report) {
-
-        const event = await Event.findOne({ _id: id, staffs: { $in: [user] } });
-        report  = await Report.create({
-          user: user,
-          event: id,
-          expenses: [],
-          title: event.eventName,
-          description: event.description,
-          location: "Event Location",
-          status: "draft",
-          reportDate: new Date(),
-        });
+      const event = await Event.findOne({ _id: id, staffs: { $in: [user] } });
+      report = await Report.create({
+        user: user,
+        event: id,
+        expenses: [],
+        title: event.eventName,
+        description: event.description,
+        location: "Event Location",
+        status: "draft",
+        reportDate: new Date(),
+      });
       }
+    } else {
+      report = await Report.findOne({ _id: id, user }).populate("expenses");
     }
 
     if (!report) {
