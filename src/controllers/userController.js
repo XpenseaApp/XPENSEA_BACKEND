@@ -653,7 +653,7 @@ Identification Number) for a user. It takes in the mobile number, new MPIN, and 
 Password) as input from the request body. Here is a breakdown of the code: */
 exports.changeMpin = async (req, res) => {
   try {
-    const { mobile, mpin, otp } = req.body;
+    const { mobile, mpin, oldmpin } = req.body;
     if (!mobile) {
       return responseHandler(res, 400, "Mobile number is required");
     }
@@ -666,10 +666,10 @@ exports.changeMpin = async (req, res) => {
       return responseHandler(res, 404, "User not found");
     }
 
-    if (user.otp !== otp) {
-      return responseHandler(res, 400, "Invalid OTP");
+    if (user.mpin !== hashPassword(oldmpin)) {
+      return responseHandler(res, 400, "Incorrect MPIN");
     }
-    user.otp = null;
+    // user.otp = null;
     const hashedPassword = await hashPassword(mpin);
     user.mpin = hashedPassword;
     await user.save();
