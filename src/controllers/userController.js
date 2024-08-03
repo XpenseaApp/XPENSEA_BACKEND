@@ -620,7 +620,7 @@ exports.getReport = async (req, res) => {
         title: event.eventName,
         description: event.description,
         location: "Event Location",
-        status: "draft",
+        status: "drafted",
         reportDate: new Date(),
       });
       }
