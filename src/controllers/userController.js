@@ -18,6 +18,7 @@ const {
 const Problem = require("../models/problemModel");
 const Event = require("../models/eventModel");
 const mongoose = require("mongoose");
+const { request } = require("express");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -560,7 +561,8 @@ exports.getExpense = async (req, res) => {
   try {
     // test
     const { id } = req.params;
-    const user = req.userId;
+    const user = await User.findById(req.userId);
+    const userid = req.userId;
     if (!id) {
       return responseHandler(res, 404, "Expense ID is required");
     }
@@ -568,7 +570,7 @@ exports.getExpense = async (req, res) => {
     if(user.userType === "approver") {
       expense = await Expense.findOne({ _id: id });
     }else{
-      expense = await Expense.findOne({ _id: id });
+      expense = await Expense.findOne({ _id: id, userid });
     }
 
     if (!expense) {
@@ -586,7 +588,7 @@ exports.getExpense = async (req, res) => {
       date: moment(expense.createdAt).format("MMM DD YYYY"),
     };
 
-    return responseHandler(res, 200, user.userType+"Expense found", mappedData);
+    return responseHandler(res, 200, "Expense found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
