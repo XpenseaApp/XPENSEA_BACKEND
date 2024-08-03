@@ -599,7 +599,8 @@ provided report ID. Here is a breakdown of what the function is doing: */
 exports.getReport = async (req, res) => {
   //test
   try {
-    const { id, isEvent } = req.params;
+    const { id } = req.params;
+    const{ isEvent } = req.query;
     const user = req.userId;
     if (!id) {
       return responseHandler(res, 404, "Report ID is required");
@@ -628,7 +629,7 @@ exports.getReport = async (req, res) => {
     }
 
     if (!report) {
-      return responseHandler(res, 404, isEvent+"Report not found");
+      return responseHandler(res, 404, id+" "+isEvent+" Report not found");
     }
 
     const mappedData = {
