@@ -12,6 +12,7 @@ const {
 } = require("./src/swagger/swagger");
 const userRoute = require("./src/routes/user");
 const loadSecrets = require("./src/config/env.config");
+const runOCR = require('./src/jobs/billAnalysis');
 
 const app = express();
 app.use(volleyball);
