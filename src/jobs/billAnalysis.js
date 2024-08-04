@@ -1,6 +1,5 @@
 
-
-
+require('dotenv').config();
 const Tesseract = require('tesseract.js');
 const Expense = require('../models/expenseModel');
 const { ChatPromptTemplate } = require('@langchain/core/prompts');
@@ -8,8 +7,7 @@ const { ChatOpenAI } = require('@langchain/openai');
 const { z } = require('zod');
 
 
-
-const openaiApiKey = "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";
+const openaiApiKey = process.env.OPENAI_API_KEY;
 if (!openaiApiKey) {
   throw new Error('Missing OpenAI API key. Please set OPENAI_API_KEY in your .env file.');
 }
