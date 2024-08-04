@@ -1,3 +1,4 @@
+//test
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -12,6 +13,7 @@ const {
 } = require("./src/swagger/swagger");
 const userRoute = require("./src/routes/user");
 const loadSecrets = require("./src/config/env.config");
+const runOCR = require('./src/jobs/billAnalysis');
 
 const app = express();
 app.use(volleyball);
@@ -49,7 +51,7 @@ const startServer = async () => {
     //* Configure routes for user API
     app.use(`${BASE_PATH}/admin`, adminRoute);
     app.use(`${BASE_PATH}/user`, userRoute);
-
+    
     //? Define a route for the API root
     app.get(BASE_PATH, (req, res) => {
       return responseHandler(
@@ -66,6 +68,8 @@ const startServer = async () => {
       const envMessage = clc.yellowBright(`✓ Environment: ${NODE_ENV || 'development'}`);
       console.log(`${portMessage}\n${envMessage}`);
     });
+
+    runOCR();
   } catch (error) {
     console.error("Failed to start the server:", error);
     process.exit(1); // Exit the application with a non-zero status code

@@ -123,4 +123,4 @@ async function runOCR() {
   }
 }
 
-runOCR();
+module.exports = runOCR;
