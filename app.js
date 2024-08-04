@@ -1,4 +1,7 @@
-require("dotenv").config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config(); // Load local .env only if not in production
+}
+
 const express = require("express");
 const cors = require("cors");
 const volleyball = require("volleyball");
@@ -15,8 +18,9 @@ const loadSecrets = require("./src/config/env.config");
 
 const app = express();
 app.use(volleyball);
-const  NODE_ENV  =  process.env.NODE_ENV;
 
+
+const NODE_ENV = process.env.NODE_ENV;
 
 
 //* Function to start the server
