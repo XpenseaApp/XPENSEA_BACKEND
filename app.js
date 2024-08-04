@@ -69,7 +69,7 @@ const startServer = async () => {
       console.log(`${portMessage}\n${envMessage}`);
     });
 
-    runOCR();
+    // runOCR();
   } catch (error) {
     console.error("Failed to start the server:", error);
     process.exit(1); // Exit the application with a non-zero status code
