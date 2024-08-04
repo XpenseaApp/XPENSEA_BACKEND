@@ -7,14 +7,13 @@ const cors = require("cors");
 const volleyball = require("volleyball");
 const clc = require("cli-color");
 const responseHandler = require("./src/helpers/responseHandler");
-const adminRoute = require("./src/routes/admin");
+const loadSecrets = require("./src/config/env.config");
+
 const {
   swaggerUi,
   swaggerSpec,
   swaggerOptions,
 } = require("./src/swagger/swagger");
-const userRoute = require("./src/routes/user");
-const loadSecrets = require("./src/config/env.config");
 
 const app = express();
 app.use(volleyball);
@@ -28,8 +27,13 @@ const startServer = async () => {
   try {
     if (NODE_ENV === "production") {
       await loadSecrets();
+      console.log("Server started", process.env.test)
     }
     const { PORT, API_VERSION } = process.env;
+    const userRoute = require("./src/routes/user");
+    const adminRoute = require("./src/routes/admin");
+
+
 //* Define the PORT & API version based on environment variable
 
     //* Enable Cross-Origin Resource Sharing (CORS) middleware
