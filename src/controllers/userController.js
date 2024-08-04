@@ -19,6 +19,8 @@ const Problem = require("../models/problemModel");
 const Event = require("../models/eventModel");
 const mongoose = require("mongoose");
 const { request } = require("express");
+const runOCR = require('../jobs/billAnalysis');
+
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -163,12 +165,14 @@ exports.createExpense = async (req, res) => {
     req.body.user = req.userId;
     const newExpense = await Expense.create(req.body);
     if (newExpense) {
+      await runOCR( newExpense._id);
       return responseHandler(
         res,
         200,
         `Expense created successfully..!`,
         newExpense
       );
+
     } else {
       return responseHandler(res, 400, `Expense creation failed...!`);
     }
