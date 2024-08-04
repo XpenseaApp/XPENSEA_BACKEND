@@ -1,9 +1,8 @@
-//test
 const Tesseract = require('tesseract.js');
-const Expense = require("../models/expenseModel");
-const { ChatPromptTemplate } = require("@langchain/core/prompts");
-const { ChatOpenAI } = require("@langchain/openai");
-const { z } = require("zod");
+const Expense = require('../models/expenseModel');
+const { ChatPromptTemplate } = require('@langchain/core/prompts');
+const { ChatOpenAI } = require('@langchain/openai');
+const { z } = require('zod');
 
 const taggingPrompt = ChatPromptTemplate.fromTemplate(
   `Extract the desired information from the following passage.
@@ -51,76 +50,63 @@ const classificationSchema = z.object({
 // LLM
 const llm = new ChatOpenAI({
   temperature: 0,
-  model: "gpt-3.5-turbo-0125",
+  model: 'gpt-3.5-turbo-0125',
 });
 
 const llmWithStructuredOutput = llm.withStructuredOutput(classificationSchema, {
-  name: "extractor",
+  name: 'extractor',
 });
 
 const taggingChain = taggingPrompt.pipe(llmWithStructuredOutput);
 
-async function createWorkers(workerCount) {
-  const workers = [];
-  for (let i = 0; i < workerCount; i++) {
-    const worker = await Tesseract.createWorker();
-    await worker.load();
-    await worker.loadLanguage('eng');
-    await worker.initialize('eng');
-    workers.push(worker);
-  }
-  return workers;
+async function createWorker() {
+  const worker = await Tesseract.createWorker();
+  await worker.load();
+  await worker.loadLanguage('eng');
+  await worker.initialize('eng');
+  return worker;
 }
 
-async function getExpensesWithoutAIScore(id) {
-  return await Expense.findOne({ _id: id ,aiScore: { $exists: false } });
+async function getExpenseWithoutAIScore(id) {
+  return await Expense.findOne({ _id: id, aiScore: { $exists: false } });
 }
 
 async function runOCR(id) {
   try {
-    const expenses = await getExpensesWithoutAIScore(id);
-    if (expenses.length === 0) {
-      console.log('No expenses without AI score found.');
+    const expense = await getExpenseWithoutAIScore(id);
+    if (!expense) {
+      console.log('No expense without AI score found for the given ID.');
       return;
     }
-    
-    const workerCount = 1;
-    const maxJobCount = 500;
-    let jobCount = 0;
-    let workers = await createWorkers(workerCount);
-  
-    for (const expense of expenses) {
-      try {
-        const { data: { text } } = await workers[jobCount % workerCount].recognize(expense.image);
-        console.log('Recognition result for expense', expense._id, ':', text);
-  
-        const input = `This is a reimbursement expense. The name of the expense is ${expense.title}, the amount is ${expense.amount}, the date is ${expense.date}, the time is ${expense.time}, the category is ${expense.category}, the description is ${expense.description}, and the data in the image is ${text}. Based on the data in the image find the scores for authenticity, accuracy, compliance, completeness, and relevance of the expense. If the data in the image does not represent any type of bill then the scores should be 0.`;
-        
-        const classificationResult = await taggingChain.invoke({ input });
-        
-        // Update the expense with the classification result
-        expense.aiScores = classificationResult;
-        await expense.save();
-  
-        console.log('Processed values', classificationResult);
-        jobCount++;
-        if (jobCount % maxJobCount === 0) {
-          for (const worker of workers) {
-            await worker.terminate();
-          }
-          workers = await createWorkers(workerCount);
-        }
-      } catch (err) {
-        console.error('Error processing expense', expense._id, ':', err);
-      }
+
+    if (!expense.image) {
+      console.log('Expense does not have an image.');
+      return;
     }
-    for (const worker of workers) {
-      await worker.terminate();
+
+    const worker = await createWorker();
+
+    try {
+      console.log('Starting OCR for expense:', expense._id);
+      const { data: { text } } = await worker.recognize(expense.image);
+      console.log('Recognition result for expense', expense._id, ':', text);
+
+      const input = `This is a reimbursement expense. The name of the expense is ${expense.title}, the amount is ${expense.amount}, the date is ${expense.date}, the time is ${expense.time}, the category is ${expense.category}, the description is ${expense.description}, and the data in the image is ${text}. Based on the data in the image find the scores for authenticity, accuracy, compliance, completeness, and relevance of the expense. If the data in the image does not represent any type of bill then the scores should be 0.`;
+
+      const classificationResult = await taggingChain.invoke({ input });
+
+      // Update the expense with the classification result
+      expense.aiScores = classificationResult;
+      await expense.save();
+
+      console.log('Processed values', classificationResult);
+    } catch (err) {
+      console.error('Error processing expense', expense._id, ':', err);
     }
+
+    await worker.terminate();
   } catch (err) {
     console.error('Error in runOCR function:', err);
-  } finally {
-    // setTimeout(runOCR, 10000); // Run OCR again after a short delay
   }
 }
 
