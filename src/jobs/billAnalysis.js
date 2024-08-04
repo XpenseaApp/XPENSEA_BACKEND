@@ -1,4 +1,5 @@
 
+require('dotenv').config();
 const Tesseract = require('tesseract.js');
 const Expense = require('../models/expenseModel');
 const { ChatPromptTemplate } = require('@langchain/core/prompts');
