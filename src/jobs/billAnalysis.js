@@ -11,10 +11,10 @@ console.log(process.env)
 
 const { OPENAI_API_KEY } = process.env;
 
-const openaiApiKey = process.env.OPENAI_API_KEY;
-if (!openaiApiKey) {
-  throw new Error('Missing OpenAI API key. Please set OPENAI_API_KEY in your .env file.');
-}
+// const openaiApiKey = process.env.OPENAI_API_KEY;
+// if (!openaiApiKey) {
+//   throw new Error('Missing OpenAI API key. Please set OPENAI_API_KEY in your .env file.');
+// }
 
 const taggingPrompt = ChatPromptTemplate.fromTemplate(
   `Extract the desired information from the following passage.
