@@ -1,4 +1,4 @@
-require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const volleyball = require("volleyball");
@@ -24,6 +24,8 @@ const startServer = async () => {
   try {
     if (NODE_ENV === "production") {
       await loadSecrets();
+    }else{
+      require("dotenv").config();
     }
     const { PORT, API_VERSION } = process.env;
 //* Define the PORT & API version based on environment variable

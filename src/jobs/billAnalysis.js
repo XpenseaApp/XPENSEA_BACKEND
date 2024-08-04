@@ -1,5 +1,5 @@
 
-require('dotenv').config();
+
 console.log(process.env)
 const Tesseract = require('tesseract.js');
 const Expense = require('../models/expenseModel');
