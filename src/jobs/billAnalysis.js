@@ -1,8 +1,15 @@
+
 const Tesseract = require('tesseract.js');
 const Expense = require('../models/expenseModel');
 const { ChatPromptTemplate } = require('@langchain/core/prompts');
 const { ChatOpenAI } = require('@langchain/openai');
 const { z } = require('zod');
+
+
+const openaiApiKey = process.env.OPENAI_API_KEY;
+if (!openaiApiKey) {
+  throw new Error('Missing OpenAI API key. Please set OPENAI_API_KEY in your .env file.');
+}
 
 const taggingPrompt = ChatPromptTemplate.fromTemplate(
   `Extract the desired information from the following passage.
@@ -51,6 +58,7 @@ const classificationSchema = z.object({
 const llm = new ChatOpenAI({
   temperature: 0,
   model: 'gpt-3.5-turbo-0125',
+  apiKey: openaiApiKey
 });
 
 const llmWithStructuredOutput = llm.withStructuredOutput(classificationSchema, {

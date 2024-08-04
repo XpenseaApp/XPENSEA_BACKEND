@@ -31,6 +31,7 @@
     "swagger-ui-express": "^5.0.1",
     "tesseract.js": "^5.1.0",
     "volleyball": "^1.5.1",
+    "xpensea_backend": "file:",
     "zod": "^3.23.8"
   }
 }
