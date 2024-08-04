@@ -1,5 +1,5 @@
 
-
+require('dotenv').config();
 console.log(process.env)
 const Tesseract = require('tesseract.js');
 const Expense = require('../models/expenseModel');
@@ -8,6 +8,8 @@ const { ChatOpenAI } = require('@langchain/openai');
 const { z } = require('zod');
 
 console.log(process.env)
+
+const { OPENAI_API_KEY } = process.env;
 
 const openaiApiKey = process.env.OPENAI_API_KEY;
 if (!openaiApiKey) {
@@ -61,7 +63,7 @@ const classificationSchema = z.object({
 const llm = new ChatOpenAI({
   temperature: 0,
   model: 'gpt-3.5-turbo-0125',
-  apiKey: openaiApiKey
+  apiKey: OPENAI_API_KEY,
 });
 
 const llmWithStructuredOutput = llm.withStructuredOutput(classificationSchema, {
