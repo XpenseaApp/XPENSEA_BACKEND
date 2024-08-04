@@ -17,7 +17,7 @@ const expenseSchema = mongoose.Schema(
     status: {
       type: String,
       default: "draft",
-      enum: ["draft", "mapped", "rejected", "accepted"],
+      enum: ["draft", "mapped", "rejected", "accepted","approved"],//TODO added approved for testing remove it later
     },
     reason: { type: String },
     aiScores: {

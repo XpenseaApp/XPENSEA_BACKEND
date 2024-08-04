@@ -72,19 +72,19 @@ async function createWorkers(workerCount) {
   return workers;
 }
 
-async function getExpensesWithoutAIScore() {
-  return await Expense.find({ aiScore: { $exists: false } });
+async function getExpensesWithoutAIScore(id) {
+  return await Expense.findOne({ _id: id ,aiScore: { $exists: false } });
 }
 
-async function runOCR() {
+async function runOCR(id) {
   try {
-    const expenses = await getExpensesWithoutAIScore();
+    const expenses = await getExpensesWithoutAIScore(id);
     if (expenses.length === 0) {
       console.log('No expenses without AI score found.');
       return;
     }
     
-    const workerCount = 4;
+    const workerCount = 1;
     const maxJobCount = 500;
     let jobCount = 0;
     let workers = await createWorkers(workerCount);
@@ -94,7 +94,7 @@ async function runOCR() {
         const { data: { text } } = await workers[jobCount % workerCount].recognize(expense.image);
         console.log('Recognition result for expense', expense._id, ':', text);
   
-        const input = `This is a reimbursement expense. The name of the expense is ${expense.title}, the amount is ${expense.amount}, the date is ${expense.date}, the time is ${expense.time}, the category is ${expense.category}, the description is ${expense.description}, and the data in the image is ${text}. Find the authenticity, accuracy, compliance, completeness, and relevance of the expense.`;
+        const input = `This is a reimbursement expense. The name of the expense is ${expense.title}, the amount is ${expense.amount}, the date is ${expense.date}, the time is ${expense.time}, the category is ${expense.category}, the description is ${expense.description}, and the data in the image is ${text}. Based on the data in the image find the scores for authenticity, accuracy, compliance, completeness, and relevance of the expense. If the data in the image does not represent any type of bill then the scores should be 0.`;
         
         const classificationResult = await taggingChain.invoke({ input });
         
@@ -102,6 +102,7 @@ async function runOCR() {
         expense.aiScores = classificationResult;
         await expense.save();
   
+        console.log('Processed values', classificationResult);
         jobCount++;
         if (jobCount % maxJobCount === 0) {
           for (const worker of workers) {
@@ -113,14 +114,13 @@ async function runOCR() {
         console.error('Error processing expense', expense._id, ':', err);
       }
     }
-  
     for (const worker of workers) {
       await worker.terminate();
     }
   } catch (err) {
     console.error('Error in runOCR function:', err);
   } finally {
-    setTimeout(runOCR, 10000); // Run OCR again after a short delay
+    // setTimeout(runOCR, 10000); // Run OCR again after a short delay
   }
 }
 
