@@ -559,17 +559,18 @@ exports.listController = async (req, res) => {
 provided expense ID. Here is a breakdown of what the function is doing: */
 exports.getExpense = async (req, res) => {
   try {
-    
     const { id } = req.params;
     const user = await User.findById(req.userId);
     const userid = req.userId;
+
     if (!id) {
       return responseHandler(res, 404, "Expense ID is required");
     }
+
     let expense;
-    if(user.userType === "approver") {
+    if (user.userType === "approver") {
       expense = await Expense.findOne({ _id: id });
-    }else{
+    } else {
       expense = await Expense.findOne({ _id: id, userid });
     }
 
@@ -588,11 +589,17 @@ exports.getExpense = async (req, res) => {
       date: moment(expense.createdAt).format("MMM DD YYYY"),
     };
 
+    // Conditionally add aiScores if available
+    if (expense.aiScores) {
+      mappedData.aiScores = expense.aiScores;
+    }
+
     return responseHandler(res, 200, "Expense found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
+
 
 /* The `exports.getReport` function is responsible for fetching a specific report record based on the
 provided report ID. Here is a breakdown of what the function is doing: */
