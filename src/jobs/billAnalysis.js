@@ -1,11 +1,13 @@
 
 require('dotenv').config();
+console.log(process.env)
 const Tesseract = require('tesseract.js');
 const Expense = require('../models/expenseModel');
 const { ChatPromptTemplate } = require('@langchain/core/prompts');
 const { ChatOpenAI } = require('@langchain/openai');
 const { z } = require('zod');
 
+console.log(process.env)
 
 const openaiApiKey = process.env.OPENAI_API_KEY;
 if (!openaiApiKey) {
