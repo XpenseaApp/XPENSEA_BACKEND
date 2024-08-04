@@ -19,7 +19,7 @@ const  NODE_ENV  =  process.env.NODE_ENV;
 
 
 
-//* Function to start the serve
+//* Function to start the server
 const startServer = async () => {
   try {
     if (NODE_ENV === "production") {
