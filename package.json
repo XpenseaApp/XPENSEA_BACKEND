@@ -11,6 +11,8 @@
   "author": "hello-world-ttj",
   "license": "ISC",
   "dependencies": {
+    "@langchain/core": "^0.2.20",
+    "@langchain/openai": "^0.2.5",
     "aws-sdk": "^2.1646.0",
     "axios": "^1.7.2",
     "bcrypt": "^5.1.1",
@@ -20,12 +22,15 @@
     "express": "^4.19.2",
     "joi": "^17.13.1",
     "jsonwebtoken": "^9.0.2",
+    "langchain": "^0.2.12",
     "moment-timezone": "^0.5.45",
     "mongoose": "^8.4.1",
     "node-cron": "^3.0.3",
     "nodemon": "^3.1.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "volleyball": "^1.5.1"
+    "tesseract.js": "^5.1.0",
+    "volleyball": "^1.5.1",
+    "zod": "^3.23.8"
   }
 }

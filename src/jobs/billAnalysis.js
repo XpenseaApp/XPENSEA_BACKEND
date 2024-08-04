@@ -1,9 +1,10 @@
 //test
 const Tesseract = require('tesseract.js');
 const Expense = require("../models/expenseModel");
-import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { ChatOpenAI } from "@langchain/openai";
-import { z } from "zod";
+const { ChatPromptTemplate } = require("@langchain/core/prompts");
+const { ChatOpenAI } = require("@langchain/openai");
+const { z } = require("zod");
+
 const taggingPrompt = ChatPromptTemplate.fromTemplate(
   `Extract the desired information from the following passage.
   

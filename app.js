@@ -59,6 +59,7 @@ require("./src/helpers/connection");
         null
       );
     });
+    
     await runOCR();
     
     //! Start the server and listen on the specified port from environment variable
