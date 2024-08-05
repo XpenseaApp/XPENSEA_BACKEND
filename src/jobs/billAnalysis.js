@@ -9,6 +9,7 @@ const { z } = require('zod');
 
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+console.log(process.env.test,'OpenAI API key', OPENAI_API_KEY);
 if (!OPENAI_API_KEY) {
   throw new Error('Missing OpenAI API key. Please set OPENAI_API_KEY in your .env file.');
 }
