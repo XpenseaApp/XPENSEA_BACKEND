@@ -811,17 +811,17 @@ exports.updateReport = async (req, res) => {
           { status: "mapped" }
         );
       }
-
+      
       if (expensesOnlyInReport.length > 0) {
-       if (type == 'save') {
+        if (type == 'save') {
          await Expense.updateMany(
            { _id: { $in: expensesOnlyInReport } },
-           { status: "pending" }
+           { status: "draft" }
          );
-       }else {
+      }else {
         await Expense.updateMany(
           { _id: { $in: expensesOnlyInReport } },
-          { status: "draft" }
+          { status: "pending" }
         );
        }
       }
