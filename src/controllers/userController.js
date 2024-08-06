@@ -818,12 +818,12 @@ exports.updateReport = async (req, res) => {
            { _id: { $in: expensesOnlyInReport } },
            { status: "draft" }
          );
-      }else {
-        await Expense.updateMany(
-          { _id: { $in: expensesOnlyInReport } },
-          { status: "pending" }
-        );
-       }
+        } else {
+          await Expense.updateMany(
+            { _id: { $in: expensesOnlyInReport } },
+            { status: "pending" }
+          );
+        }
       }
     }
 
