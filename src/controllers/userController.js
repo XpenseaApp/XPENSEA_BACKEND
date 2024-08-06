@@ -781,6 +781,7 @@ exports.createEvent = async (req, res) => {
 exports.updateReport = async (req, res) => {
   try {
     const { id } = req.params;
+    const { type } = req.query;
     if (!id) {
       return responseHandler(res, 400, "Report ID is required");
     }
@@ -812,10 +813,17 @@ exports.updateReport = async (req, res) => {
       }
 
       if (expensesOnlyInReport.length > 0) {
+       if (type == 'save') {
+         await Expense.updateMany(
+           { _id: { $in: expensesOnlyInReport } },
+           { status: "pending" }
+         );
+       }else {
         await Expense.updateMany(
           { _id: { $in: expensesOnlyInReport } },
           { status: "draft" }
         );
+       }
       }
     }
 
