@@ -834,7 +834,7 @@ exports.updateReport = async (req, res) => {
     return responseHandler(
       res,
       200,
-      "Report updated successfully",
+      "Report updated successfully"+type,
       updatedReport
     );
   } catch (error) {
