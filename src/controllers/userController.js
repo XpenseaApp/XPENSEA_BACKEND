@@ -846,7 +846,7 @@ exports.getWalletUsed = async (req, res) => {
 
     const expenses = await Expense.find({
       createdAt: { $gte: startOfMonth.toDate(), $lte: endOfMonth.toDate() },
-      status: { $in: ["mapped", "accepted"] },
+      status: { $in: ["mapped", "approved"] },
       user: req.userId,
     });
 
@@ -1041,7 +1041,7 @@ exports.updateApproval = async (req, res) => {
 
       await Expense.updateMany(
         { _id: { $in: remainingExpenses } },
-        { $set: { status: "accepted" } },
+        { $set: { status: "approved" } },
         { new: true }
       );
     }

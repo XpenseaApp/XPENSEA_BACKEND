@@ -1355,7 +1355,7 @@ exports.updateApproval = async (req, res) => {
 
       await Expense.updateMany(
         { _id: { $in: remainingExpenses } },
-        { $set: { status: "accepted" } },
+        { $set: { status: "approved" } },
         { new: true }
       );
     }
