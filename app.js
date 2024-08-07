@@ -45,7 +45,7 @@ const startServer = async () => {
     //* Import database connection module
     require("./src/helpers/connection");
     //* Start the cron job
-    require("./src/jobs/updateEventStatus"); 
+    require("./src/jobs"); 
 
     //* Swagger setup
     app.use(

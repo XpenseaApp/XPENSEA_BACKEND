@@ -9,7 +9,8 @@ cron.schedule("* * * * *", async () => {
   const currentTime = now.format("HH:mm");
 
   try {
-    const events = await Event.updateMany(
+    //* Update events from "scheduled" to "progress"
+    const progressEvents = await Event.updateMany(
       {
         status: "scheduled",
         startDate: currentDate,
@@ -20,7 +21,21 @@ cron.schedule("* * * * *", async () => {
       { status: "progress" },
       { new: true }
     );
-    console.log(`Updated ${events.eventName} events to progress`);
+    console.log(`Updated ${progressEvents.nModified} events to progress`);
+
+    //* Update events from "progress" to "done"
+    const doneEvents = await Event.updateMany(
+      {
+        status: "progress",
+        endDate: currentDate,
+        endTime: {
+          $lte: moment.utc(`${currentDate}T${currentTime}`).toDate(),
+        },
+      },
+      { status: "done" },
+      { new: true }
+    );
+    console.log(`Updated ${doneEvents.nModified} events to done`);
   } catch (err) {
     console.error("Error updating events:", err);
   }
