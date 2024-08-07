@@ -19,8 +19,7 @@ const Problem = require("../models/problemModel");
 const Event = require("../models/eventModel");
 const mongoose = require("mongoose");
 const { request } = require("express");
-const runOCR = require('../jobs/billAnalysis');
-
+const runOCR = require("../jobs/billAnalysis");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -165,14 +164,13 @@ exports.createExpense = async (req, res) => {
     req.body.user = req.userId;
     const newExpense = await Expense.create(req.body);
     if (newExpense) {
-      await runOCR( newExpense._id);
+      await runOCR(newExpense._id);
       return responseHandler(
         res,
         200,
         `Expense created successfully..!`,
         newExpense
       );
-
     } else {
       return responseHandler(res, 400, `Expense creation failed...!`);
     }
@@ -604,13 +602,12 @@ exports.getExpense = async (req, res) => {
   }
 };
 
-
 /* The `exports.getReport` function is responsible for fetching a specific report record based on the
 provided report ID. Here is a breakdown of what the function is doing: */
 exports.getReport = async (req, res) => {
   try {
     const { id } = req.params;
-    const{ isEvent } = req.query;
+    const { isEvent } = req.query;
     const user = req.userId;
     if (!id) {
       return responseHandler(res, 404, "Report ID is required");
@@ -622,24 +619,28 @@ exports.getReport = async (req, res) => {
     } else if (isEvent) {
       report = await Report.findOne({ event: id, user }).populate("expenses");
       if (!report) {
-      const event = await Event.findOne({ _id: id, staffs: { $in: [user] } });
-      report = await Report.create({
-        user: user,
-        event: id,
-        expenses: [],
-        title: event.eventName,
-        description: event.description,
-        location: "Event Location",
-        status: "drafted",
-        reportDate: new Date(),
-      });
+        const event = await Event.findOne({ _id: id, staffs: { $in: [user] } });
+        report = await Report.create({
+          user: user,
+          event: id,
+          expenses: [],
+          title: event.eventName,
+          description: event.description,
+          location: "Event Location",
+          status: "drafted",
+          reportDate: new Date(),
+        });
       }
     } else {
       report = await Report.findOne({ _id: id, user }).populate("expenses");
     }
 
     if (!report) {
-      return responseHandler(res, 404, id+" "+isEvent+" Report not found");
+      return responseHandler(
+        res,
+        404,
+        id + " " + isEvent + " Report not found"
+      );
     }
 
     const mappedData = {
@@ -781,7 +782,6 @@ exports.createEvent = async (req, res) => {
 exports.updateReport = async (req, res) => {
   try {
     const { id } = req.params;
-    const { type } = req.query;
     if (!id) {
       return responseHandler(res, 400, "Report ID is required");
     }
@@ -811,19 +811,12 @@ exports.updateReport = async (req, res) => {
           { status: "mapped" }
         );
       }
-      
+
       if (expensesOnlyInReport.length > 0) {
-        if (type == 'save') {
-         await Expense.updateMany(
-           { _id: { $in: expensesOnlyInReport } },
-           { status: "draft" }
-         );
-        } else {
-          await Expense.updateMany(
-            { _id: { $in: expensesOnlyInReport } },
-            { status: "pending" }
-          );
-        }
+        await Expense.updateMany(
+          { _id: { $in: expensesOnlyInReport } },
+          { status: "draft" }
+        );
       }
     }
 
@@ -834,7 +827,7 @@ exports.updateReport = async (req, res) => {
     return responseHandler(
       res,
       200,
-      "Report updated successfully"+type,
+      "Report updated successfully",
       updatedReport
     );
   } catch (error) {
