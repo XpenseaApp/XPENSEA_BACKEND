@@ -1435,7 +1435,12 @@ exports.reimburseReport = async (req, res) => {
 
     const reimburse = await Report.findByIdAndUpdate(
       id,
-      { status: "reimbursed", descriptionFinance },
+      {
+        status: "reimbursed",
+        descriptionFinance,
+        reimburserModel: "Admin",
+        reimburser: req.userId,
+      },
       { new: true }
     );
 
@@ -1515,6 +1520,7 @@ exports.getFinance = async (req, res) => {
       })
       .populate("expenses")
       .populate("approver", "name")
+      .populate("reimburser", "name")
       .lean();
 
     if (!fetchReport) {

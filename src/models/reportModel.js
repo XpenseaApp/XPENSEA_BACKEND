@@ -39,6 +39,14 @@ const reportModel = mongoose.Schema(
       type: String,
       enum: ["User", "Admin"],
     },
+    reimburser: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "reimburserModel",
+    },
+    reimburserModel: {
+      type: String,
+      enum: ["User", "Admin"],
+    },
     descriptionFinance: { type: String },
   },
   { timestamps: true }
