@@ -1,3 +1,4 @@
+const axios = require('axios');
 const { HumanMessage } = require('@langchain/core/messages');
 const { ChatOpenAI } = require('@langchain/openai');
 const { z } = require('zod');
@@ -5,8 +6,7 @@ const base64 = require('base64-js');
 
 // Fetch and encode the image
 async function getImageData(url) {
-    const httpx = await import('httpx');  // Use dynamic import for ES Modules
-    const response = await httpx.get(url, { responseType: 'arraybuffer' });
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
     return base64.fromByteArray(new Uint8Array(response.data));
 }
 
