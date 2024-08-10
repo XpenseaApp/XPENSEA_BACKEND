@@ -1,4 +1,4 @@
-const axios = require('axios');
+const https = require('https');
 const { HumanMessage } = require('@langchain/core/messages');
 const { ChatOpenAI } = require('@langchain/openai');
 const { z } = require('zod');
@@ -6,9 +6,20 @@ const base64 = require('base64-js');
 
 // Fetch and encode the image
 async function getImageData(url) {
-    logger.info(`Fetching image from ${url}`);
-    const response = await axios.get(url, { responseType: 'arraybuffer' });
-    return base64.fromByteArray(new Uint8Array(response.data));
+    return new Promise((resolve, reject) => {
+        https.get(url, (response) => {
+            let data = [];
+            response.on('data', (chunk) => {
+                data.push(chunk);
+            });
+            response.on('end', () => {
+                const buffer = Buffer.concat(data);
+                resolve(base64.fromByteArray(new Uint8Array(buffer)));
+            });
+        }).on('error', (err) => {
+            reject(err);
+        });
+    });
 }
 
 // Define the Zod schema for structured output
