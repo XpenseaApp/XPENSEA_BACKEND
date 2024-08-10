@@ -1143,7 +1143,7 @@ exports.reimburseReport = async (req, res) => {
 exports.imageAnalysis = async (req, res) => {
   try {
     const { imagelink } = req.query;
-   
+   console.log(imagelink);
     
     if (!imagelink) {
       analyzeImage(imagelink).then((response) => {
