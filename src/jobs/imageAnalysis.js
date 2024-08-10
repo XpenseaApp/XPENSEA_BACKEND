@@ -6,6 +6,7 @@ const base64 = require('base64-js');
 
 // Fetch and encode the image
 async function getImageData(url) {
+    logger.info(`Fetching image from ${url}`);
     const response = await axios.get(url, { responseType: 'arraybuffer' });
     return base64.fromByteArray(new Uint8Array(response.data));
 }
