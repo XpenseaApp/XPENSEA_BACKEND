@@ -3,7 +3,7 @@ const { ChatOpenAI } = require('@langchain/openai') ;
 const { z } = require('zod');
 (async () => {
     const httpx = await import('httpx');
-    // Now you can use httpx as usualn
+    // Now you can use httpx as usual
   })();
   const base64 = require('base64-js');
 
