@@ -11,10 +11,11 @@
   "author": "hello-world-ttj",
   "license": "ISC",
   "dependencies": {
-    "@langchain/core": "^0.2.20",
-    "@langchain/openai": "^0.2.5",
+    "@langchain/core": "^0.2.23",
+    "@langchain/openai": "^0.2.6",
     "aws-sdk": "^2.1646.0",
     "axios": "^1.7.2",
+    "base64-js": "^1.5.1",
     "bcrypt": "^5.1.1",
     "cli-color": "^2.0.4",
     "cors": "^2.8.5",

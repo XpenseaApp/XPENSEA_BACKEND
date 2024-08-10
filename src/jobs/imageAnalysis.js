@@ -1,14 +1,11 @@
-const { HumanMessage } =  require('@langchain/core/messages');
-const { ChatOpenAI } = require('@langchain/openai') ;
+const { HumanMessage } = require('@langchain/core/messages');
+const { ChatOpenAI } = require('@langchain/openai');
 const { z } = require('zod');
-(async () => {
-    const httpx = await import('httpx');
-    // Now you can use httpx as usualn
-  })();
-  const base64 = require('base64-js');
+const base64 = require('base64-js');
 
 // Fetch and encode the image
 async function getImageData(url) {
+    const httpx = await import('httpx');  // Use dynamic import for ES Modules
     const response = await httpx.get(url, { responseType: 'arraybuffer' });
     return base64.fromByteArray(new Uint8Array(response.data));
 }
@@ -25,7 +22,7 @@ const expenseSchema = z.object({
 async function analyzeImage(imageUrl) {
     const model = new ChatOpenAI({
         temperature: 0,
-        model: 'gpt-4o',
+        modelName: 'gpt-4',
         apiKey: process.env.OPENAI_API_KEY,  // Ensure the API key is set in the environment variables
     });
 
@@ -36,13 +33,10 @@ async function analyzeImage(imageUrl) {
     const imageData = await getImageData(imageUrl);
 
     const message = new HumanMessage({
-        content: [
-            { type: 'text', text: 'Is this an applicable expense bill? If so, provide a title, category, and description for it.' },
-            {
-                type: 'image_url',
-                image_url: `data:image/jpeg;base64,${imageData}`,
-            },
-        ],
+        content: 'Is this an applicable expense bill? If so, provide a title, category, and description for it.',
+        additional_kwargs: {
+            image_url: `data:image/jpeg;base64,${imageData}`,
+        },
     });
 
     const response = await modelWithOutput.invoke([message]);
