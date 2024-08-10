@@ -20,6 +20,7 @@ const Event = require("../models/eventModel");
 const mongoose = require("mongoose");
 const { request } = require("express");
 const runOCR = require("../jobs/billAnalysis");
+const analyzeImage = require("../jobs/imageAnalysis");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -1133,6 +1134,33 @@ exports.reimburseReport = async (req, res) => {
     if (!reimburse) return responseHandler(res, 400, "Reimbursed failed");
 
     return responseHandler(res, 200, `Reimbursed successfully`);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+
+exports.imageAnalysis = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { imagelink } = req.query;
+    if (!id) {
+      return responseHandler(res, 400, "Approval ID is required");
+    }
+
+    
+    if (!imagelink) {
+      analyzeImage(imagelink).then((response) => {
+        if (response) {
+          return responseHandler(res, 200, "Image analyzed successfully", response);
+        } else {
+          return responseHandler(res, 400, "Image analysis failed");
+        }
+      });
+    }
+    
+
+    
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
