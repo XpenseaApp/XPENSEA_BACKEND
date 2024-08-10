@@ -1,8 +1,11 @@
-const { HumanMessage } = require('langchain_core/messages');
-const { ChatOpenAI } = require('langchain_openai');
+const { HumanMessage } =  require('@langchain/core/messages');
+const { ChatOpenAI } = require('@langchain/openai') ;
 const { z } = require('zod');
-const httpx = require('httpx');
-const base64 = require('base64-js');
+(async () => {
+    const httpx = await import('httpx');
+    // Now you can use httpx as usual
+  })();
+  const base64 = require('base64-js');
 
 // Fetch and encode the image
 async function getImageData(url) {

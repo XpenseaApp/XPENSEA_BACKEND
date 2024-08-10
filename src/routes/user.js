@@ -26,6 +26,6 @@ userRoute.get("/approval/:id", userController.getApproval);
 userRoute.put("/approval/:id/:action", userController.updateApproval);
 userRoute.get("/finance/:id", userController.getFinance);
 userRoute.put("/reimburse/:id", userController.reimburseReport);
-userRoute.get("/image-analysis/", userController);
+userRoute.get("/image-analysis/", userController.imageAnalysis);
 
 module.exports = userRoute;
