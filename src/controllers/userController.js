@@ -1142,12 +1142,8 @@ exports.reimburseReport = async (req, res) => {
 
 exports.imageAnalysis = async (req, res) => {
   try {
-    const { id } = req.params;
     const { imagelink } = req.query;
-    if (!id) {
-      return responseHandler(res, 400, "Approval ID is required");
-    }
-
+   
     
     if (!imagelink) {
       analyzeImage(imagelink).then((response) => {
