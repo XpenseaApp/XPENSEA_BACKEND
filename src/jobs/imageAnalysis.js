@@ -10,6 +10,18 @@ async function getImageData(url) {
     return base64.fromByteArray(new Uint8Array(response.data));
 }
 
+
+const taggingPrompt = ChatPromptTemplate.fromTemplate(
+    `Extract the desired information from the following passage.
+    
+    Only extract the properties mentioned in the 'Classification' function.
+    
+    Passage:
+    {input}
+    `
+  );
+  
+
 // Define the Zod schema for structured output
 const expenseSchema = z.object({
     isExpenseBill: z.boolean().describe("Whether the image is an applicable expense bill"),
@@ -26,12 +38,17 @@ async function analyzeImage(imageUrl) {
         apiKey: process.env.OPENAI_API_KEY,  // Ensure the API key is set in the environment variables
     });
 
+    
     // Commented out the `withStructuredOutput` as it might not be supported.
     // const modelWithOutput = model.withStructuredOutput(expenseSchema, {
-    //     name: "Expense Bill Analyzer",
-    // });
-
-    const imageData = await getImageData(imageUrl);
+        //     name: "Expense Bill Analyzer",
+        // });
+        
+        const imageData = await getImageData(imageUrl);
+        const llmWithStructuredOutput = model.withStructuredOutput(expenseSchema, {
+            name: 'extractor',
+        });
+        const taggingChain = taggingPrompt.pipe(llmWithStructuredOutput);
 
     const message = new HumanMessage({
         content: `Is this an applicable expense bill? If so, provide a title, category, and description for it.`,
@@ -40,19 +57,18 @@ async function analyzeImage(imageUrl) {
         },
     });
 
-    const response = await model.invoke([message]);
+    const response = await taggingChain.invoke([message]);
 
     // Validate the response using the Zod schema
-    const validatedResponse = expenseSchema.safeParse(response);
 
-    if (!validatedResponse.success) {
-        console.error("Response validation failed:", validatedResponse.error);
+    if (!response.success) {
+        console.error("Response validation failed:", response.error);
         return;
     }
 
     // Output the structured JSON response
-    console.log(validatedResponse.data);
-    return validatedResponse.data;
+    console.log(response.data);
+    return response.data;
 }
 
 module.exports = analyzeImage;
