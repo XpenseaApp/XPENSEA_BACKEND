@@ -3,26 +3,24 @@ const { HumanMessage } = require('@langchain/core/messages');
 const { ChatOpenAI } = require('@langchain/openai');
 const { ChatPromptTemplate } = require('@langchain/core/prompts');
 const { z } = require('zod');
-const base64 = require('base64-js');
 
-// Fetch and encode the image
+// Fetch the image data as a URL or binary buffer
 async function getImageData(url) {
     console.log("Fetching image data from URL:", url);
     const response = await axios.get(url, { responseType: 'arraybuffer' });
-    const encodedImage = base64.fromByteArray(new Uint8Array(response.data));
-    console.log("Image data successfully fetched and encoded.");
-    return encodedImage;
+    console.log("Image data successfully fetched.");
+    return response.data; // Return binary data instead of base64
 }
 
 const taggingPrompt = ChatPromptTemplate.fromTemplate(
-    `Analyze the provided passage and image. Extract and return the following information:
+    `Analyze the provided image and extract the following information:
     
     1. "isExpenseBill": true or false - Whether the image is an applicable expense bill.
     2. "title": (string, optional) - Title for the expense bill.
     3. "category": (string, optional) - Category for the expense bill.
     4. "description": (string, optional) - Description of the expense bill.
 
-    Passage:
+    Image and additional details:
     {input}
     `
 );
@@ -49,15 +47,18 @@ async function analyzeImage(imageUrl) {
         const imageData = await getImageData(imageUrl);
         console.log("Image data prepared for analysis.");
 
+        // Consider storing the image to a temporary storage and passing the URL instead
+        // For example:
+        // const temporaryImageUrl = await uploadImageToTemporaryStorage(imageData);
+
+        const inputContent = `The image URL is: ${imageUrl}. Please analyze the image accordingly.`;
+        console.log("Input content for LLM prepared:", inputContent);
+
         const llmWithStructuredOutput = model.withStructuredOutput(expenseSchema, {
             name: 'extractor',
         });
 
         const taggingChain = taggingPrompt.pipe(llmWithStructuredOutput);
-
-        // The content of the input to the LLM
-        const inputContent = `This is the image data: data:image/jpeg;base64,${imageData}.`;
-        console.log("Input content for LLM prepared:", inputContent);
 
         const response = await taggingChain.invoke({ input: inputContent });
         console.log("Response from LLM received:", response);
