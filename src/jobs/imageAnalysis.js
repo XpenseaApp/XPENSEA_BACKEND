@@ -58,7 +58,7 @@ async function analyzeImage(imageUrl) {
         },
     });
 
-    const response = await taggingChain.invoke([message]);
+    const response = await taggingChain.invoke({message});
 
     // Validate the response using the Zod schema
 
