@@ -26,24 +26,33 @@ async function analyzeImage(imageUrl) {
         apiKey: process.env.OPENAI_API_KEY,  // Ensure the API key is set in the environment variables
     });
 
-    const modelWithOutput = model.withStructuredOutput(expenseSchema, {
-        name: "Expense Bill Analyzer",
-    });
+    // Commented out the `withStructuredOutput` as it might not be supported.
+    // const modelWithOutput = model.withStructuredOutput(expenseSchema, {
+    //     name: "Expense Bill Analyzer",
+    // });
 
     const imageData = await getImageData(imageUrl);
 
     const message = new HumanMessage({
-        content: 'Is this an applicable expense bill? If so, provide a title, category, and description for it.',
-        additional_kwargs: {
-            image_url: `data:image/jpeg;base64,${imageData}`,
+        content: `Is this an applicable expense bill? If so, provide a title, category, and description for it.`,
+        metadata: {
+            image: `data:image/jpeg;base64,${imageData}`,
         },
     });
 
-    const response = await modelWithOutput.invoke([message]);
+    const response = await model.invoke([message]);
+
+    // Validate the response using the Zod schema
+    const validatedResponse = expenseSchema.safeParse(response);
+
+    if (!validatedResponse.success) {
+        console.error("Response validation failed:", validatedResponse.error);
+        return;
+    }
 
     // Output the structured JSON response
-    console.log(response);
-    return response;
+    console.log(validatedResponse.data);
+    return validatedResponse.data;
 }
 
 module.exports = analyzeImage;
