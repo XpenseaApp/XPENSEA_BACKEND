@@ -11,17 +11,18 @@ async function getImageData(url) {
     return base64.fromByteArray(new Uint8Array(response.data));
 }
 
-
 const taggingPrompt = ChatPromptTemplate.fromTemplate(
-    `Extract the desired information from the following passage.
+    `Analyze the provided passage and image. Extract and return the following information:
     
-    Only extract the properties mentioned in the 'Classification' function.
-    
+    1. "isExpenseBill": true or false - Whether the image is an applicable expense bill.
+    2. "title": (string, optional) - Title for the expense bill.
+    3. "category": (string, optional) - Category for the expense bill.
+    4. "description": (string, optional) - Description of the expense bill.
+
     Passage:
     {input}
     `
-  );
-  
+);
 
 // Define the Zod schema for structured output
 const expenseSchema = z.object({
@@ -39,31 +40,19 @@ async function analyzeImage(imageUrl) {
         apiKey: process.env.OPENAI_API_KEY,  // Ensure the API key is set in the environment variables
     });
 
-    
-    // Commented out the `withStructuredOutput` as it might not be supported.
-    // const modelWithOutput = model.withStructuredOutput(expenseSchema, {
-        //     name: "Expense Bill Analyzer",
-        // });
-        
-        const imageData = await getImageData(imageUrl);
-        const llmWithStructuredOutput = model.withStructuredOutput(expenseSchema, {
-            name: 'extractor',
-        });
-        const taggingChain = taggingPrompt.pipe(llmWithStructuredOutput);
-
-    const message = new HumanMessage({
-        content: `Is this an applicable expense bill? If so, provide a title, category, and description for it.`,
-        metadata: {
-            image: `data:image/jpeg;base64,${imageData}`,
-        },
+    const imageData = await getImageData(imageUrl);
+    const llmWithStructuredOutput = model.withStructuredOutput(expenseSchema, {
+        name: 'extractor',
     });
 
-    const input = `${input}` ;
+    const taggingChain = taggingPrompt.pipe(llmWithStructuredOutput);
 
-    const response = await taggingChain.invoke({message});
+    // The content of the input to the LLM
+    const inputContent = `This is the image data: data:image/jpeg;base64,${imageData}.`;
+
+    const response = await taggingChain.invoke({ input: inputContent });
 
     // Validate the response using the Zod schema
-
     if (!response.success) {
         console.error("Response validation failed:", response.error);
         return;
