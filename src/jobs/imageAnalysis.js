@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { HumanMessage } = require('@langchain/core/messages');
 const { ChatOpenAI } = require('@langchain/openai');
+const { ChatPromptTemplate } = require('@langchain/core/prompts');
 const { z } = require('zod');
 const base64 = require('base64-js');
 
