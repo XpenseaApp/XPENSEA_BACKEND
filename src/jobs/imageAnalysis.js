@@ -7,8 +7,11 @@ const base64 = require('base64-js');
 
 // Fetch and encode the image
 async function getImageData(url) {
+    console.log("Fetching image data from URL:", url);
     const response = await axios.get(url, { responseType: 'arraybuffer' });
-    return base64.fromByteArray(new Uint8Array(response.data));
+    const encodedImage = base64.fromByteArray(new Uint8Array(response.data));
+    console.log("Image data successfully fetched and encoded.");
+    return encodedImage;
 }
 
 const taggingPrompt = ChatPromptTemplate.fromTemplate(
@@ -34,33 +37,43 @@ const expenseSchema = z.object({
 
 // Analyze the image using GPT-4 via LangChain
 async function analyzeImage(imageUrl) {
+    console.log("Starting analysis of image:", imageUrl);
+
     const model = new ChatOpenAI({
         temperature: 0,
         modelName: 'gpt-4',
         apiKey: process.env.OPENAI_API_KEY,  // Ensure the API key is set in the environment variables
     });
 
-    const imageData = await getImageData(imageUrl);
-    const llmWithStructuredOutput = model.withStructuredOutput(expenseSchema, {
-        name: 'extractor',
-    });
+    try {
+        const imageData = await getImageData(imageUrl);
+        console.log("Image data prepared for analysis.");
 
-    const taggingChain = taggingPrompt.pipe(llmWithStructuredOutput);
+        const llmWithStructuredOutput = model.withStructuredOutput(expenseSchema, {
+            name: 'extractor',
+        });
 
-    // The content of the input to the LLM
-    const inputContent = `This is the image data: data:image/jpeg;base64,${imageData}.`;
+        const taggingChain = taggingPrompt.pipe(llmWithStructuredOutput);
 
-    const response = await taggingChain.invoke({ input: inputContent });
+        // The content of the input to the LLM
+        const inputContent = `This is the image data: data:image/jpeg;base64,${imageData}.`;
+        console.log("Input content for LLM prepared:", inputContent);
 
-    // Validate the response using the Zod schema
-    if (!response.success) {
-        console.error("Response validation failed:", response.error);
-        return;
+        const response = await taggingChain.invoke({ input: inputContent });
+        console.log("Response from LLM received:", response);
+
+        // Validate the response using the Zod schema
+        if (!response.success) {
+            console.error("Response validation failed:", response.error);
+            return;
+        }
+
+        // Output the structured JSON response
+        console.log("Validated response data:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error during image analysis:", error);
     }
-
-    // Output the structured JSON response
-    console.log(response.data);
-    return response.data;
 }
 
 module.exports = analyzeImage;
