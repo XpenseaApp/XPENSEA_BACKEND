@@ -64,11 +64,11 @@ async function analyzeImage(imageUrl) {
         console.log("Response from LLM received:", response);
 
         // Validate the response using the Zod schema
-       
+        
 
         // Output the structured JSON response
-        console.log("Validated response data:", response.data);
-        return response.data;
+        console.log("Validated response data:", response);
+        return response;
     } catch (error) {
         console.error("Error during image analysis:", error);
     }
