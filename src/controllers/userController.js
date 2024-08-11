@@ -1139,25 +1139,25 @@ exports.reimburseReport = async (req, res) => {
   }
 };
 
-
 exports.imageAnalysis = async (req, res) => {
   try {
     const { imageUrl } = req.query;
-   console.log(imageUrl);
-    
-    if (!imageUrl) {
-      analyzeImage(imageUrl).then((response) => {
-        if (response) {
-          return responseHandler(res, 200, "Image analyzed successfully", response);
-        } else {
-          return responseHandler(res, 400, "Image analysis failed");
-        }
-      });
-    }
-    
+    console.log("Received imageUrl:", imageUrl);
 
-    
+    if (!imageUrl) {
+      return responseHandler(res, 400, "Image URL is required");
+    }
+
+    const response = await analyzeImage(imageUrl);
+
+    if (response) {
+      return responseHandler(res, 200, "Image analyzed successfully", response);
+    } else {
+      return responseHandler(res, 400, "Image analysis failed");
+    }
+
   } catch (error) {
-    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+    console.error("Error during image analysis:", error);
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
