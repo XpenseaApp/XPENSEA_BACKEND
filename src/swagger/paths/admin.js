@@ -960,7 +960,6 @@
  *       500:
  *         description: Internal Server Error
  */
-
 /**
  * @swagger
  * /admin/users/filtered:
@@ -1030,7 +1029,6 @@
  *         description: Internal Server Error
  */
 
-
 /**
  * @swagger
  * /admin/policy:
@@ -1089,8 +1087,6 @@
  *         description: Internal Server Error
  */
 
-
-
 /**
  * @swagger
  * /admin/policy/{id}:
@@ -1116,8 +1112,6 @@
  *       500:
  *         description: Internal Server Error
  */
-
-
 
 /**
  * @swagger
