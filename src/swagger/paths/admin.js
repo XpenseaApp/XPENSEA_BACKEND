@@ -1111,7 +1111,7 @@
  *         description: Policy not found
  *       500:
  *         description: Internal Server Error
- *   put:
+ *      put:
  *     summary: Update an existing policy
  *     description: API endpoint for updating a policy based on its ID.
  *     tags:
