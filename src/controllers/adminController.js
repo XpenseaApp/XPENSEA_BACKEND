@@ -734,7 +734,7 @@ exports.listController = async (req, res) => {
         mappedData,
         totalCount
       );
-    }else if (type === "Advances") {
+    }else if (type === "advances") {
       // Check if the user has the required permissions
       const check = await checkAccess(req.roleId, "permissions");
     

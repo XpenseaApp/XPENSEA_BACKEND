@@ -219,7 +219,7 @@
  *         schema:
  *           type: string
  *         required: true
- *         description: Type of data to retrieve (e.g., admins, roles, tiers, users, approvals, approvers, finances, events)
+ *         description: Type of data to retrieve (e.g., admins, roles, tiers, users, approvals, approvers, finances, events, advances)
  *       - in: query
  *         name: tier
  *         schema:
