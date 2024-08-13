@@ -1029,3 +1029,157 @@
  *       500:
  *         description: Internal Server Error
  */
+
+
+/**
+ * @swagger
+ * /admin/policy:
+ *   post:
+ *     summary: Create a new policy
+ *     description: API endpoint for creating a new policy.
+ *     tags:
+ *       - Policy
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               policyTitle:
+ *                 type: string
+ *                 example: "New Reimbursement Policy"
+ *               tier:
+ *                 type: string
+ *                 example: "64a55c6f3f8b9c001c8b4567"  // Example ObjectId
+ *               userType:
+ *                 type: string
+ *                 example: "Admin"
+ *               activationDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-08-01"
+ *               location:
+ *                 type: string
+ *                 example: "Headquarters"
+ *               policyDetails:
+ *                 type: string
+ *                 example: "This policy covers all reimbursement procedures."
+ *               accuracy:
+ *                 type: string
+ *                 example: "High"
+ *               authenticity:
+ *                 type: string
+ *                 example: "Verified"
+ *               compliance:
+ *                 type: string
+ *                 example: "Compliant with local laws"
+ *               relevance:
+ *                 type: string
+ *                 example: "Relevant to current business needs"
+ *               completeness:
+ *                 type: string
+ *                 example: "Complete as per internal guidelines"
+ *     responses:
+ *       201:
+ *         description: Policy created successfully
+ *       400:
+ *         description: Invalid input
+ *       500:
+ *         description: Internal Server Error
+ */
+
+
+
+/**
+ * @swagger
+ * /admin/policy/{id}:
+ *   get:
+ *     summary: Get policy details
+ *     description: API endpoint for fetching policy details based on policy ID.
+ *     tags:
+ *       - Policy
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the policy to retrieve
+ *     responses:
+ *       200:
+ *         description: Policy details retrieved successfully
+ *       400:
+ *         description: Policy ID is required
+ *       404:
+ *         description: Policy not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+
+
+/**
+ * @swagger
+ * /admin/policy/{id}:
+ *   put:
+ *     summary: Update an existing policy
+ *     description: API endpoint for updating a policy based on its ID.
+ *     tags:
+ *       - Policy
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the policy to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               policyTitle:
+ *                 type: string
+ *                 example: "Updated Reimbursement Policy"
+ *               tier:
+ *                 type: string
+ *                 example: "64a55c6f3f8b9c001c8b4567"  // Example ObjectId
+ *               userType:
+ *                 type: string
+ *                 example: "Admin"
+ *               activationDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-08-01"
+ *               location:
+ *                 type: string
+ *                 example: "Headquarters"
+ *               policyDetails:
+ *                 type: string
+ *                 example: "Updated policy details."
+ *               accuracy:
+ *                 type: string
+ *                 example: "High"
+ *               authenticity:
+ *                 type: string
+ *                 example: "Verified"
+ *               compliance:
+ *                 type: string
+ *                 example: "Compliant with updated regulations"
+ *               relevance:
+ *                 type: string
+ *                 example: "Still relevant"
+ *               completeness:
+ *                 type: string
+ *                 example: "Complete"
+ *     responses:
+ *       200:
+ *         description: Policy updated successfully
+ *       400:
+ *         description: Policy update failed or Policy not found
+ *       500:
+ *         description: Internal Server Error
+ */

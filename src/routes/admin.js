@@ -63,5 +63,10 @@ adminRoute.post("/advance-payment", adminController.createAdvancePayment);
 adminRoute.get("/advance-payment/:id", adminController.viewAdvancePaymentById);
 adminRoute.put("/advance-payment/:id", adminController.AdvancePaymentMarkCompleted);
 
+adminRoute.post("/policy", adminController.createPolicy);
+adminRoute.get("/policy/:id", adminController.viewPolicyById);
+adminRoute.put("/policy/:id", adminController.updatePolicy);
+
+
 
 module.exports = adminRoute;
