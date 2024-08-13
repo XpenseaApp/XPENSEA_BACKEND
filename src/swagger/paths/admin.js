@@ -1051,7 +1051,7 @@
  *                 example: "New Reimbursement Policy"
  *               tier:
  *                 type: string
- *                 example: "64a55c6f3f8b9c001c8b4567"  // Example ObjectId
+ *                 example: "64a55c6f3f8b9c001c8b4567"  
  *               userType:
  *                 type: string
  *                 example: "Admin"
@@ -1143,7 +1143,7 @@
  *                 example: "Updated Reimbursement Policy"
  *               tier:
  *                 type: string
- *                 example: "64a55c6f3f8b9c001c8b4567"  // Example ObjectId
+ *                 example: "64a55c6f3f8b9c001c8b4567"  
  *               userType:
  *                 type: string
  *                 example: "Admin"
