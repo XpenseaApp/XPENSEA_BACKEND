@@ -4,6 +4,8 @@ const Role = require("../models/roleModel");
 const Tier = require("../models/tierModel");
 const User = require("../models/userModel");
 const Event = require("../models/eventModel");
+const AdvancePayment = require("../models/advancePaymentModel");
+
 const { hashPassword, comparePasswords } = require("../utils/bcrypt");
 const { generateToken } = require("../utils/generateToken");
 const checkAccess = require("../helpers/checkAccess");
@@ -730,7 +732,72 @@ exports.listController = async (req, res) => {
         mappedData,
         totalCount
       );
-    } else {
+    }else if (type === "Advances") {
+      // Check if the user has the required permissions
+      const check = await checkAccess(req.roleId, "permissions");
+    
+      if (!check || !check.includes(accessPermissions[type])) {
+        return responseHandler(
+          res,
+          403,
+          "You don't have permission to perform this action"
+        );
+      }
+    
+      // Setting up the filter based on status
+      filter.status = { $in: ["Pending","Completed", "Cancelled"] };
+    
+      if (status) {
+        filter.status = status;
+      }
+    
+      // Count total matching advance payment documents
+      const totalCount = await AdvancePayment.countDocuments(filter);
+    
+      // Fetch advance payments based on the filter
+      const fetchAdvances = await AdvancePayment.find(filter)
+        .populate("requestedBy.admin", "name") // Populate admin's name
+        .populate("requestedBy.staff", "name") // Populate staff's name
+        .populate("paidBy", "name") // Populate financer name
+        .skip(skipCount)
+        .limit(limit)
+        .lean();
+    
+      // Map fetched advances to desired structure
+      const mappedData = fetchAdvances.map((data) => {
+        return {
+          _id: data._id,
+          requestedBy: {
+            admin: data.requestedBy.admin.name,
+            staff: data.requestedBy.staff.name,
+          },
+          amount: data.amount,
+          paidBy: data.paidBy.name,
+          status: data.status,
+          paymentMethod: data.paymentMethod,
+          requestedOn: moment(data.requestedOn).format("MMM DD YYYY"),
+          paidOn: data.paidOn
+            ? moment(data.paidOn).format("MMM DD YYYY")
+            : "Not Paid Yet",
+          createdAt: moment(data.createdAt).format("MMM DD YYYY"),
+          updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
+          description: data.description,
+        };
+      });
+    
+      if (!fetchAdvances || fetchAdvances.length === 0) {
+        return responseHandler(res, 404, "No Advances found");
+      }
+    
+      return responseHandler(
+        res,
+        200,
+        "Advances found",
+        mappedData,
+        totalCount
+      );
+    }
+    else {
       return responseHandler(res, 404, "Invalid type..!");
     }
   } catch (error) {
@@ -1562,5 +1629,94 @@ exports.getFinance = async (req, res) => {
     return responseHandler(res, 200, "Report found", mappedData);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+
+exports.createAdvancePayment = async (req, res) => {
+  try {
+    const advancePaymentData = req.body;
+
+    // Validate input data (Assuming you have a validation schema)
+    // const validation = AdvancePaymentSchema.validate(advancePaymentData, {
+    //   abortEarly: false,
+    // });
+
+    if (validation.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${validation.error.details.map((err) => err.message).join(', ')}`
+      );
+    }
+
+    // Create the advance payment record
+    const newAdvancePayment = await AdvancePayment.create(advancePaymentData);
+
+    if (newAdvancePayment) {
+      return responseHandler(
+        res,
+        201,
+        `Advance payment created successfully!`,
+        newAdvancePayment
+      );
+    } else {
+      return responseHandler(res, 400, `Advance payment creation failed`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+
+
+exports.viewAdvancePaymentById = async (req, res) => {
+  try {
+    const advancePaymentId = req.params.id;
+
+    // Find the advance payment by ID
+    const advancePayment = await AdvancePayment.findById(advancePaymentId)
+      .populate('requestedBy.admin', 'name') // Populate admin's name
+      .populate('requestedBy.staff', 'name') // Populate staff's name
+      .populate('paidBy', 'name'); // Populate financer name
+
+    if (!advancePayment) {
+      return responseHandler(res, 404, `Advance payment not found`);
+    }
+
+    return responseHandler(res, 200, `Advance payment found`, advancePayment);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+exports.AdvancePaymentMarkCompleted = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { description } = req.body;  // Assuming description field is used instead of descriptionFinance
+
+    if (!id) {
+      return responseHandler(res, 400, "Advance Payment ID is required");
+    }
+
+    // Update the advance payment with the new status and additional details
+    const advance = await AdvancePayment.findByIdAndUpdate(
+      id,
+      {
+        status: "Completed",  // Update status to "Completed"
+        description,          // Update the description provided by finance
+        paidBy: req.userId,   // Assume req.userId is the ID of the user marking this as completed
+        paidOn: new Date(),   // Record the current date as the payment date
+      },
+      { new: true }
+    );
+
+    if (!advance) {
+      return responseHandler(res, 400, "Reimbursement failed or Advance Payment not found");
+    }
+
+    return responseHandler(res, 200, "Reimbursed successfully", advance);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };

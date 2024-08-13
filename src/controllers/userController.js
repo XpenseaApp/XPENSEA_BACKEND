@@ -1161,3 +1161,81 @@ exports.imageAnalysis = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
+
+
+exports.viewAdvancePaymentById = async (req, res) => {
+  try {
+    const advancePaymentId = req.params.id;
+
+    // Find the advance payment by ID
+    const advancePayment = await AdvancePayment.findById(advancePaymentId)
+      .populate('requestedBy.admin', 'name') // Populate admin's name
+      .populate('requestedBy.staff', 'name') // Populate staff's name
+      .populate('paidBy', 'name'); // Populate financer name
+
+    if (!advancePayment) {
+      return responseHandler(res, 404, `Advance payment not found`);
+    }
+
+    return responseHandler(res, 200, `Advance payment found`, advancePayment);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+
+exports.getWallet = async (req, res) => {
+  try {
+    // Find the user and verify their existence
+    const user = await User.findById(req.userId);
+    if (!user) return responseHandler(res, 404, "User not found");
+
+    // Calculate the total amount of all advances paid to the user
+    const advances = await AdvancePayment.find({
+      "requestedBy.staff": req.userId,
+      status: "Completed",  // Only include completed payments
+    });
+
+    const totalAmount = advances.reduce((acc, advance) => acc + advance.amount, 0);
+
+    // Calculate the start and end of the current month
+    const startOfMonth = moment().startOf("month").toDate();
+    const endOfMonth = moment().endOf("month").toDate();
+
+    // Fetch all expenses for the user within the current month
+    const expenses = await Expense.find({
+      createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+      status: { $in: ["mapped", "approved"] },
+      user: req.userId,
+    });
+
+    // Calculate the total expenses
+    const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
+
+    // Calculate the balance amount (total advances paid minus total expenses)
+    const balanceAmount = totalAmount - totalExpenses;
+
+    // Map the expense data for response
+    const mappedData = expenses.map((exp) => ({
+      _id: exp._id,
+      category: exp.category,
+      amount: exp.amount,
+      image: exp.image,
+      title: exp.title,
+    }));
+
+    // Get the user's tier categories (assuming it's relevant for the response)
+    const categories = user.tier.categories;
+
+    // Respond with the wallet details
+    return responseHandler(res, 200, "Wallet details retrieved successfully", {
+      totalAmount,
+      totalExpenses,
+      balanceAmount,
+      expenses: mappedData,
+      categories,
+    });
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};

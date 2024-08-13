@@ -59,4 +59,9 @@ adminRoute.put("/reimburse/:id", adminController.reimburseReport);
 adminRoute.get("/users/filtered", adminController.getFilteredUsers);
 adminRoute.get("/finance/:id", adminController.getFinance);
 
+adminRoute.post("/advance-payment", adminController.createAdvancePayment);
+adminRoute.get("/advance-payment/:id", adminController.viewAdvancePaymentById);
+adminRoute.put("/advance-payment/:id", adminController.AdvancePaymentMarkCompleted);
+
+
 module.exports = adminRoute;
