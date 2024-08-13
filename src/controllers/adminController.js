@@ -5,7 +5,7 @@ const Tier = require("../models/tierModel");
 const User = require("../models/userModel");
 const Event = require("../models/eventModel");
 const AdvancePayment = require("../models/advancePaymentModel");
-const Policy = require('../models/Policy'); 
+const Policy = require('../models/policyModel'); 
 
 
 const { hashPassword, comparePasswords } = require("../utils/bcrypt");
