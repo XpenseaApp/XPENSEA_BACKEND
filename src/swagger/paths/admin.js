@@ -1111,7 +1111,12 @@
  *         description: Policy not found
  *       500:
  *         description: Internal Server Error
- *      put:
+ */
+
+/**
+ * @swagger
+ * /admin/policy/{id}:
+ *   put:
  *     summary: Update an existing policy
  *     description: API endpoint for updating a policy based on its ID.
  *     tags:
@@ -1172,4 +1177,3 @@
  *       500:
  *         description: Internal Server Error
  */
-
