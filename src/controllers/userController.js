@@ -1224,7 +1224,7 @@ exports.getWallet = async (req, res) => {
       title: exp.title,
     }));
 
-    // Get the user's tier categories (assuming it's relevant for the response)
+    // Get the user's tier categories (assuming it's relevant for the resp0onse)
     const categories = user.tier.categories;
 
     // Respond with the wallet details
