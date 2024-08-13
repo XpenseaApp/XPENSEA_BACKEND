@@ -9,6 +9,8 @@
  *     description: Tier related endpoints
  *   - name: List
  *     description: List related endpoints for admin and users
+ *   - name: Policy
+ *     description: Policy related endpoints for admin and users
  *   - name: User
  *     description: User related endpoints
  *   - name: Expense
@@ -1112,6 +1114,7 @@
  *       500:
  *         description: Internal Server Error
  */
+
 
 /**
  * @swagger
