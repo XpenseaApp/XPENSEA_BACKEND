@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const advancePaymentSchema = mongoose.Schema(
+const transactionSchema = mongoose.Schema(
   {
     requestedBy: {
       admin: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Admin who requested
@@ -24,6 +24,6 @@ const advancePaymentSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-const AdvancePayment = mongoose.model("AdvancePayment", advancePaymentSchema);
+const transaction = mongoose.model("transaction", transactionSchema);
 
-module.exports = AdvancePayment;
+module.exports = transaction;

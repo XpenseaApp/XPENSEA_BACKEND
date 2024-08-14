@@ -27,7 +27,7 @@ userRoute.put("/approval/:id/:action", userController.updateApproval);
 userRoute.get("/finance/:id", userController.getFinance);
 userRoute.put("/reimburse/:id", userController.reimburseReport);
 userRoute.get("/image-analysis/", userController.imageAnalysis);
-userRoute.get("/advance-payment/:id", userController.viewAdvancePaymentById);
+userRoute.get("/advance-payment/:id", userController.viewtransactionById);
 userRoute.get("/wallet", userController.getWallet);
 
 

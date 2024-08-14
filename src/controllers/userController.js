@@ -1163,21 +1163,21 @@ exports.imageAnalysis = async (req, res) => {
 };
 
 
-exports.viewAdvancePaymentById = async (req, res) => {
+exports.viewtransactionById = async (req, res) => {
   try {
-    const advancePaymentId = req.params.id;
+    const transactionId = req.params.id;
 
     // Find the advance payment by ID
-    const advancePayment = await AdvancePayment.findById(advancePaymentId)
+    const transaction = await transaction.findById(transactionId)
       .populate('requestedBy.admin', 'name') // Populate admin's name
       .populate('requestedBy.staff', 'name') // Populate staff's name
       .populate('paidBy', 'name'); // Populate financer name
 
-    if (!advancePayment) {
+    if (!transaction) {
       return responseHandler(res, 404, `Advance payment not found`);
     }
 
-    return responseHandler(res, 200, `Advance payment found`, advancePayment);
+    return responseHandler(res, 200, `Advance payment found`, transaction);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
@@ -1191,7 +1191,7 @@ exports.getWallet = async (req, res) => {
     if (!user) return responseHandler(res, 404, "User not found");
 
     // Calculate the total amount of all advances paid to the user
-    const advances = await AdvancePayment.find({
+    const advances = await transaction.find({
       "requestedBy.staff": req.userId,
       status: "Completed",  // Only include completed payments
     });

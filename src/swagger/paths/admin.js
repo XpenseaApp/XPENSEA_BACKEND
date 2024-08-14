@@ -219,7 +219,7 @@
  *         schema:
  *           type: string
  *         required: true
- *         description: Type of data to retrieve (e.g., admins, roles, tiers, users, approvals, approvers, finances, events, advances)
+ *         description: Type of data to retrieve (e.g., admins, roles, tiers, users, approvals, approvers, finances, events, transactions, policy)
  *       - in: query
  *         name: tier
  *         schema:
@@ -227,6 +227,11 @@
  *         description: Tier ID
  *       - in: query
  *         name: status
+ *         schema:
+ *           type: string
+ *         description: Status
+ *       - in: query
+ *         name: staffId
  *         schema:
  *           type: string
  *         description: Status

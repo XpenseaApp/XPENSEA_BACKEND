@@ -59,13 +59,15 @@ adminRoute.put("/reimburse/:id", adminController.reimburseReport);
 adminRoute.get("/users/filtered", adminController.getFilteredUsers);
 adminRoute.get("/finance/:id", adminController.getFinance);
 
-adminRoute.post("/advance-payment", adminController.createAdvancePayment);
-adminRoute.get("/advance-payment/:id", adminController.viewAdvancePaymentById);
-adminRoute.put("/advance-payment/:id", adminController.AdvancePaymentMarkCompleted);
+adminRoute.post("/transaction", adminController.createtransaction);
+adminRoute.get("/transaction/:id", adminController.viewtransactionById);
+adminRoute.put("/transaction/:id", adminController.transactionMarkCompleted);
 
 adminRoute.post("/policy", adminController.createPolicy);
 adminRoute.get("/policy/:id", adminController.viewPolicyById);
 adminRoute.put("/policy/:id", adminController.updatePolicy);
+
+adminRoute.get("/wallet/:id",adminController.getWallet);
 
 
 

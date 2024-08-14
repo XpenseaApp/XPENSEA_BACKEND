@@ -4,7 +4,7 @@ const Role = require("../models/roleModel");
 const Tier = require("../models/tierModel");
 const User = require("../models/userModel");
 const Event = require("../models/eventModel");
-const AdvancePayment = require("../models/advancePaymentModel");
+const transaction = require("../models/transactionModel");
 const Policy = require('../models/policyModel'); 
 
 
@@ -734,7 +734,7 @@ exports.listController = async (req, res) => {
         mappedData,
         totalCount
       );
-    }else if (type === "advances") {
+    }else if (type === "transactions") {
       // Check if the user has the required permissions
       const check = await checkAccess(req.roleId, "permissions");
     
@@ -752,12 +752,15 @@ exports.listController = async (req, res) => {
       if (status) {
         filter.status = status;
       }
+      if(req.query.staffId){
+        filter.requestedBy.staff = req.query.staffId
+      }
     
       // Count total matching advance payment documents
-      const totalCount = await AdvancePayment.countDocuments(filter);
+      const totalCount = await transaction.countDocuments(filter);
     
       // Fetch advance payments based on the filter
-      const fetchAdvances = await AdvancePayment.find(filter)
+      const fetchAdvances = await transaction.find(filter)
         .populate("requestedBy.admin", "name") // Populate admin's name
         .populate("requestedBy.staff", "name") // Populate staff's name
         .populate("paidBy", "name") // Populate financer name
@@ -798,8 +801,79 @@ exports.listController = async (req, res) => {
         mappedData,
         totalCount
       );
-    }
-    else {
+    }else if (type === "policy") {
+      // Check if the user has the required permissions
+      const check = await checkAccess(req.roleId, "permissions");
+    
+      if (!check || !check.includes(accessPermissions[type])) {
+        return responseHandler(
+          res,
+          403,
+          "You don't have permission to perform this action"
+        );
+      }
+    
+      // Setting up the filter for the policy query
+      const filter = {};
+      if (status) {
+        filter.status = status;  // Example: filter by policy status if required
+      }
+    
+      // Add additional filters if needed, e.g., by userType, tier, or location
+      if (req.query.userType) {
+        filter.userType = req.query.userType;
+      }
+    
+      if (req.query.tier) {
+        filter.tier = req.query.tier;
+      }
+    
+      if (req.query.location) {
+        filter.location = req.query.location;
+      }
+    
+      // Count total matching policy documents
+      const totalCount = await Policy.countDocuments(filter);
+    
+      // Fetch policies based on the filter
+      const fetchPolicies = await Policy.find(filter)
+        .populate("tier", "tierName") // Populate tier's name (assuming the Tier model has a tierName field)
+        .skip(skipCount)
+        .limit(limit)
+        .lean();
+    
+      // Map fetched policies to the desired structure
+      const mappedData = fetchPolicies.map((data) => {
+        return {
+          _id: data._id,
+          policyTitle: data.policyTitle,
+          tier: data.tier ? data.tier.tierName : "Not assigned",
+          userType: data.userType,
+          activationDate: moment(data.activationDate).format("MMM DD YYYY"),
+          location: data.location,
+          accuracy: data.accuracy,
+          authenticity: data.authenticity,
+          compliance: data.compliance,
+          relevance: data.relevance,
+          completeness: data.completeness,
+          createdAt: moment(data.createdAt).format("MMM DD YYYY"),
+          updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
+          policyDetails: data.policyDetails,
+        };
+      });
+    
+      if (!fetchPolicies || fetchPolicies.length === 0) {
+        return responseHandler(res, 404, "No policies found");
+      }
+    
+      return responseHandler(
+        res,
+        200,
+        "Policies found",
+        mappedData,
+        totalCount
+      );
+    }else {
       return responseHandler(res, 404, "Invalid type..!");
     }
   } catch (error) {
@@ -1635,12 +1709,12 @@ exports.getFinance = async (req, res) => {
 };
 
 
-exports.createAdvancePayment = async (req, res) => {
+exports.createtransaction = async (req, res) => {
   try {
-    const advancePaymentData = req.body;
+    const transactionData = req.body;
 
     // Validate input data (Assuming you have a validation schema)
-    // const validation = AdvancePaymentSchema.validate(advancePaymentData, {
+    // const validation = transactionSchema.validate(transactionData, {
     //   abortEarly: false,
     // });
 
@@ -1653,14 +1727,14 @@ exports.createAdvancePayment = async (req, res) => {
     }
 
     // Create the advance payment record
-    const newAdvancePayment = await AdvancePayment.create(advancePaymentData);
+    const newtransaction = await transaction.create(transactionData);
 
-    if (newAdvancePayment) {
+    if (newtransaction) {
       return responseHandler(
         res,
         201,
         `Advance payment created successfully!`,
-        newAdvancePayment
+        newtransaction
       );
     } else {
       return responseHandler(res, 400, `Advance payment creation failed`);
@@ -1672,27 +1746,27 @@ exports.createAdvancePayment = async (req, res) => {
 
 
 
-exports.viewAdvancePaymentById = async (req, res) => {
+exports.viewtransactionById = async (req, res) => {
   try {
-    const advancePaymentId = req.params.id;
+    const transactionId = req.params.id;
 
     // Find the advance payment by ID
-    const advancePayment = await AdvancePayment.findById(advancePaymentId)
+    const transaction = await transaction.findById(transactionId)
       .populate('requestedBy.admin', 'name') // Populate admin's name
       .populate('requestedBy.staff', 'name') // Populate staff's name
       .populate('paidBy', 'name'); // Populate financer name
 
-    if (!advancePayment) {
+    if (!transaction) {
       return responseHandler(res, 404, `Advance payment not found`);
     }
 
-    return responseHandler(res, 200, `Advance payment found`, advancePayment);
+    return responseHandler(res, 200, `Advance payment found`, transaction);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
 
-exports.AdvancePaymentMarkCompleted = async (req, res) => {
+exports.transactionMarkCompleted = async (req, res) => {
   try {
     const { id } = req.params;
     const { description } = req.body;  // Assuming description field is used instead of descriptionFinance
@@ -1702,7 +1776,7 @@ exports.AdvancePaymentMarkCompleted = async (req, res) => {
     }
 
     // Update the advance payment with the new status and additional details
-    const advance = await AdvancePayment.findByIdAndUpdate(
+    const advance = await transaction.findByIdAndUpdate(
       id,
       {
         status: "Completed",  // Update status to "Completed"
@@ -1806,6 +1880,67 @@ exports.updatePolicy = async (req, res) => {
     }
 
     return responseHandler(res, 200, "Policy updated successfully", updatedPolicy);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+
+exports.getWallet = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return responseHandler(res, 400, "User ID is required");
+    }
+    // Find the user and verify their existence
+    const user = await User.findById(req.userId);
+    if (!user) return responseHandler(res, 404, "User not found");
+
+    // Calculate the total amount of all advances paid to the user
+    const advances = await transaction.find({
+      "requestedBy.staff": req.userId,
+      status: "Completed",  // Only include completed payments
+    });
+
+    const totalAmount = advances.reduce((acc, advance) => acc + advance.amount, 0);
+
+    // Calculate the start and end of the current month
+    const startOfMonth = moment().startOf("month").toDate();
+    const endOfMonth = moment().endOf("month").toDate();
+
+    // Fetch all expenses for the user within the current month
+    const expenses = await Expense.find({
+      createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+      status: { $in: ["mapped", "approved"] },
+      user: req.userId,
+    });
+
+    // Calculate the total expenses
+    const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
+
+    // Calculate the balance amount (total advances paid minus total expenses)
+    const balanceAmount = totalAmount - totalExpenses;
+
+    // Map the expense data for response
+    const mappedData = expenses.map((exp) => ({
+      _id: exp._id,
+      category: exp.category,
+      amount: exp.amount,
+      image: exp.image,
+      title: exp.title,
+    }));
+
+    // Get the user's tier categories (assuming it's relevant for the resp0onse)
+    const categories = user.tier.categories;
+
+    // Respond with the wallet details
+    return responseHandler(res, 200, "Wallet details retrieved successfully", {
+      totalAmount,
+      totalExpenses,
+      balanceAmount,
+      expenses: mappedData,
+      categories,
+    });
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
