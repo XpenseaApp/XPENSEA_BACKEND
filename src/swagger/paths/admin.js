@@ -556,9 +556,6 @@
  *               tier:
  *                 type: string
  *                 example: "666c1a3895a6b176b7f2bcf7"
- *               approver:
- *                 type: string
- *                 example: "666c1a3895a6b176b7f2bcf7"
  *               userType:
  *                 type: string
  *                 example: "submitter"
