@@ -7,7 +7,10 @@ cron.schedule("* * * * *", async () => {
   const now = moment().tz("Asia/Kolkata");
   const currentDate = now.format("YYYY-MM-DD");
   const currentTime = now.format("HH:mm");
-  
+  console.log(
+    "🚀 ~ cron.schedule ~  moment.utc(`${currentDate}T${currentTime}`).toDate():",
+    moment.utc(`${currentDate}T${currentTime}`).toDate()
+  );
   try {
     //* Update events from "scheduled" to "progress"
     const progressEvents = await Event.updateMany(
