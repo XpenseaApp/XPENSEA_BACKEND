@@ -739,7 +739,7 @@ exports.listController = async (req, res) => {
     } else if (type === "transactions") {
       // Check if the user has the required permissions
       const check = await checkAccess(req.roleId, "permissions");
-
+    
       if (!check || !check.includes(accessPermissions["finances"])) {
         return responseHandler(
           res,
@@ -747,41 +747,45 @@ exports.listController = async (req, res) => {
           "You don't have permission to perform this action"
         );
       }
-
+    
       // Setting up the filter based on status
       filter.status = { $in: ["Pending", "Completed", "Cancelled"] };
-
+    
       if (status) {
         filter.status = status;
       }
       if (req.query.staffId) {
         filter.requestedBy.staff = req.query.staffId;
       }
-
+    
       // Count total matching advance payment documents
       const totalCount = await transaction.countDocuments(filter);
-
+    
       // Fetch advance payments based on the filter
       const fetchAdvances = await transaction
         .find(filter)
-       
         .skip(skipCount)
         .limit(limit)
         .lean();
-      console.log(fetchAdvances);
+    
+      if (!fetchAdvances || fetchAdvances.length === 0) {
+        return responseHandler(res, 404, "No Advances found");
+      }
+    
       // Map fetched advances to desired structure
-      const mappedData = fetchAdvances.map((data) => {
-        const sender = User.findOne({ _id: data.requestedBy.sender });
-        const receiver = User.findOne({ _id: data.requestedBy.receiver });
-        const paidBy = User.findOne({ _id: data.paidBy });
+      const mappedData = await Promise.all(fetchAdvances.map(async (data) => {
+        const sender = await User.findOne({ _id: data.requestedBy.sender }).lean();
+        const receiver = await User.findOne({ _id: data.requestedBy.receiver }).lean();
+        const paidBy = await User.findOne({ _id: data.paidBy }).lean();
+    
         return {
           _id: data._id,
           requestedBy: {
-            sender: sender.name,
-            receiver: receiver.name,
+            sender: sender ? sender.name : "N/A",
+            receiver: receiver ? receiver.name : "N/A",
           },
           amount: data.amount,
-          paidBy: paidBy,
+          paidBy: paidBy ? paidBy.name : "N/A",
           status: data.status,
           paymentMethod: data.paymentMethod,
           requestedOn: moment(data.requestedOn).format("MMM DD YYYY"),
@@ -792,12 +796,8 @@ exports.listController = async (req, res) => {
           updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
           description: data.description,
         };
-      });
-
-      if (!fetchAdvances || fetchAdvances.length === 0) {
-        return responseHandler(res, 404, "No Advances found");
-      }
-
+      }));
+    
       return responseHandler(
         res,
         200,
@@ -805,7 +805,8 @@ exports.listController = async (req, res) => {
         mappedData,
         totalCount
       );
-    } else if (type === "policy") {
+    }
+     else if (type === "policy") {
       // Check if the user has the required permissions
       const check = await checkAccess(req.roleId, "permissions");
 
