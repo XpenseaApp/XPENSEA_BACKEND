@@ -780,10 +780,8 @@ exports.listController = async (req, res) => {
     
         return {
           _id: data._id,
-          requestedBy: {
             sender: sender ? sender.name : "N/A",
             receiver: receiver ? receiver.name : "N/A",
-          },
           amount: data.amount,
           paidBy: paidBy ? paidBy.name : "N/A",
           status: data.status,
