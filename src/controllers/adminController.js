@@ -770,14 +770,16 @@ exports.listController = async (req, res) => {
         .skip(skipCount)
         .limit(limit)
         .lean();
-
+      console.log(fetchAdvances);
       // Map fetched advances to desired structure
       const mappedData = fetchAdvances.map((data) => {
+        const sender = User.findOne({ _id: data.requestedBy.sender });
+        const receiver = User.findOne({ _id: data.requestedBy.receiver });
         return {
           _id: data._id,
           requestedBy: {
-            admin: data.requestedBy.sender.name,
-            staff: data.requestedBy.receiver.name,
+            sender: sender,
+            receiver: receiver,
           },
           amount: data.amount,
           paidBy: data.paidBy.name,
