@@ -1903,12 +1903,12 @@ exports.getWallet = async (req, res) => {
       return responseHandler(res, 400, "User ID is required");
     }
     // Find the user and verify their existence
-    const user = await User.findById(req.userId);
+    const user = await User.findById(id);
     if (!user) return responseHandler(res, 404, "User not found");
 
     // Calculate the total amount of all advances paid to the user
     const advances = await transaction.find({
-      "requestedBy.staff": req.userId,
+      "requestedBy.staff": id,
       status: "Completed", // Only include completed payments
     });
 
@@ -1925,7 +1925,7 @@ exports.getWallet = async (req, res) => {
     const expenses = await Expense.find({
       createdAt: { $gte: startOfMonth, $lte: endOfMonth },
       status: { $in: ["mapped", "approved"] },
-      user: req.userId,
+      user: id,
     });
 
     // Calculate the total expenses
