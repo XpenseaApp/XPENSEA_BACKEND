@@ -749,7 +749,7 @@ exports.listController = async (req, res) => {
       }
     
       // Setting up the filter based on status
-      filter.status = { $in: ["Pending", "Completed", "Cancelled"] };
+      filter.status = { $in: ["pending", "completed", "cancelled"] };
     
       if (status) {
         filter.status = status;
@@ -1760,15 +1760,12 @@ exports.viewtransactionById = async (req, res) => {
     // Find the advance payment by ID
     const transaction = await transaction
       .findById(transactionId)
-      .populate("requestedBy.sender", "name") // Populate admin's name
-      .populate("requestedBy.receiver", "name") // Populate staff's name
-      .populate("paidBy", "name"); // Populate financer name
 
     if (!transaction) {
-      return responseHandler(res, 404, `Advance payment not found`);
+      return responseHandler(res, 404, `Transaction not found`);
     }
 
-    return responseHandler(res, 200, `Advance payment found`, transaction);
+    return responseHandler(res, 200, `Transaction found`, transaction);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
