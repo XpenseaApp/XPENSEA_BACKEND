@@ -773,6 +773,7 @@ exports.listController = async (req, res) => {
       const mappedData = fetchAdvances.map((data) => {
         const sender = User.findOne({ _id: data.requestedBy.sender });
         const receiver = User.findOne({ _id: data.requestedBy.receiver });
+        const paidBy = User.findOne({ _id: data.paidBy });
         return {
           _id: data._id,
           requestedBy: {
