@@ -160,3 +160,36 @@ exports.problemSchema = Joi.object({
   description: Joi.string().required(),
   to: Joi.string().required(),
 });
+
+exports.createTransactionSchema = Joi.object({
+  requestedBy: Joi.object({
+    admin: Joi.string().required(),  // Admin who requested
+    staff: Joi.string().required(),  // Staff who requested
+  }).required(),
+  requestedOn: Joi.date().default(Date.now),  // Request date
+  amount: Joi.number().required(),  // Amount of payment
+  paidBy: Joi.string().required(),  // Financer who paid
+  status: Joi.string()
+    .valid('Pending', 'Completed', 'Cancelled')  // Status of the payment
+    .default('Pending'),
+  paidOn: Joi.date().optional(),  // Date of payment
+  paymentMethod: Joi.string()
+    .valid('Bank Transfer', 'Cash', 'Credit Card', 'Other')  // Payment method
+    .optional(),
+  description: Joi.string().optional(),  // Description of the payment
+});
+
+
+exports.createPolicySchema = Joi.object({
+  policyTitle: Joi.string().required(),
+  tier: Joi.string().required(),  // Assuming the ObjectId is represented as a string
+  userType: Joi.string().optional(),
+  activationDate: Joi.date().required(),
+  location: Joi.string().required(),
+  policyDetails: Joi.string().optional(),
+  accuracy: Joi.string().required(),
+  authenticity: Joi.string().required(),
+  compliance: Joi.string().required(),
+  relevance: Joi.string().required(),
+  completeness: Joi.string().required(),
+});

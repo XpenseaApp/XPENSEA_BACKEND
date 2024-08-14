@@ -1717,9 +1717,9 @@ exports.createtransaction = async (req, res) => {
     const transactionData = req.body;
 
     // Validate input data (Assuming you have a validation schema)
-    // const validation = transactionSchema.validate(transactionData, {
-    //   abortEarly: false,
-    // });
+    const validation = createTransactionSchema.validate(transactionData, {
+      abortEarly: false,
+    });
 
     if (validation.error) {
       return responseHandler(
@@ -1810,9 +1810,9 @@ exports.createPolicy = async (req, res) => {
     const policyData = req.body;
 
     // Validate input data if you have a validation schema
-    // const validation = PolicySchema.validate(policyData, {
-    //   abortEarly: false,
-    // });
+    const validation = createPolicySchema.validate(policyData, {
+      abortEarly: false,
+    });
 
     if (validation.error) {
       return responseHandler(
