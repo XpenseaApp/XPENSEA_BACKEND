@@ -21,6 +21,8 @@ const {
   editUserSchema,
   createEventSchema,
   editEventSchema,
+  createPolicySchema,
+  createTransactionSchema,
 } = require("../validations");
 const moment = require("moment-timezone");
 const Report = require("../models/reportModel");
@@ -1717,9 +1719,9 @@ exports.createtransaction = async (req, res) => {
     const transactionData = req.body;
 
     // Validate input data (Assuming you have a validation schema)
-    // const validation = transactionSchema.validate(transactionData, {
-    //   abortEarly: false,
-    // });
+    const validation = createTransactionSchema.validate(transactionData, {
+      abortEarly: false,
+    });
 
     if (validation.error) {
       return responseHandler(
@@ -1810,9 +1812,9 @@ exports.createPolicy = async (req, res) => {
     const policyData = req.body;
 
     // Validate input data if you have a validation schema
-    // const validation = PolicySchema.validate(policyData, {
-    //   abortEarly: false,
-    // });
+    const validation = createPolicySchema.validate(policyData, {
+      abortEarly: false,
+    });
 
     if (validation.error) {
       return responseHandler(
@@ -1903,12 +1905,12 @@ exports.getWallet = async (req, res) => {
       return responseHandler(res, 400, "User ID is required");
     }
     // Find the user and verify their existence
-    const user = await User.findById(req.userId);
+    const user = await User.findById(id);
     if (!user) return responseHandler(res, 404, "User not found");
 
     // Calculate the total amount of all advances paid to the user
     const advances = await transaction.find({
-      "requestedBy.staff": req.userId,
+      "requestedBy.staff": id,
       status: "Completed", // Only include completed payments
     });
 
@@ -1925,7 +1927,7 @@ exports.getWallet = async (req, res) => {
     const expenses = await Expense.find({
       createdAt: { $gte: startOfMonth, $lte: endOfMonth },
       status: { $in: ["mapped", "approved"] },
-      user: req.userId,
+      user: id,
     });
 
     // Calculate the total expenses

@@ -1332,3 +1332,47 @@
  *         description: Internal server error.
  */
 
+/**
+ * @swagger
+ * /admin/wallet/{id}:
+ *   get:
+ *     summary: Get wallet details
+ *     description: Retrieve wallet information for a specific user based on their ID. The total amount of all advances paid to the user is also calculated.
+ *     tags:
+ *       - Wallet
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID to retrieve wallet details.
+ *     responses:
+ *       200:
+ *         description: Wallet details retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalAmount:
+ *                   type: number
+ *                   example: 1500
+ *                 advances:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       amount:
+ *                         type: number
+ *                         example: 500
+ *                       status:
+ *                         type: string
+ *                         example: "Completed"
+ *       400:
+ *         description: User ID is required.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Internal Server Error.
+ */
