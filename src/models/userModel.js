@@ -9,9 +9,14 @@ const userSchema = mongoose.Schema(
     image: { type: String },
     otp: { type: Number },
     mpin: { type: String },
+    designation: { type: String },
     userType: {
       type: String,
       enum: ["submitter", "approver"],
+    },
+    approver: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     status: {
       type: Boolean,

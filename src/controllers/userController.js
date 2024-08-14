@@ -18,7 +18,6 @@ const {
 const Problem = require("../models/problemModel");
 const Event = require("../models/eventModel");
 const mongoose = require("mongoose");
-const { request } = require("express");
 const runOCR = require("../jobs/billAnalysis");
 const analyzeImage = require("../jobs/imageAnalysis");
 
@@ -508,11 +507,6 @@ exports.listController = async (req, res) => {
         );
       }
 
-      let level = 0;
-      if (user.tier) {
-        level = user.tier.level;
-      }
-
       const result = await Report.aggregate([
         {
           $lookup: {
@@ -534,7 +528,7 @@ exports.listController = async (req, res) => {
         { $unwind: "$tierDetails" },
         {
           $match: {
-            "tierDetails.level": { $lt: level },
+            approver: mongoose.Types.ObjectId(req.userId),
           },
         },
         {
@@ -1155,23 +1149,22 @@ exports.imageAnalysis = async (req, res) => {
     } else {
       return responseHandler(res, 400, "Image analysis failed");
     }
-
   } catch (error) {
     console.error("Error during image analysis:", error);
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
 
-
 exports.viewtransactionById = async (req, res) => {
   try {
     const transactionId = req.params.id;
 
     // Find the advance payment by ID
-    const transaction = await transaction.findById(transactionId)
-      .populate('requestedBy.admin', 'name') // Populate admin's name
-      .populate('requestedBy.staff', 'name') // Populate staff's name
-      .populate('paidBy', 'name'); // Populate financer name
+    const transaction = await transaction
+      .findById(transactionId)
+      .populate("requestedBy.admin", "name") // Populate admin's name
+      .populate("requestedBy.staff", "name") // Populate staff's name
+      .populate("paidBy", "name"); // Populate financer name
 
     if (!transaction) {
       return responseHandler(res, 404, `Advance payment not found`);
@@ -1183,7 +1176,6 @@ exports.viewtransactionById = async (req, res) => {
   }
 };
 
-
 exports.getWallet = async (req, res) => {
   try {
     // Find the user and verify their existence
@@ -1193,10 +1185,13 @@ exports.getWallet = async (req, res) => {
     // Calculate the total amount of all advances paid to the user
     const advances = await transaction.find({
       "requestedBy.staff": req.userId,
-      status: "Completed",  // Only include completed payments
+      status: "Completed", // Only include completed payments
     });
 
-    const totalAmount = advances.reduce((acc, advance) => acc + advance.amount, 0);
+    const totalAmount = advances.reduce(
+      (acc, advance) => acc + advance.amount,
+      0
+    );
 
     // Calculate the start and end of the current month
     const startOfMonth = moment().startOf("month").toDate();

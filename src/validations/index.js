@@ -61,6 +61,8 @@ exports.createUserSchema = Joi.object({
   tier: Joi.string().required(),
   userType: Joi.string().required(),
   location: Joi.string().required(),
+  designation: Joi.string().required(),
+  approver: Joi.string(),
   status: Joi.boolean(),
 });
 
