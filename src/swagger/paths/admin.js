@@ -11,6 +11,8 @@
  *     description: List related endpoints for admin and users
  *   - name: Policy
  *     description: Policy related endpoints for admin and users
+ *   - name: Transaction
+ *     description: Transaction related endpoints for admin and users
  *   - name: User
  *     description: User related endpoints
  *   - name: Expense
@@ -1204,3 +1206,129 @@
  *       500:
  *         description: Internal Server Error
  */
+
+
+/**
+ * @swagger
+ * /admin/transaction:
+ *   post:
+ *     summary: Create a new transaction
+ *     description: API endpoint to create a new transaction record.
+ *     tags:
+ *       - Transaction
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               requestedBy:
+ *                 type: object
+ *                 properties:
+ *                   admin:
+ *                     type: string
+ *                     description: ID of the admin who requested.
+ *                     example: "64c0ed92b7e8773e9cd3c401"
+ *                   staff:
+ *                     type: string
+ *                     description: ID of the staff who requested.
+ *                     example: "64c0ed92b7e8773e9cd3c402"
+ *               amount:
+ *                 type: number
+ *                 description: Amount of payment.
+ *                 example: 1500.50
+ *               paidBy:
+ *                 type: string
+ *                 description: ID of the financer who paid.
+ *                 example: "64c0ed92b7e8773e9cd3c403"
+ *               paymentMethod:
+ *                 type: string
+ *                 enum: ["Bank Transfer", "Cash", "Credit Card", "Other"]
+ *                 description: Method of payment.
+ *                 example: "Bank Transfer"
+ *               description:
+ *                 type: string
+ *                 description: Description of the payment.
+ *                 example: "Payment for office supplies"
+ *     responses:
+ *       201:
+ *         description: Transaction created successfully.
+ *       400:
+ *         description: Bad request.
+ *       500:
+ *         description: Internal server error.
+ */
+
+
+
+/**
+ * @swagger
+ * /admin/transaction/{id}:
+ *   get:
+ *     summary: Get transaction details by ID
+ *     description: API endpoint to retrieve transaction details using its ID.
+ *     tags:
+ *       - Transaction
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "64c0ed92b7e8773e9cd3c404"
+ *         description: ID of the transaction to retrieve.
+ *     responses:
+ *       200:
+ *         description: Transaction details retrieved successfully.
+ *       404:
+ *         description: Transaction not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
+
+/**
+ * @swagger
+ * /admin/transaction/{id}:
+ *   put:
+ *     summary: Mark transaction as completed
+ *     description: API endpoint to update the status of a transaction to "Completed".
+ *     tags:
+ *       - Transaction
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "64c0ed92b7e8773e9cd3c405"
+ *         description: ID of the transaction to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               description:
+ *                 type: string
+ *                 description: Additional description for the payment.
+ *                 example: "Payment marked as completed."
+ *     responses:
+ *       200:
+ *         description: Transaction marked as completed successfully.
+ *       400:
+ *         description: Bad request.
+ *       404:
+ *         description: Transaction not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
