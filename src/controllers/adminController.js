@@ -781,7 +781,7 @@ exports.listController = async (req, res) => {
             receiver: receiver.name,
           },
           amount: data.amount,
-          paidBy: data.paidBy.name,
+          paidBy: paidBy,
           status: data.status,
           paymentMethod: data.paymentMethod,
           requestedOn: moment(data.requestedOn).format("MMM DD YYYY"),
