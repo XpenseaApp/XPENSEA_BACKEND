@@ -528,7 +528,7 @@ exports.listController = async (req, res) => {
         { $unwind: "$tierDetails" },
         {
           $match: {
-            approver: mongoose.Types.ObjectId(req.userId),
+            "userDetails.approver": new mongoose.Types.ObjectId(req.userId),
           },
         },
         {
