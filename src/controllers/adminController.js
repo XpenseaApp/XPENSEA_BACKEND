@@ -1147,7 +1147,10 @@ exports.getUser = async (req, res) => {
       );
     }
 
-    const findUser = await User.findById(id).populate("tier").lean();
+    const findUser = await User.findById(id)
+      .populate("tier")
+      .populate("approver", "name")
+      .lean();
     const mappedData = {
       ...findUser,
       tierName: findUser.tier && findUser.tier.title,
