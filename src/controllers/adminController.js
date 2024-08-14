@@ -765,7 +765,6 @@ exports.listController = async (req, res) => {
       const fetchAdvances = await transaction
         .find(filter)
        
-        .populate("paidBy", "name") // Populate financer name
         .skip(skipCount)
         .limit(limit)
         .lean();
