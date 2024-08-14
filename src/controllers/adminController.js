@@ -740,7 +740,7 @@ exports.listController = async (req, res) => {
       // Check if the user has the required permissions
       const check = await checkAccess(req.roleId, "permissions");
 
-      if (!check || !check.includes(accessPermissions[type])) {
+      if (!check || !check.includes(accessPermissions["finances"])) {
         return responseHandler(
           res,
           403,
