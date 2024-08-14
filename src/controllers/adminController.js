@@ -1740,11 +1740,11 @@ exports.createtransaction = async (req, res) => {
       return responseHandler(
         res,
         201,
-        `Advance payment created successfully!`,
+        `Transaction created successfully!`,
         newtransaction
       );
     } else {
-      return responseHandler(res, 400, `Advance payment creation failed`);
+      return responseHandler(res, 400, `Transaction creation failed`);
     }
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
@@ -1758,8 +1758,8 @@ exports.viewtransactionById = async (req, res) => {
     // Find the advance payment by ID
     const transaction = await transaction
       .findById(transactionId)
-      .populate("requestedBy.admin", "name") // Populate admin's name
-      .populate("requestedBy.staff", "name") // Populate staff's name
+      .populate("requestedBy.sender", "name") // Populate admin's name
+      .populate("requestedBy.receiver", "name") // Populate staff's name
       .populate("paidBy", "name"); // Populate financer name
 
     if (!transaction) {

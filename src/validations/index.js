@@ -163,8 +163,8 @@ exports.problemSchema = Joi.object({
 
 exports.createTransactionSchema = Joi.object({
   requestedBy: Joi.object({
-    admin: Joi.string().required(),  // Admin who requested
-    staff: Joi.string().required(),  // Staff who requested
+    sender: Joi.string().required(),  // Admin who requested
+    receiver: Joi.string().required(),  // Staff who requested
   }).required(),
   requestedOn: Joi.date().default(Date.now),  // Request date
   amount: Joi.number().required(),  // Amount of payment
