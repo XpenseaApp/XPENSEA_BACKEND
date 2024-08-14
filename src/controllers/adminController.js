@@ -764,8 +764,7 @@ exports.listController = async (req, res) => {
       // Fetch advance payments based on the filter
       const fetchAdvances = await transaction
         .find(filter)
-        .populate("requestedBy.sender", "name") // Populate admin's name
-        .populate("requestedBy.receiver", "name") // Populate staff's name
+       
         .populate("paidBy", "name") // Populate financer name
         .skip(skipCount)
         .limit(limit)
