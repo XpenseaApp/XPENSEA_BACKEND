@@ -1228,11 +1228,11 @@
  *               requestedBy:
  *                 type: object
  *                 properties:
- *                   admin:
+ *                   sender:
  *                     type: string
  *                     description: ID of the admin who requested.
  *                     example: "64c0ed92b7e8773e9cd3c401"
- *                   staff:
+ *                   receiver:
  *                     type: string
  *                     description: ID of the staff who requested.
  *                     example: "64c0ed92b7e8773e9cd3c402"

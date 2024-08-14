@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const transactionSchema = mongoose.Schema(
   {
     requestedBy: {
-      admin: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Admin who requested
-      staff: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Staff who requested
+      sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
+      receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
     },
     requestedOn: { type: Date, default: Date.now }, // Request date
     amount: { type: Number, required: true }, // Amount of payment
