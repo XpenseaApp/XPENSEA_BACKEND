@@ -11,8 +11,8 @@ const transactionSchema = mongoose.Schema(
     paidBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Financer who paid
     status: {
       type: String,
-      enum: ["Pending", "Completed", "Cancelled"], // Status of the payment
-      default: "Pending",
+      enum: ["pending", "completed", "cancelled"], // Status of the payment
+      default: "pending",
     },
     paidOn: { type: Date }, // Date of payment
     paymentMethod: { 

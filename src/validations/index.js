@@ -170,8 +170,8 @@ exports.createTransactionSchema = Joi.object({
   amount: Joi.number().required(),  // Amount of payment
   paidBy: Joi.string().optional(),  // Financer who paid
   status: Joi.string()
-    .valid('Pending', 'Completed', 'Cancelled')  // Status of the payment
-    .default('Pending'),
+    .valid('pending', 'completed', 'cancelled')  // Status of the payment
+    .default('pending'),
   paidOn: Joi.date().optional(),  // Date of payment
   paymentMethod: Joi.string()
     .valid('Bank Transfer', 'Cash', 'Credit Card', 'Other')  // Payment method

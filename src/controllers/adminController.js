@@ -769,7 +769,7 @@ exports.listController = async (req, res) => {
         .lean();
     
       if (!fetchAdvances || fetchAdvances.length === 0) {
-        return responseHandler(res, 404, "No Advances found");
+        return responseHandler(res, 404, "No Transactions found");
       }
     
       // Map fetched advances to desired structure
@@ -799,7 +799,7 @@ exports.listController = async (req, res) => {
       return responseHandler(
         res,
         200,
-        "Advances found",
+        "Transactions found",
         mappedData,
         totalCount
       );
