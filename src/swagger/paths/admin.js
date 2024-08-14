@@ -550,7 +550,13 @@
  *               mobile:
  *                 type: string
  *                 example: "+123456789"
+ *               designation:
+ *                 type: string
+ *                 example: "Staff"
  *               tier:
+ *                 type: string
+ *                 example: "666c1a3895a6b176b7f2bcf7"
+ *               approver:
  *                 type: string
  *                 example: "666c1a3895a6b176b7f2bcf7"
  *               userType:
@@ -1056,7 +1062,7 @@
  *                 example: "New Reimbursement Policy"
  *               tier:
  *                 type: string
- *                 example: "64a55c6f3f8b9c001c8b4567"  
+ *                 example: "64a55c6f3f8b9c001c8b4567"
  *               userType:
  *                 type: string
  *                 example: "Admin"
@@ -1120,7 +1126,6 @@
  *         description: Internal Server Error
  */
 
-
 /**
  * @swagger
  * /admin/policy/{id}:
@@ -1148,7 +1153,7 @@
  *                 example: "Updated Reimbursement Policy"
  *               tier:
  *                 type: string
- *                 example: "64a55c6f3f8b9c001c8b4567"  
+ *                 example: "64a55c6f3f8b9c001c8b4567"
  *               userType:
  *                 type: string
  *                 example: "Admin"
@@ -1182,6 +1187,23 @@
  *         description: Policy updated successfully
  *       400:
  *         description: Policy update failed or Policy not found
+ *       500:
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /admin/approvers:
+ *   get:
+ *     summary: Retrieve a list of approvers
+ *     description: This endpoint allows you to retrieve a list of users who have the role of "approver". Only users with the appropriate permissions can access this endpoint.
+ *     tags:
+ *       - User
+ *     responses:
+ *       200:
+ *         description: Approvers retrieved successfully
+ *       403:
+ *         description: You don't have permission to perform this action
  *       500:
  *         description: Internal Server Error
  */
