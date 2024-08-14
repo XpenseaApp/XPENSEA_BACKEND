@@ -21,6 +21,8 @@ const {
   editUserSchema,
   createEventSchema,
   editEventSchema,
+  createPolicySchema,
+  createTransactionSchema,
 } = require("../validations");
 const moment = require("moment-timezone");
 const Report = require("../models/reportModel");
