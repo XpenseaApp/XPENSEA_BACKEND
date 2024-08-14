@@ -8,7 +8,7 @@ const transactionSchema = mongoose.Schema(
     },
     requestedOn: { type: Date, default: Date.now }, // Request date
     amount: { type: Number, required: true }, // Amount of payment
-    paidBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Financer who paid
+    paidBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Financer who paid
     status: {
       type: String,
       enum: ["Pending", "Completed", "Cancelled"], // Status of the payment
