@@ -68,7 +68,7 @@ adminRoute.get("/policy/:id", adminController.viewPolicyById);
 adminRoute.put("/policy/:id", adminController.updatePolicy);
 
 adminRoute.get("/wallet/:id",adminController.getWallet);
-
+adminRoute.get("/approvers", adminController.getApprovers);
 
 
 module.exports = adminRoute;

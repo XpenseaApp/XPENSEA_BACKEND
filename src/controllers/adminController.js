@@ -5,8 +5,7 @@ const Tier = require("../models/tierModel");
 const User = require("../models/userModel");
 const Event = require("../models/eventModel");
 const transaction = require("../models/transactionModel");
-const Policy = require('../models/policyModel'); 
-
+const Policy = require("../models/policyModel");
 
 const { hashPassword, comparePasswords } = require("../utils/bcrypt");
 const { generateToken } = require("../utils/generateToken");
@@ -734,10 +733,10 @@ exports.listController = async (req, res) => {
         mappedData,
         totalCount
       );
-    }else if (type === "transactions") {
+    } else if (type === "transactions") {
       // Check if the user has the required permissions
       const check = await checkAccess(req.roleId, "permissions");
-    
+
       if (!check || !check.includes(accessPermissions[type])) {
         return responseHandler(
           res,
@@ -745,29 +744,30 @@ exports.listController = async (req, res) => {
           "You don't have permission to perform this action"
         );
       }
-    
+
       // Setting up the filter based on status
-      filter.status = { $in: ["Pending","Completed", "Cancelled"] };
-    
+      filter.status = { $in: ["Pending", "Completed", "Cancelled"] };
+
       if (status) {
         filter.status = status;
       }
-      if(req.query.staffId){
-        filter.requestedBy.staff = req.query.staffId
+      if (req.query.staffId) {
+        filter.requestedBy.staff = req.query.staffId;
       }
-    
+
       // Count total matching advance payment documents
       const totalCount = await transaction.countDocuments(filter);
-    
+
       // Fetch advance payments based on the filter
-      const fetchAdvances = await transaction.find(filter)
+      const fetchAdvances = await transaction
+        .find(filter)
         .populate("requestedBy.admin", "name") // Populate admin's name
         .populate("requestedBy.staff", "name") // Populate staff's name
         .populate("paidBy", "name") // Populate financer name
         .skip(skipCount)
         .limit(limit)
         .lean();
-    
+
       // Map fetched advances to desired structure
       const mappedData = fetchAdvances.map((data) => {
         return {
@@ -789,11 +789,11 @@ exports.listController = async (req, res) => {
           description: data.description,
         };
       });
-    
+
       if (!fetchAdvances || fetchAdvances.length === 0) {
         return responseHandler(res, 404, "No Advances found");
       }
-    
+
       return responseHandler(
         res,
         200,
@@ -801,10 +801,10 @@ exports.listController = async (req, res) => {
         mappedData,
         totalCount
       );
-    }else if (type === "policy") {
+    } else if (type === "policy") {
       // Check if the user has the required permissions
       const check = await checkAccess(req.roleId, "permissions");
-    
+
       if (!check || !check.includes(accessPermissions[type])) {
         return responseHandler(
           res,
@@ -812,36 +812,36 @@ exports.listController = async (req, res) => {
           "You don't have permission to perform this action"
         );
       }
-    
+
       // Setting up the filter for the policy query
       const filter = {};
       if (status) {
-        filter.status = status;  // Example: filter by policy status if required
+        filter.status = status; // Example: filter by policy status if required
       }
-    
+
       // Add additional filters if needed, e.g., by userType, tier, or location
       if (req.query.userType) {
         filter.userType = req.query.userType;
       }
-    
+
       if (req.query.tier) {
         filter.tier = req.query.tier;
       }
-    
+
       if (req.query.location) {
         filter.location = req.query.location;
       }
-    
+
       // Count total matching policy documents
       const totalCount = await Policy.countDocuments(filter);
-    
+
       // Fetch policies based on the filter
       const fetchPolicies = await Policy.find(filter)
         .populate("tier", "tierName") // Populate tier's name (assuming the Tier model has a tierName field)
         .skip(skipCount)
         .limit(limit)
         .lean();
-    
+
       // Map fetched policies to the desired structure
       const mappedData = fetchPolicies.map((data) => {
         return {
@@ -861,11 +861,11 @@ exports.listController = async (req, res) => {
           policyDetails: data.policyDetails,
         };
       });
-    
+
       if (!fetchPolicies || fetchPolicies.length === 0) {
         return responseHandler(res, 404, "No policies found");
       }
-    
+
       return responseHandler(
         res,
         200,
@@ -873,7 +873,7 @@ exports.listController = async (req, res) => {
         mappedData,
         totalCount
       );
-    }else {
+    } else {
       return responseHandler(res, 404, "Invalid type..!");
     }
   } catch (error) {
@@ -1708,7 +1708,6 @@ exports.getFinance = async (req, res) => {
   }
 };
 
-
 exports.createtransaction = async (req, res) => {
   try {
     const transactionData = req.body;
@@ -1722,7 +1721,9 @@ exports.createtransaction = async (req, res) => {
       return responseHandler(
         res,
         400,
-        `Invalid input: ${validation.error.details.map((err) => err.message).join(', ')}`
+        `Invalid input: ${validation.error.details
+          .map((err) => err.message)
+          .join(", ")}`
       );
     }
 
@@ -1744,17 +1745,16 @@ exports.createtransaction = async (req, res) => {
   }
 };
 
-
-
 exports.viewtransactionById = async (req, res) => {
   try {
     const transactionId = req.params.id;
 
     // Find the advance payment by ID
-    const transaction = await transaction.findById(transactionId)
-      .populate('requestedBy.admin', 'name') // Populate admin's name
-      .populate('requestedBy.staff', 'name') // Populate staff's name
-      .populate('paidBy', 'name'); // Populate financer name
+    const transaction = await transaction
+      .findById(transactionId)
+      .populate("requestedBy.admin", "name") // Populate admin's name
+      .populate("requestedBy.staff", "name") // Populate staff's name
+      .populate("paidBy", "name"); // Populate financer name
 
     if (!transaction) {
       return responseHandler(res, 404, `Advance payment not found`);
@@ -1769,7 +1769,7 @@ exports.viewtransactionById = async (req, res) => {
 exports.transactionMarkCompleted = async (req, res) => {
   try {
     const { id } = req.params;
-    const { description } = req.body;  // Assuming description field is used instead of descriptionFinance
+    const { description } = req.body; // Assuming description field is used instead of descriptionFinance
 
     if (!id) {
       return responseHandler(res, 400, "Advance Payment ID is required");
@@ -1779,16 +1779,20 @@ exports.transactionMarkCompleted = async (req, res) => {
     const advance = await transaction.findByIdAndUpdate(
       id,
       {
-        status: "Completed",  // Update status to "Completed"
-        description,          // Update the description provided by finance
-        paidBy: req.userId,   // Assume req.userId is the ID of the user marking this as completed
-        paidOn: new Date(),   // Record the current date as the payment date
+        status: "Completed", // Update status to "Completed"
+        description, // Update the description provided by finance
+        paidBy: req.userId, // Assume req.userId is the ID of the user marking this as completed
+        paidOn: new Date(), // Record the current date as the payment date
       },
       { new: true }
     );
 
     if (!advance) {
-      return responseHandler(res, 400, "Reimbursement failed or Advance Payment not found");
+      return responseHandler(
+        res,
+        400,
+        "Reimbursement failed or Advance Payment not found"
+      );
     }
 
     return responseHandler(res, 200, "Reimbursed successfully", advance);
@@ -1796,10 +1800,6 @@ exports.transactionMarkCompleted = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
-
-
-
-
 
 exports.createPolicy = async (req, res) => {
   try {
@@ -1814,7 +1814,9 @@ exports.createPolicy = async (req, res) => {
       return responseHandler(
         res,
         400,
-        `Invalid input: ${validation.error.details.map((err) => err.message).join(', ')}`
+        `Invalid input: ${validation.error.details
+          .map((err) => err.message)
+          .join(", ")}`
       );
     }
 
@@ -1836,16 +1838,14 @@ exports.createPolicy = async (req, res) => {
   }
 };
 
-
-
 exports.viewPolicyById = async (req, res) => {
   try {
     const policyId = req.params.id;
 
     // Find the policy by ID
     const policy = await Policy.findById(policyId)
-      .populate('tier', 'tierName') // Assuming 'Tier' has a field 'tierName'
-      .populate('userType', 'name'); // Assuming 'userType' refers to a model with a 'name' field
+      .populate("tier", "tierName") // Assuming 'Tier' has a field 'tierName'
+      .populate("userType", "name"); // Assuming 'userType' refers to a model with a 'name' field
 
     if (!policy) {
       return responseHandler(res, 404, `Policy not found`);
@@ -1856,8 +1856,6 @@ exports.viewPolicyById = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
-
-
 
 exports.updatePolicy = async (req, res) => {
   try {
@@ -1876,15 +1874,23 @@ exports.updatePolicy = async (req, res) => {
     );
 
     if (!updatedPolicy) {
-      return responseHandler(res, 400, "Policy update failed or Policy not found");
+      return responseHandler(
+        res,
+        400,
+        "Policy update failed or Policy not found"
+      );
     }
 
-    return responseHandler(res, 200, "Policy updated successfully", updatedPolicy);
+    return responseHandler(
+      res,
+      200,
+      "Policy updated successfully",
+      updatedPolicy
+    );
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
-
 
 exports.getWallet = async (req, res) => {
   try {
@@ -1899,10 +1905,13 @@ exports.getWallet = async (req, res) => {
     // Calculate the total amount of all advances paid to the user
     const advances = await transaction.find({
       "requestedBy.staff": req.userId,
-      status: "Completed",  // Only include completed payments
+      status: "Completed", // Only include completed payments
     });
 
-    const totalAmount = advances.reduce((acc, advance) => acc + advance.amount, 0);
+    const totalAmount = advances.reduce(
+      (acc, advance) => acc + advance.amount,
+      0
+    );
 
     // Calculate the start and end of the current month
     const startOfMonth = moment().startOf("month").toDate();
@@ -1941,6 +1950,28 @@ exports.getWallet = async (req, res) => {
       expenses: mappedData,
       categories,
     });
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+exports.getApprovers = async (req, res) => {
+  try {
+    const check = await checkAccess(req.roleId, "permissions");
+    if (!check || !check.includes("userManagement_view")) {
+      return responseHandler(
+        res,
+        403,
+        "You don't have permission to perform this action"
+      );
+    }
+    const approvers = await User.find({ userType: "approver" });
+    return responseHandler(
+      res,
+      200,
+      "Approvers retrieved successfully",
+      approvers
+    );
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
