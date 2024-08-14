@@ -21,7 +21,7 @@ cron.schedule("* * * * *", async () => {
       { status: "progress" },
       { new: true }
     );
-    console.log(`Updated ${progressEvents.nModified} events to progress`);
+    console.log(`Updated ${progressEvents.eventName} events to progress`);
 
     //* Update events from "progress" to "done"
     const doneEvents = await Event.updateMany(
@@ -35,7 +35,7 @@ cron.schedule("* * * * *", async () => {
       { status: "done" },
       { new: true }
     );
-    console.log(`Updated ${doneEvents.nModified} events to done`);
+    console.log(`Updated ${doneEvents.eventName} events to done`);
   } catch (err) {
     console.error("Error updating events:", err);
   }
