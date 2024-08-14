@@ -4,10 +4,10 @@ const Event = require("../models/eventModel");
 require("dotenv").config();
 
 cron.schedule("* * * * *", async () => {
-  const now = moment();
+  const now = moment().tz("Asia/Kolkata");
   const currentDate = now.format("YYYY-MM-DD");
   const currentTime = now.format("HH:mm");
-
+  
   try {
     //* Update events from "scheduled" to "progress"
     const progressEvents = await Event.updateMany(
