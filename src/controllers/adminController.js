@@ -393,6 +393,7 @@ exports.listController = async (req, res) => {
       users: "userManagement_view",
       approvals: "approvalManagement_view",
       finances: "financeManagement_view",
+      policy: "policyManagement_view",
     };
 
     if (type === "admins") {
