@@ -1751,23 +1751,26 @@ exports.createtransaction = async (req, res) => {
   }
 };
 
+
+
 exports.viewtransactionById = async (req, res) => {
   try {
     const transactionId = req.params.id;
 
-    // Find the advance payment by ID
-    const transaction = await transaction
-      .findById(transactionId)
+    // Find the transaction by ID
+    const transactionRecord = await transaction.findById(transactionId);
 
-    if (!transaction) {
+    if (!transactionRecord) {
       return responseHandler(res, 404, `Transaction not found`);
     }
 
-    return responseHandler(res, 200, `Transaction found`, transaction);
+    return responseHandler(res, 200, `Transaction found`, transactionRecord);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
+
+
 
 exports.transactionMarkCompleted = async (req, res) => {
   try {
