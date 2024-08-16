@@ -573,8 +573,8 @@ exports.listController = async (req, res) => {
         filter.status = status;
       }
 
-      if (creator) {
-        filter.type = creator;
+      if (req.query.creator) {
+        filter.type = req.query.creator;
       }
 
       const totalCount = await Event.countDocuments(filter);
