@@ -1911,8 +1911,8 @@ exports.getWallet = async (req, res) => {
 
     // Calculate the total amount of all advances paid to the user
     const advances = await transaction.find({
-      "requestedBy.staff": id,
-      status: "Completed", // Only include completed payments
+      "requestedBy.receiver": id,
+      status: "completed", // Only include completed payments
     });
 
     const totalAmount = advances.reduce(
