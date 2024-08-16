@@ -1778,7 +1778,7 @@ exports.transactionMarkCompleted = async (req, res) => {
     const advance = await transaction.findByIdAndUpdate(
       id,
       {
-        status: "Completed", // Update status to "Completed"
+        status: "completed", // Update status to "Completed"
         description, // Update the description provided by finance
         paidBy: req.userId, // Assume req.userId is the ID of the user marking this as completed
         paidOn: new Date(), // Record the current date as the payment date
