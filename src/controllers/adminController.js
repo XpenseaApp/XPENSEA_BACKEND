@@ -549,7 +549,7 @@ exports.listController = async (req, res) => {
       const mappedData = fetchUsers.map((data) => {
         return {
           ...data,
-          tier: data.tier.title,
+          tier: data.tier?.title,
           createdAt: moment(data.createdAt).format("MMM DD YYYY"),
         };
       });
@@ -755,7 +755,7 @@ exports.listController = async (req, res) => {
         filter.status = status;
       }
       if (req.query.staffId) {
-        filter.requestedBy.staff = req.query.staffId;
+        filter.requestedBy.receiver = req.query.staffId;
       }
     
       // Count total matching advance payment documents
