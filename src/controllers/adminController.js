@@ -755,7 +755,9 @@ exports.listController = async (req, res) => {
         filter.status = status;
       }
       if (req.query.staffId) {
-        filter.requestedBy.receiver = req.query.staffId;
+        filter.requestedBy = {
+          receiver: req.query.staffId,
+        };
       }
 
       // Count total matching advance payment documents
