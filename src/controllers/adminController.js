@@ -842,7 +842,7 @@ exports.listController = async (req, res) => {
 
       // Fetch policies based on the filter
       const fetchPolicies = await Policy.find(filter)
-        .populate("tier", "tierName") // Populate tier's name (assuming the Tier model has a tierName field)
+        .populate("tier", "title") // Populate tier's name (assuming the Tier model has a tierName field)
         .skip(skipCount)
         .limit(limit)
         .lean();
@@ -852,7 +852,7 @@ exports.listController = async (req, res) => {
         return {
           _id: data._id,
           policyTitle: data.policyTitle,
-          tier: data.tier ? data.tier.tierName : "Not assigned",
+          tier: data.tier ? data.tier.title : "",
           userType: data.userType,
           activationDate: moment(data.activationDate).format("MMM DD YYYY"),
           location: data.location,
