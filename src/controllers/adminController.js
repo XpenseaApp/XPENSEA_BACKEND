@@ -739,7 +739,7 @@ exports.listController = async (req, res) => {
     } else if (type === "transactions") {
       // Check if the user has the required permissions
       const check = await checkAccess(req.roleId, "permissions");
-    
+
       if (!check || !check.includes(accessPermissions["finances"])) {
         return responseHandler(
           res,
@@ -747,43 +747,39 @@ exports.listController = async (req, res) => {
           "You don't have permission to perform this action"
         );
       }
-    
+
       // Setting up the filter based on status
       filter.status = { $in: ["pending", "completed", "cancelled"] };
-    
+
       if (status) {
         filter.status = status;
       }
       if (req.query.staffId) {
         filter.requestedBy.receiver = req.query.staffId;
       }
-    
+
       // Count total matching advance payment documents
       const totalCount = await transaction.countDocuments(filter);
-    
+
       // Fetch advance payments based on the filter
       const fetchAdvances = await transaction
         .find(filter)
+        .populate("requestedBy.sender requestedBy.receiver paidBy", "name")
         .skip(skipCount)
         .limit(limit)
         .lean();
-    
+
       if (!fetchAdvances || fetchAdvances.length === 0) {
         return responseHandler(res, 404, "No Transactions found");
       }
-    
-      // Map fetched advances to desired structure
-      const mappedData = await Promise.all(fetchAdvances.map(async (data) => {
-        const sender = await User.findOne({ _id: data.requestedBy.sender }).lean();
-        const receiver = await User.findOne({ _id: data.requestedBy.receiver }).lean();
-        const paidBy = await User.findOne({ _id: data.paidBy }).lean();
-    
+
+      const mappedData = fetchAdvances.map((data) => {
         return {
           _id: data._id,
-            sender: sender ? sender.name : "N/A",
-            receiver: receiver ? receiver.name : "N/A",
+          sender: data.requestedBy.sender.name,
+          receiver: data.requestedBy.receiver.name,
+          paidBy: data.paidBy ? data.paidBy.name : "",
           amount: data.amount,
-          paidBy: paidBy ? paidBy.name : "N/A",
           status: data.status,
           paymentMethod: data.paymentMethod,
           requestedOn: moment(data.requestedOn).format("MMM DD YYYY"),
@@ -794,8 +790,8 @@ exports.listController = async (req, res) => {
           updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
           description: data.description,
         };
-      }));
-    
+      });
+
       return responseHandler(
         res,
         200,
@@ -803,8 +799,7 @@ exports.listController = async (req, res) => {
         mappedData,
         totalCount
       );
-    }
-     else if (type === "policy") {
+    } else if (type === "policy") {
       // Check if the user has the required permissions
       const check = await checkAccess(req.roleId, "permissions");
 
@@ -1751,14 +1746,14 @@ exports.createtransaction = async (req, res) => {
   }
 };
 
-
-
 exports.viewtransactionById = async (req, res) => {
   try {
     const transactionId = req.params.id;
 
     // Find the transaction by ID
-    const transactionRecord = await transaction.findById(transactionId);
+    const transactionRecord = await transaction
+      .findById(transactionId)
+      .populate("requestedBy.sender requestedBy.receiver paidBy", "name");
 
     if (!transactionRecord) {
       return responseHandler(res, 404, `Transaction not found`);
@@ -1769,8 +1764,6 @@ exports.viewtransactionById = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
-
-
 
 exports.transactionMarkCompleted = async (req, res) => {
   try {

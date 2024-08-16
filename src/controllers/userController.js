@@ -1162,8 +1162,8 @@ exports.viewtransactionById = async (req, res) => {
     // Find the advance payment by ID
     const transaction = await transaction
       .findById(transactionId)
-      .populate("requestedBy.admin", "name") // Populate admin's name
-      .populate("requestedBy.staff", "name") // Populate staff's name
+      .populate("requestedBy.sender", "name") // Populate admin's name
+      .populate("requestedBy.receiver", "name") // Populate staff's name
       .populate("paidBy", "name"); // Populate financer name
 
     if (!transaction) {
@@ -1184,8 +1184,8 @@ exports.getWallet = async (req, res) => {
 
     // Calculate the total amount of all advances paid to the user
     const advances = await transaction.find({
-      "requestedBy.staff": req.userId,
-      status: "Completed", // Only include completed payments
+      "requestedBy.receiver": req.userId,
+      status: "completed", // Only include completed payments
     });
 
     const totalAmount = advances.reduce(
