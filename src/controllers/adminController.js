@@ -573,6 +573,10 @@ exports.listController = async (req, res) => {
         filter.status = status;
       }
 
+      if (creator) {
+        filter.type = creator;
+      }
+
       const totalCount = await Event.countDocuments(filter);
       const fetchEvents = await Event.find(filter)
         .skip(skipCount)
