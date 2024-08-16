@@ -6,6 +6,7 @@ const User = require("../models/userModel");
 const Event = require("../models/eventModel");
 const transaction = require("../models/transactionModel");
 const Policy = require("../models/policyModel");
+const mongoose = require("mongoose");
 
 const { hashPassword, comparePasswords } = require("../utils/bcrypt");
 const { generateToken } = require("../utils/generateToken");
@@ -749,15 +750,15 @@ exports.listController = async (req, res) => {
       }
 
       // Setting up the filter based on status
-      filter.status = { $in: ["pending", "completed", "cancelled"] };
+      // filter.status = { $in: ["pending", "completed", "cancelled"] };
 
       if (status) {
         filter.status = status;
       }
       if (req.query.staffId) {
-        filter.requestedBy = {
-          receiver: req.query.staffId,
-        };
+        filter["requestedBy.receiver"] = new mongoose.Types.ObjectId(
+          req.query.staffId
+        );
       }
 
       // Count total matching advance payment documents
