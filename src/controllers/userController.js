@@ -565,11 +565,15 @@ exports.getExpense = async (req, res) => {
     }
 
     let expense;
+
     if (user.userType === "approver") {
       expense = await Expense.findOne({ _id: id });
+      console.log(expense);
     } else {
       expense = await Expense.findOne({ _id: id, userid });
+      console.log(expense);
     }
+
 
     if (!expense) {
       return responseHandler(res, 404, "Expense not found");
