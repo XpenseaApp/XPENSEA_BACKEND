@@ -569,6 +569,8 @@ exports.getExpense = async (req, res) => {
     if (user.userType === "approver") {
       expense = await Expense.findById( id );
       console.log(expense);
+      // TODO :make find one work
+
     } else {
       expense = await Expense.findById( id);
       console.log(expense);
