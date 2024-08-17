@@ -567,10 +567,10 @@ exports.getExpense = async (req, res) => {
     let expense;
 
     if (user.userType === "approver") {
-      expense = await Expense.findOne({ _id: id });
+      expense = await Expense.findById( id );
       console.log(expense);
     } else {
-      expense = await Expense.findOne({ _id: id, userid });
+      expense = await Expense.findById( id);
       console.log(expense);
     }
 
