@@ -1374,6 +1374,7 @@ exports.getApproval = async (req, res) => {
         populate: { path: "tier" },
       })
       .populate("expenses")
+      .populate("event", "creator startDate endDate startTime endTime")
       .populate("approver", "name")
       .lean();
 
@@ -1410,6 +1411,17 @@ exports.getApproval = async (req, res) => {
         0
       ),
       reportDate: moment(fetchReport.reportDate).format("MMM DD YYYY"),
+      creator: fetchReport.event ? fetchReport.event.creator.name : null,
+      start: fetchReport.event
+        ? moment(fetchReport.event.startDate).format("MMM DD YYYY") +
+          "" +
+          moment(fetchReport.event.startTime).format("hh:mm A")
+        : null,
+      end: fetchReport.event
+        ? moment(fetchReport.event.endDate).format("MMM DD YYYY") +
+          "" +
+          moment(fetchReport.event.endTime).format("hh:mm A")
+        : null,
       createdAt: moment(fetchReport.createdAt).format("MMM DD YYYY"),
       updatedAt: moment(fetchReport.updatedAt).format("MMM DD YYYY"),
     };
