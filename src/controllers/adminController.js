@@ -450,6 +450,7 @@ exports.listController = async (req, res) => {
       const fetchRoles = await Role.find(filter)
         .skip(skipCount)
         .limit(limit)
+        .sort({ createdAt: -1 })
         .lean();
       const mappedData = fetchRoles.map((data) => {
         return {
@@ -546,6 +547,7 @@ exports.listController = async (req, res) => {
         .populate("tier", "title")
         .skip(skipCount)
         .limit(limit)
+        .sort({ createdAt: -1 })
         .lean();
       const mappedData = fetchUsers.map((data) => {
         return {
@@ -581,6 +583,7 @@ exports.listController = async (req, res) => {
       const fetchEvents = await Event.find(filter)
         .skip(skipCount)
         .limit(limit)
+        .sort({ createdAt: -1 })
         .lean();
       const mappedData = fetchEvents.map((data) => {
         return {
@@ -618,6 +621,7 @@ exports.listController = async (req, res) => {
         .populate("event", "type")
         .skip(skipCount)
         .limit(limit)
+        .sort({ createdAt: -1 })
         .lean();
       const mappedData = fetchReports.map((data) => {
         return {
@@ -717,6 +721,7 @@ exports.listController = async (req, res) => {
         .populate("user", "name")
         .populate("expenses")
         .skip(skipCount)
+        .sort({ createdAt: -1 })
         .limit(limit)
         .lean();
       const mappedData = fetchReports.map((data) => {
@@ -779,6 +784,7 @@ exports.listController = async (req, res) => {
         .populate("requestedBy.sender requestedBy.receiver paidBy", "name")
         .skip(skipCount)
         .limit(limit)
+        .sort({ createdAt: -1 })
         .lean();
 
       if (!fetchAdvances || fetchAdvances.length === 0) {
@@ -850,6 +856,7 @@ exports.listController = async (req, res) => {
         .populate("tier", "title") // Populate tier's name (assuming the Tier model has a tierName field)
         .skip(skipCount)
         .limit(limit)
+        .sort({ createdAt: -1 })
         .lean();
 
       // Map fetched policies to the desired structure
