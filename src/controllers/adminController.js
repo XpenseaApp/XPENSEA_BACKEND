@@ -1376,11 +1376,7 @@ exports.getApproval = async (req, res) => {
       .populate("expenses")
       .populate({
         path: "event",
-        select: "startDate endDate startTime endTime",
-        populate: {
-          path: "creator",
-          select: "name",
-        },
+        select: "startDate endDate startTime endTime creator type",
       })
       .populate("approver", "name")
       .lean();
@@ -1418,7 +1414,12 @@ exports.getApproval = async (req, res) => {
         0
       ),
       reportDate: moment(fetchReport.reportDate).format("MMM DD YYYY"),
-      creator: fetchReport.event ? fetchReport.event.creator.name : null,
+      creator: fetchReport.event
+        ? await mongoose
+            .model(fetchReport.event.type)
+            .findById(fetchReport.event.creator)
+            .select("name")
+        : null,
       start: fetchReport.event
         ? moment(fetchReport.event.startDate).format("MMM DD YYYY") +
           " " +
