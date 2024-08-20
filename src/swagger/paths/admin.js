@@ -27,6 +27,8 @@
  *     description: User Problem related endpoints
  *   - name: Approval
  *     description: User Approval related endpoints
+ *   - name: Wallet
+ *     description: Wallet related endpoints
  */
 
 /**
@@ -1207,7 +1209,6 @@
  *         description: Internal Server Error
  */
 
-
 /**
  * @swagger
  * /admin/transaction:
@@ -1262,8 +1263,6 @@
  *         description: Internal server error.
  */
 
-
-
 /**
  * @swagger
  * /admin/transaction/{id}:
@@ -1290,7 +1289,6 @@
  *       500:
  *         description: Internal server error.
  */
-
 
 /**
  * @swagger
@@ -1350,25 +1348,6 @@
  *     responses:
  *       200:
  *         description: Wallet details retrieved successfully.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 totalAmount:
- *                   type: number
- *                   example: 1500
- *                 advances:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       amount:
- *                         type: number
- *                         example: 500
- *                       status:
- *                         type: string
- *                         example: "Completed"
  *       400:
  *         description: User ID is required.
  *       404:

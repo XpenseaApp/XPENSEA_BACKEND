@@ -624,3 +624,22 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /user/wallet/:
+ *   get:
+ *     summary: Get wallet details
+ *     description: Retrieve wallet information for a specific user based on their ID.
+ *     tags:
+ *       - Wallet
+ *     responses:
+ *       200:
+ *         description: Wallet details retrieved successfully.
+ *       400:
+ *         description: User ID is required.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Internal Server Error.
+ */

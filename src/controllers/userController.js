@@ -20,6 +20,7 @@ const Event = require("../models/eventModel");
 const mongoose = require("mongoose");
 const runOCR = require("../jobs/billAnalysis");
 const analyzeImage = require("../jobs/imageAnalysis");
+const transaction = require("../models/transactionModel");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
