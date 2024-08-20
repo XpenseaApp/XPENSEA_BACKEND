@@ -1374,8 +1374,14 @@ exports.getApproval = async (req, res) => {
         populate: { path: "tier" },
       })
       .populate("expenses")
-      .populate("event", "startDate endDate startTime endTime")
-      .populate("event.creator", "name")
+      .populate({
+        path: "event",
+        select: "startDate endDate startTime endTime",
+        populate: {
+          path: "creator",
+          select: "name",
+        },
+      })
       .populate("approver", "name")
       .lean();
 
