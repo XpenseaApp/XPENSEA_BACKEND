@@ -660,3 +660,43 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /admin/deduct:
+ *   post:
+ *     summary: Deduct an amount from a user's wallet
+ *     description: This endpoint allows an admin to deduct a specified amount from a user's wallet and record the deduction details.
+ *     tags:
+ *       - Wallet
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user:
+ *                 type: string
+ *                 description: The ID of the user whose wallet will be deducted
+ *                 example: "667275cda0521a39e214cd6c"
+ *               amount:
+ *                 type: number
+ *                 description: The amount to be deducted
+ *                 example: 150.00
+ *               report:
+ *                 type: string
+ *                 description: ID of the report
+ *                 example: "667275cda0521a39e214cd6c"
+ *             required:
+ *               - user
+ *               - amount
+ *               - report
+ *     responses:
+ *       200:
+ *         description: Deduction successful
+ *       400:
+ *         description: Invalid input or Deduction failed
+ *       500:
+ *         description: Internal Server Error
+ */

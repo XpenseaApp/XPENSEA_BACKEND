@@ -24,11 +24,13 @@ const {
   editEventSchema,
   createPolicySchema,
   createTransactionSchema,
+  createDeductionSchema,
 } = require("../validations");
 const moment = require("moment-timezone");
 const Report = require("../models/reportModel");
 const Expense = require("../models/expenseModel");
 const Notification = require("../models/notificationModel");
+const Deduction = require("../models/deductionModel");
 
 exports.loginAdmin = async (req, res) => {
   try {
@@ -1596,7 +1598,7 @@ exports.getUserReports = async (req, res) => {
         totalAmount: data.expenses.reduce((acc, curr) => acc + curr.amount, 0),
         location: data.location,
         status: data.status,
-        approver: data.approver.name,
+        approver: data.approver ? data.approver.name : null,
         reportDate: moment(data.reportDate).format("MMM DD YYYY"),
         createdAt: moment(data.createdAt).format("MMM DD YYYY"),
         updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
@@ -2069,6 +2071,28 @@ exports.getDashboard = async (req, res) => {
       { $limit: 5 },
     ]);
     return responseHandler(res, 200, "Expenses dashboard", expenses);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+exports.deductWallet = async (req, res) => {
+  try {
+    const createEventValidator = createDeductionSchema.validate(req.body, {
+      abortEarly: true,
+    });
+    if (createEventValidator.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${createEventValidator.error}`
+      );
+    }
+    req.body.deductBy = req.userId;
+    req.body.deductOn = new Date();
+    const deduction = await Deduction.create(req.body);
+    if (!deduction) return responseHandler(res, 400, "Deduction failed");
+    return responseHandler(res, 200, "Deduction successful", deduction);
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }

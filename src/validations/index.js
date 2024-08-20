@@ -163,26 +163,25 @@ exports.problemSchema = Joi.object({
 
 exports.createTransactionSchema = Joi.object({
   requestedBy: Joi.object({
-    sender: Joi.string().required(),  // Admin who requested
-    receiver: Joi.string().required(),  // Staff who requested
+    sender: Joi.string().required(), // Admin who requested
+    receiver: Joi.string().required(), // Staff who requested
   }).required(),
-  requestedOn: Joi.date().default(Date.now),  // Request date
-  amount: Joi.number().required(),  // Amount of payment
-  paidBy: Joi.string().optional(),  // Financer who paid
+  requestedOn: Joi.date().default(Date.now), // Request date
+  amount: Joi.number().required(), // Amount of payment
+  paidBy: Joi.string().optional(), // Financer who paid
   status: Joi.string()
-    .valid('pending', 'completed', 'cancelled')  // Status of the payment
-    .default('pending'),
-  paidOn: Joi.date().optional(),  // Date of payment
+    .valid("pending", "completed", "cancelled") // Status of the payment
+    .default("pending"),
+  paidOn: Joi.date().optional(), // Date of payment
   paymentMethod: Joi.string()
-    .valid('Bank Transfer', 'Cash', 'Credit Card', 'Other')  // Payment method
+    .valid("Bank Transfer", "Cash", "Credit Card", "Other") // Payment method
     .optional(),
-  description: Joi.string().optional(),  // Description of the payment
+  description: Joi.string().optional(), // Description of the payment
 });
-
 
 exports.createPolicySchema = Joi.object({
   policyTitle: Joi.string().required(),
-  tier: Joi.string().required(),  // Assuming the ObjectId is represented as a string
+  tier: Joi.string().required(), // Assuming the ObjectId is represented as a string
   userType: Joi.string().optional(),
   activationDate: Joi.date().required(),
   location: Joi.string().required(),
@@ -192,4 +191,10 @@ exports.createPolicySchema = Joi.object({
   compliance: Joi.string().required(),
   relevance: Joi.string().required(),
   completeness: Joi.string().required(),
+});
+
+exports.createDeductionSchema = Joi.object({
+  user: Joi.string().required(),
+  amount: Joi.number().required(),
+  report: Joi.string().required(),
 });
