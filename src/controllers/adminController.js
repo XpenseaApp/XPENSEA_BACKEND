@@ -1564,6 +1564,8 @@ exports.getUserReports = async (req, res) => {
 
     if (status) {
       filter.status = status;
+    } else {
+      filter.status = { $ne: "drafted" };
     }
 
     if (!id) {
