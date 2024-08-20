@@ -20,6 +20,10 @@ const deductionSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Report",
     },
+    mode: {
+      type: String,
+      enum: ["wallet", "bank"],
+    }
   },
   { timestamps: true }
 );

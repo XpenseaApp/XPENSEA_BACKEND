@@ -197,4 +197,5 @@ exports.createDeductionSchema = Joi.object({
   user: Joi.string().required(),
   amount: Joi.number().required(),
   report: Joi.string().required(),
+  mode: Joi.string().required(),
 });

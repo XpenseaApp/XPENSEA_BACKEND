@@ -688,6 +688,10 @@
  *                 type: string
  *                 description: ID of the report
  *                 example: "667275cda0521a39e214cd6c"
+ *               mode:
+ *                 type: string
+ *                 description: Deduction mode
+ *                 example: "bank / wallet"
  *             required:
  *               - user
  *               - amount
