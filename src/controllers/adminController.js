@@ -2073,9 +2073,10 @@ exports.getDashboard = async (req, res) => {
       { $limit: 5 },
     ]);
 
-    const pending = await Report.find({ status: "pending" }).populate(
-      "expenses"
-    );
+    const pending = await Report.find({ status: "pending" })
+      .populate("expenses")
+      .limit(3)
+      .sort({ reportDate: -1 });
 
     const pendingData = pending.map((rep) => ({
       _id: rep._id,
