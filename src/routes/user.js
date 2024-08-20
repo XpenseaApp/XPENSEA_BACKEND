@@ -29,6 +29,7 @@ userRoute.put("/reimburse/:id", userController.reimburseReport);
 userRoute.get("/image-analysis/", userController.imageAnalysis);
 userRoute.get("/advance-payment/:id", userController.viewtransactionById);
 userRoute.get("/wallet", userController.getWallet);
+userRoute.get("/policy", userController.getPolicy);
 
 
 module.exports = userRoute;

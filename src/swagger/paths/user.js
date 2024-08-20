@@ -643,3 +643,20 @@
  *       500:
  *         description: Internal Server Error.
  */
+
+/**
+ * @swagger
+ * /user/policy:
+ *   get:
+ *     summary: Retrieve user policy based on user tier
+ *     description: This endpoint allows users to retrieve the policy associated with their tier.
+ *     tags:
+ *       - Policy
+ *     responses:
+ *       200:
+ *         description: Policy retrieved successfully
+ *       400:
+ *         description: Policy not found
+ *       500:
+ *         description: Internal Server Error
+ */

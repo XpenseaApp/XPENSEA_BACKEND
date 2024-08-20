@@ -21,6 +21,7 @@ const mongoose = require("mongoose");
 const runOCR = require("../jobs/billAnalysis");
 const analyzeImage = require("../jobs/imageAnalysis");
 const transaction = require("../models/transactionModel");
+const Policy = require("../models/policyModel");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -1244,6 +1245,29 @@ exports.getWallet = async (req, res) => {
       expenses: mappedData,
       categories,
     });
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+exports.getPolicy = async (req, res) => {
+  try {
+    const getTier = await User.findById(req.userId);
+    const getPolicy = await Policy.findOne({ tier: getTier.tier }).populate(
+      "tier",
+      "title"
+    );
+    if (!getPolicy) return responseHandler(res, 400, "Policy not found");
+    const mappedData = {
+      ...getPolicy._doc,
+      tier: getPolicy.tier.title,
+    };
+    return responseHandler(
+      res,
+      200,
+      "Policy retrieved successfully",
+      mappedData
+    );
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
