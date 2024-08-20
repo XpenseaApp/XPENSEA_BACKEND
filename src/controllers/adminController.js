@@ -632,6 +632,7 @@ exports.listController = async (req, res) => {
           location: data.location,
           type: data.type,
           status: data.status,
+          eventCreator: data.event ? data.event.type : "report",
           reportDate: moment(data.reportDate).format("MMM DD YYYY"),
           createdAt: moment(data.createdAt).format("MMM DD YYYY"),
           updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
