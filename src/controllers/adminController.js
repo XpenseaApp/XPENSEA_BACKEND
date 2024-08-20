@@ -610,6 +610,7 @@ exports.listController = async (req, res) => {
       } else {
         filter.status = { $ne: "drafted" };
       }
+      
 
       const totalCount = await Report.countDocuments(filter);
       const fetchReports = await Report.find(filter)
