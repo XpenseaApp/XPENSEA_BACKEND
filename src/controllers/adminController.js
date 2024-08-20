@@ -2072,7 +2072,24 @@ exports.getDashboard = async (req, res) => {
       },
       { $limit: 5 },
     ]);
-    return responseHandler(res, 200, "Expenses dashboard", expenses);
+
+    const pending = await Report.find({ status: "pending" }).populate(
+      "expenses"
+    );
+
+    const pendingData = pending.map((rep) => ({
+      _id: rep._id,
+      title: rep.title,
+      reportDate: moment(rep.reportDate).format("MMM DD YYYY"),
+      totalAmount: rep.expenses.reduce((acc, curr) => acc + curr.amount, 0),
+      expensesCount: rep.expenses.length,
+      location: rep.location,
+    }));
+
+    return responseHandler(res, 200, "Dashboard results", {
+      expenses,
+      pendingData,
+    });
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
