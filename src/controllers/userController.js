@@ -567,15 +567,13 @@ exports.getExpense = async (req, res) => {
     let expense;
 
     if (user.userType === "approver") {
-      expense = await Expense.findById( id );
+      expense = await Expense.findById(id);
       console.log(expense);
       // TODO :make find one work
-
     } else {
-      expense = await Expense.findById( id);
+      expense = await Expense.findById(id);
       console.log(expense);
     }
-
 
     if (!expense) {
       return responseHandler(res, 404, "Expense not found");
@@ -819,6 +817,15 @@ exports.updateReport = async (req, res) => {
           { status: "draft" }
         );
       }
+    }
+
+    if (findReport.reportId == undefined) {
+      const reportCount = await Report.countDocuments();
+      const nextReportNumber = reportCount + 1;
+      const formattedReportNumber = nextReportNumber
+        .toString()
+        .padStart(3, "0");
+      req.body.reportId = `Rep#${formattedReportNumber}`;
     }
 
     const updatedReport = await Report.findByIdAndUpdate(id, req.body, {
