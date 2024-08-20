@@ -605,10 +605,10 @@ exports.listController = async (req, res) => {
         );
       }
 
-      filter.status = { $ne: "drafted" };
-
       if (status) {
         filter.status = status;
+      } else {
+        filter.status = { $ne: "drafted" };
       }
 
       const totalCount = await Report.countDocuments(filter);
