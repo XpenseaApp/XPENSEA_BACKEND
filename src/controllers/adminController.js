@@ -605,6 +605,8 @@ exports.listController = async (req, res) => {
         );
       }
 
+      filter.status = { $ne: "drafted" };
+
       if (status) {
         filter.status = status;
       }
