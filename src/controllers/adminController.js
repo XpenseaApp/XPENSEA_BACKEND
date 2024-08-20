@@ -627,6 +627,7 @@ exports.listController = async (req, res) => {
             0
           ),
           location: data.location,
+          type: data.type,
           status: data.status,
           reportDate: moment(data.reportDate).format("MMM DD YYYY"),
           createdAt: moment(data.createdAt).format("MMM DD YYYY"),
@@ -1385,6 +1386,7 @@ exports.getApproval = async (req, res) => {
       title: fetchReport.title,
       description: fetchReport.description,
       location: fetchReport.location,
+      type: fetchReport.type,
       status: fetchReport.status,
       approver: fetchReport?.approver?.name,
       expenses: fetchReport.expenses.map((expense) => {
