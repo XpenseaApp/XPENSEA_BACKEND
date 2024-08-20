@@ -29,6 +29,8 @@
  *     description: User Approval related endpoints
  *   - name: Wallet
  *     description: Wallet related endpoints
+ *   - name: Dashboard
+ *     description: Dashboard related endpoints
  */
 
 /**
@@ -1354,4 +1356,20 @@
  *         description: User not found.
  *       500:
  *         description: Internal Server Error.
+ */
+
+/**
+ * @swagger
+ * /admin/dashboard:
+ *   get:
+ *     summary: Retrieve the dashboard data
+ *     description: This endpoint allows an admin to retrieve aggregated expense data for the current month, grouped by user and category.
+ *     tags:
+ *       - Dashboard
+ *     security:
+ *     responses:
+ *       200:
+ *         description: Expenses dashboard retrieved successfully
+ *       500:
+ *         description: Internal Server Error
  */

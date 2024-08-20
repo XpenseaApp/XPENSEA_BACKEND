@@ -2016,3 +2016,60 @@ exports.getApprovers = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
+
+exports.getDashboard = async (req, res) => {
+  try {
+    const start = moment().startOf("month").toDate();
+    const end = moment().endOf("month").toDate();
+    const expenses = await Expense.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: start, $lte: end },
+          status: "approved",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            user: "$user",
+            category: "$category",
+          },
+          totalAmount: { $sum: "$amount" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id.user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $lookup: {
+          from: "tiers",
+          localField: "user.tier",
+          foreignField: "_id",
+          as: "user.tier",
+        },
+      },
+      { $unwind: "$user.tier" },
+      {
+        $project: {
+          _id: 0,
+          user: "$user.name",
+          tier: "$user.tier.title",
+          category: "$_id.category",
+          totalAmount: 1,
+          count: 1,
+        },
+      },
+      { $limit: 5 },
+    ]);
+    return responseHandler(res, 200, "Expenses dashboard", expenses);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
