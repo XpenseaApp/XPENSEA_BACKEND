@@ -1715,6 +1715,22 @@ exports.getFinance = async (req, res) => {
       return responseHandler(res, 404, "Report not found");
     }
 
+    const wallet = await transaction.find({
+      "requestedBy.receiver": fetchReport.user._id,
+      status: "completed",
+    });
+
+    const walletAmount = wallet.reduce(
+      (acc, advance) => acc + advance.amount,
+      0
+    );
+
+    const deductAmount = await Deduction.aggregate([
+      { $match: { user: fetchReport.user._id, mode: "wallet", status: true } },
+      { $group: { _id: null, amount: { $sum: "$amount" } } },
+      { $project: { _id: 0, amount: 1 } },
+    ]);
+
     const mappedData = {
       _id: fetchReport._id,
       user: fetchReport.user.name,
@@ -1742,6 +1758,7 @@ exports.getFinance = async (req, res) => {
         (acc, curr) => acc + curr.amount,
         0
       ),
+      walletAmount: walletAmount - deductAmount[0].amount,
       reportDate: moment(fetchReport.reportDate).format("MMM DD YYYY"),
       createdAt: moment(fetchReport.createdAt).format("MMM DD YYYY"),
       updatedAt: moment(fetchReport.updatedAt).format("MMM DD YYYY"),
