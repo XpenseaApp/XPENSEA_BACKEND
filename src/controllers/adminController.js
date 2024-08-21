@@ -2108,6 +2108,11 @@ exports.deductWallet = async (req, res) => {
         `Invalid input: ${createEventValidator.error}`
       );
     }
+
+    const report = await Report.findById(req.body.report);
+    if (!report) return responseHandler(res, 404, "Report not found");
+
+    req.body.user = report.user;
     req.body.deductBy = req.userId;
     req.body.deductOn = new Date();
     const deduction = await Deduction.create(req.body);

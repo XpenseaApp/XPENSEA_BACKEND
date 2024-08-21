@@ -676,10 +676,6 @@
  *           schema:
  *             type: object
  *             properties:
- *               user:
- *                 type: string
- *                 description: The ID of the user whose wallet will be deducted
- *                 example: "667275cda0521a39e214cd6c"
  *               amount:
  *                 type: number
  *                 description: The amount to be deducted
