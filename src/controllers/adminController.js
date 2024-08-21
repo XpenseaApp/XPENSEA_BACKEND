@@ -1731,6 +1731,14 @@ exports.getFinance = async (req, res) => {
       { $project: { _id: 0, amount: 1 } },
     ]);
 
+    const deductionReport = await Deduction.find({
+      user: fetchReport.user._id,
+      status: true,
+      report: fetchReport._id,
+    })
+      .populate("user", "name")
+      .populate("deductBy", "name");
+
     const mappedData = {
       _id: fetchReport._id,
       user: fetchReport.user.name,
@@ -1758,7 +1766,18 @@ exports.getFinance = async (req, res) => {
         (acc, curr) => acc + curr.amount,
         0
       ),
-      walletAmount: walletAmount - deductAmount[0].amount,
+      walletAmount:
+        walletAmount - (deductAmount.length > 0 ? deductAmount[0].amount : 0),
+      deduction: deductionReport.map((res) => {
+        return {
+          _id: res._id,
+          amount: res.amount,
+          user: res.user.name,
+          deductBy: res.deductBy.name,
+          mode: res.mode,
+          deductOn: moment(res.deductOn).format("MMM DD YYYY"),
+        };
+      }),
       reportDate: moment(fetchReport.reportDate).format("MMM DD YYYY"),
       createdAt: moment(fetchReport.createdAt).format("MMM DD YYYY"),
       updatedAt: moment(fetchReport.updatedAt).format("MMM DD YYYY"),
