@@ -2115,6 +2115,7 @@ exports.deductWallet = async (req, res) => {
     req.body.user = report.user;
     req.body.deductBy = req.userId;
     req.body.deductOn = new Date();
+    req.body.mode = "wallet";
     const deduction = await Deduction.create(req.body);
     if (!deduction) return responseHandler(res, 400, "Deduction failed");
     return responseHandler(res, 200, "Deduction successful", deduction);

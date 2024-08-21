@@ -22,6 +22,7 @@ const runOCR = require("../jobs/billAnalysis");
 const analyzeImage = require("../jobs/imageAnalysis");
 const transaction = require("../models/transactionModel");
 const Policy = require("../models/policyModel");
+const Deduction = require("../models/deductionModel");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -425,12 +426,7 @@ exports.listController = async (req, res) => {
         .sort({ createdAt: -1 })
         .lean();
       if (!fetchNotifications || fetchNotifications.length === 0) {
-        return responseHandler(
-          res,
-          200,
-          "No Notifications found",
-          []
-        );
+        return responseHandler(res, 200, "No Notifications found", []);
       }
 
       const mappedData = fetchNotifications.map((item) => {
@@ -1124,9 +1120,24 @@ exports.getFinance = async (req, res) => {
 exports.reimburseReport = async (req, res) => {
   try {
     const { id } = req.params;
-    const { descriptionFinance } = req.body;
+    const { descriptionFinance, amount } = req.body;
     if (!id) {
       return responseHandler(res, 400, "Approval ID is required");
+    }
+
+    const fetchReport = await Report.findById(id);
+
+    if (!fetchReport) return responseHandler(res, 400, "Report not found");
+
+    if (amount > 0) {
+      await Deduction.create({
+        user: fetchReport.user,
+        amount,
+        deductBy: req.userId,
+        deductOn: Date.now(),
+        report: id,
+        mode: "bank",
+      });
     }
 
     const reimburse = await Report.findByIdAndUpdate(
