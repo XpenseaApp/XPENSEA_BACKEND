@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config(); // Load local .env only if not in production
+  require('dotenv').config(); // Load local .env only if not in productions
 }
 
 const express = require("express");
