@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 
 // Define the name of the secret and the AWS region
-const secretName = "xpensea-secrets";
+const secretName = "prod/xpensea";
 const region = "ap-south-1";
 
 // Create a Secrets Manager client
