@@ -34,7 +34,7 @@ const startServer = async () => {
     const adminRoute = require("./src/routes/admin");
 
 
-//* Define the PORT & API version based on environment variable
+    //* Define the PORT & API version based on environment variable
 
     //* Enable Cross-Origin Resource Sharing (CORS) middleware
     app.use(cors());
