@@ -23,6 +23,8 @@ const analyzeImage = require("../jobs/imageAnalysis");
 const transaction = require("../models/transactionModel");
 const Policy = require("../models/policyModel");
 const Deduction = require("../models/deductionModel");
+const Location = require('../models/locationModel');
+
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -1281,5 +1283,29 @@ exports.getPolicy = async (req, res) => {
     );
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+
+exports.saveLocation = async (req, res) => {
+  try {
+    const { eventName, eventId, location } = req.body;
+
+    if (!eventName || !location) {
+      return responseHandler(res, 400, "Event name and location are required");
+    }
+
+    // Assuming req.userId represents the user making the request
+    const locationData = await Location.create({
+      eventName,
+      eventId: eventId || null, // Optional event ID
+      location,
+      user: req.userId,
+      timeRecorded: Date.now(), // Explicitly recording the time
+    });
+
+    return responseHandler(res, 200, "Location saved successfully");
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error ${error.message}`);
   }
 };
