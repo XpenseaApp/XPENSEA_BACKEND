@@ -40,8 +40,7 @@ userRoute.get("/advance-payment/:id", userController.viewtransactionById);
 userRoute.get("/wallet", userController.getWallet);
 userRoute.get("/policy", userController.getPolicy);
 
-userRoute.get("/location", userController.saveLocation);
-userRoute.post("/location", userController.saveLocation);
+userRoute.put("/location", userController.saveLocation);
 
 
 module.exports = userRoute;
