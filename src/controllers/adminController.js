@@ -66,7 +66,7 @@ exports.loginAdmin = async (req, res) => {
 };
 
 /* The `exports.createAdmin` function is responsible for creating a new admin in the system. Here is a
-breakdown of what the function is doing: */
+breakdown of what the functions is doing: */
 exports.createAdmin = async (req, res) => {
   try {
     const createAdminValidator = createAdminSchema.validate(req.body, {
