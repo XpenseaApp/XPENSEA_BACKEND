@@ -40,7 +40,6 @@ jobs:
           PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           GCR_REPOSITORY: xpensea
           IMAGE_TAG: latest
-
         run: |
           docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
           docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
@@ -66,26 +65,27 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-
+      
+      - name: Configure Docker for Google Cloud
+        run: gcloud auth configure-docker gcr.io
+      
       - name: SSH into Compute Engine and deploy
         uses: google-github-actions/ssh-compute@v1
         with:
-          instance_name: ${{ env.GCE_INSTANCE_NAME }}
-          zone: ${{ env.GCE_ZONE }}
-          ssh_private_key: ${{ env.GCE_SSH_KEY }}
-          user: ${{ env.GCE_SSH_USER }}
-
-          command: |
-            # Pull Docker Image
-            sudo docker pull gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-
-            # Stop and remove the existing container if it's running
-            sudo docker stop ${{ env.CONTAINER_NAME }} || true
-            sudo docker rm ${{ env.CONTAINER_NAME }} || true
-
-            # Run the new container
-            sudo docker run -d \
-              -p ${{ env.PORT }}:${{ env.PORT }} \
-              --name ${{ env.CONTAINER_NAME }} \
-              -e ENVIRONMENT=production \
-              gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          instance_name: ${{ secrets.GCE_INSTANCE_NAME }}
+          zone: ${{ secrets.GCE_ZONE }}
+          ssh_private_key: ${{ secrets.GCE_SSH_KEY }}
+          user: ${{ secrets.GCE_SSH_USER }}
+        command: |
+          # Authenticate GCR
+          gcloud auth configure-docker gcr.io
+          
+          # Pull Docker Image
+          sudo docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+      
+          # Stop and remove the existing container if it's running
+          sudo docker stop ${{ env.CONTAINER_NAME }} || true
+          sudo docker rm ${{ env.CONTAINER_NAME }} || true
+      
+          # Run the new container
+          sudo docker run -d -p 3040:3040 --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
