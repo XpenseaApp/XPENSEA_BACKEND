@@ -88,4 +88,5 @@ jobs:
             sudo docker rm ${{ env.CONTAINER_NAME }} || true
 
             # Run the new container
-            sudo docker run\ -d -p ${{ env.PORT }}:${{ env.PORT }} --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            # sudo docker run\ -d -p ${{ env.PORT }}:${{ env.PORT }} --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            sudo docker run -d -p 3040:3040 --name XPENSEA_BACKEND -e ENVIRONMENT=production  gcr.io/xpensea/xpensea:latest
