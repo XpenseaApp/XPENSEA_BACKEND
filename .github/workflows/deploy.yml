@@ -76,16 +76,16 @@ jobs:
           zone: ${{ secrets.GCE_ZONE }}
           ssh_private_key: ${{ secrets.GCE_SSH_KEY }}
           user: ${{ secrets.GCE_SSH_USER }}
-        command: |
-          # Authenticate GCR
-          gcloud auth configure-docker gcr.io
+          command: |
+             # Authenticate GCR
+             gcloud auth configure-docker gcr.io
           
-          # Pull Docker Image
-          sudo docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+             # Pull Docker Image
+             sudo docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
       
-          # Stop and remove the existing container if it's running
-          sudo docker stop ${{ env.CONTAINER_NAME }} || true
-          sudo docker rm ${{ env.CONTAINER_NAME }} || true
+             # Stop and remove the existing container if it's running
+             sudo docker stop ${{ env.CONTAINER_NAME }} || true
+             sudo docker rm ${{ env.CONTAINER_NAME }} || true
       
-          # Run the new container
-          sudo docker run -d -p 3040:3040 --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+             # Run the new container
+             sudo docker run -d -p 3040:3040 --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
