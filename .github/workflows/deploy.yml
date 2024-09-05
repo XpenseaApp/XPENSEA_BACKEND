@@ -62,19 +62,18 @@ jobs:
 
     steps:
         - name: SSH into Compute Engine and deploy
-          uses: google-github-actions/ssh-compute@v1
+          uses: appleboy/ssh-action@v1.0.3
           with:
-            instance_name: ${{ env.GCE_INSTANCE_NAME }}
-            zone: ${{ env.GCE_ZONE }}
-            ssh_private_key: ${{ env.GCE_SSH_KEY }}
-            user: ${{ env.GCE_SSH_USER }}
-            command: |
-             # Pull Docker Image from GCR
-             sudo docker pull gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            host: ${{ secrets.GCE_EXTERNAL_IP }}
+            username: ${{ env.GCE_SSH_USER }}
+            key: ${{ secrets.GCE_SSH_KEY }}
+            script: |
+                # Pull Docker Image from GCR
+                sudo docker pull gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
-             # Stop and remove the existing container if it's running
-             sudo docker stop ${{ env.CONTAINER_NAME }} || true
-             sudo docker rm ${{ env.CONTAINER_NAME }} || true
+                # Stop and remove the existing container if it's running
+                sudo docker stop ${{ env.CONTAINER_NAME }} || true
+                sudo docker rm ${{ env.CONTAINER_NAME }} || true
 
-             # Run the new container
-             sudo docker run -d -p ${{ env.PORT }}:${{ env.PORT }} --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+                  # Run the new container
+                  sudo docker run -d -p ${{ env.PORT }}:${{ env.PORT }} --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
