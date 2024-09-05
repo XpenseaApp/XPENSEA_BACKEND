@@ -10,30 +10,43 @@ jobs:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [20.x]
+
     env:
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       GCR_REPOSITORY: xpensea
       IMAGE_TAG: latest
 
     steps:
-      # Checkout the code from the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Authenticate to Google Cloud
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      # Build and push the Docker image to Google Container Registry (GCR)
-      - name: Build and Push Docker image to GCR
+      - name: Configure Docker for Google Cloud
+        run: gcloud auth configure-docker gcr.io
+
+      - name: Build and Push Docker image
+        id: build-and-push-image
+        env:
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCR_REPOSITORY: xpensea
+          IMAGE_TAG: latest
+
         run: |
           docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
           docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
   deploy:
-    name: Deploy to Google Compute Engine
+    name: Deploy to Compute Engine
     runs-on: ubuntu-latest
     needs: build
 
@@ -45,29 +58,28 @@ jobs:
       GCE_ZONE: ${{ secrets.GCE_ZONE }}
       GCE_SSH_USER: ${{ secrets.GCE_SSH_USER }}
       GCE_SSH_KEY: ${{ secrets.GCE_SSH_KEY }}
-      CONTAINER_NAME: xpensea-backend
       PORT: 3040
+      CONTAINER_NAME: XPENSEA_BACKEND
 
     steps:
-      # Authenticate to Google Cloud
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      # SSH into the Compute Engine instance and deploy the Docker container
-      - name: SSH and deploy to Compute Engine
+      - name: SSH into Compute Engine and deploy
         uses: google-github-actions/ssh-compute@v1
         with:
           instance_name: ${{ env.GCE_INSTANCE_NAME }}
           zone: ${{ env.GCE_ZONE }}
           ssh_private_key: ${{ env.GCE_SSH_KEY }}
           user: ${{ env.GCE_SSH_USER }}
+
           command: |
-            # Pull the Docker image from GCR
+            # Pull Docker Image
             sudo docker pull gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
-            # Stop and remove the existing container if running
+            # Stop and remove the existing container if it's running
             sudo docker stop ${{ env.CONTAINER_NAME }} || true
             sudo docker rm ${{ env.CONTAINER_NAME }} || true
 
@@ -75,4 +87,5 @@ jobs:
             sudo docker run -d \
               -p ${{ env.PORT }}:${{ env.PORT }} \
               --name ${{ env.CONTAINER_NAME }} \
+              -e ENVIRONMENT=production \
               gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
