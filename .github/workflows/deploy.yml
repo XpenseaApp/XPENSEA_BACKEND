@@ -50,43 +50,31 @@ jobs:
     needs: build
 
     env:
-      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-      GCR_REPOSITORY: xpensea
-      IMAGE_TAG: latest
-      GCE_INSTANCE_NAME: ${{ secrets.GCE_INSTANCE_NAME }}
-      GCE_ZONE: ${{ secrets.GCE_ZONE }}
-      GCE_SSH_USER: ${{ secrets.GCE_SSH_USER }}
-      GCE_SSH_KEY: ${{ secrets.GCE_SSH_KEY }}
-      PORT: 3040
-      CONTAINER_NAME: XPENSEA_BACKEND
+        PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        GCR_REPOSITORY: xpensea
+        IMAGE_TAG: latest
+        GCE_INSTANCE_NAME: ${{ secrets.GCE_INSTANCE_NAME }}
+        GCE_ZONE: ${{ secrets.GCE_ZONE }}
+        GCE_SSH_USER: ${{ secrets.GCE_SSH_USER }}
+        GCE_SSH_KEY: ${{ secrets.GCE_SSH_KEY }}
+        PORT: 3040
+        CONTAINER_NAME: XPENSEA_BACKEND
 
     steps:
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-    
-      - name: Configure Docker for Google Cloud
-        run: gcloud auth configure-docker gcr.io
-    
-      - name: SSH into Compute Engine and deploy
-        uses: google-github-actions/ssh-compute@v1
-        with:
-          instance_name: ${{ env.GCE_INSTANCE_NAME }}
-          zone: ${{ env.GCE_ZONE }}
-          ssh_private_key: ${{ env.GCE_SSH_KEY }}
-          user: ${{ env.GCE_SSH_USER }}
-          command: |
-            # Authenticate GCR on the remote machine
-            gcloud auth configure-docker gcr.io
+        - name: SSH into Compute Engine and deploy
+          uses: google-github-actions/ssh-compute@v1
+          with:
+            instance_name: ${{ env.GCE_INSTANCE_NAME }}
+            zone: ${{ env.GCE_ZONE }}
+            ssh_private_key: ${{ env.GCE_SSH_KEY }}
+            user: ${{ env.GCE_SSH_USER }}
+            command: |
+             # Pull Docker Image from GCR
+             sudo docker pull gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
-            # Pull Docker Image
-            sudo docker pull\ gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+             # Stop and remove the existing container if it's running
+             sudo docker stop ${{ env.CONTAINER_NAME }} || true
+             sudo docker rm ${{ env.CONTAINER_NAME }} || true
 
-            # Stop and remove the existing container if it's running
-            sudo docker stop ${{ env.CONTAINER_NAME }} || true
-            sudo docker rm ${{ env.CONTAINER_NAME }} || true
-
-            # Run the new container
-            # sudo docker run\ -d -p ${{ env.PORT }}:${{ env.PORT }} --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-            sudo docker run -d -p 3040:3040 --name XPENSEA_BACKEND -e ENVIRONMENT=production  gcr.io/xpensea/xpensea:latest
+             # Run the new container
+             sudo docker run -d -p ${{ env.PORT }}:${{ env.PORT }} --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
