@@ -16,7 +16,7 @@ services:
     ports:
       - 3040:3040
     volumes:
-      - /home/acuteangletech/xpensea-988cce69e3c6.json:/config/xpensea-988cce69e3c6.json
+      - /home/acuteangletech/xpensea-988cce69e3c6.json:/tmp/xpensea-988cce69e3c6.json
 
 
 
