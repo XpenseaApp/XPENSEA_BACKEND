@@ -15,6 +15,9 @@ services:
       NODE_ENV: production
     ports:
       - 3040:3040
+    volumes:
+      - ./home/acuteangletech/xpensea-988cce69e3c6.json:/usr/src/app/xpensea-988cce69e3c6.json
+
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
