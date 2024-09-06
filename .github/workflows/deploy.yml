@@ -69,7 +69,7 @@ jobs:
             key: ${{ secrets.GCE_SSH_KEY }}
             script: |
               # Authenticate GCR on the remote machine
-              gcloud auth configure-docker gcr.io
+              gcloud auth configure-docker gcr.io --service-account
 
               # Pull Docker Image from GCR
                docker pull gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
