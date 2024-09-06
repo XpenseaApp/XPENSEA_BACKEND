@@ -16,14 +16,8 @@ services:
     ports:
       - 3040:3040
     volumes:
-      - xpensea-config:/usr/src/app/xpensea-988cce69e3c6.json
-volumes:
-  xpensea-config:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/acuteangletech/xpensea-988cce69e3c6.json
+      - /home/acuteangletech/xpensea-988cce69e3c6.json:/config/xpensea-988cce69e3c6.json
+
 
 
 # The commented out section below is an example of how to define a PostgreSQL
