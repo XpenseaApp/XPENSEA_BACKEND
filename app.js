@@ -27,7 +27,7 @@ const NODE_ENV = process.env.NODE_ENV;
 const startServer = async () => {
   try {
     if (NODE_ENV === "production") {
-      
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = " gha-creds-3274efd02b687b3a.json";
       await loadSecrets();
       console.log("Server started", process.env.test)
     }else{
