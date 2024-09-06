@@ -26,9 +26,9 @@ const NODE_ENV = process.env.NODE_ENV;
 const startServer = async () => {
   try {
     if (NODE_ENV === "production") {
-      await loadSecrets();
-      console.log("Server started", process.env.test)
     }
+    await loadSecrets();
+    console.log("Server started", process.env.test)
     const { PORT, API_VERSION } = process.env;
     const userRoute = require("./src/routes/user");
     const adminRoute = require("./src/routes/admin");
