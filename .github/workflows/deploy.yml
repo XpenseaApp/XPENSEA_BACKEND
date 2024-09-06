@@ -68,12 +68,24 @@ jobs:
             username: ${{ env.GCE_SSH_USER }}
             key: ${{ secrets.GCE_SSH_KEY }}
             script: |
-                # Pull Docker Image from GCR
-                sudo docker pull gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+              # Pull Docker Image from GCR
+              sudo docker pull gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
-                # Stop and remove the existing container if it's running
-                sudo docker stop ${{ env.CONTAINER_NAME }} || true
-                sudo docker rm ${{ env.CONTAINER_NAME }} || true
+              # Check Docker Images
+              sudo docker images
 
-                  # Run the new container
-                  sudo docker run -d -p ${{ env.PORT }}:${{ env.PORT }} --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+              # Stop and remove the existing container if it's running
+              sudo docker stop ${{ env.CONTAINER_NAME }} || true
+              sudo docker rm ${{ env.CONTAINER_NAME }} || true
+
+              # Check Container Removal
+              sudo docker ps -a
+
+              # Remove unused images
+              sudo docker image prune -af
+
+              # Run the new container
+              sudo docker run -d -p ${{ env.PORT }}:${{ env.PORT }} --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+
+              # Check Container Logs
+              sudo docker logs ${{ env.CONTAINER_NAME }}
