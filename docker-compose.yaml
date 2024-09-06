@@ -4,9 +4,9 @@ services:
     build:
       context: .
     environment:
-      NODE_ENV: production
+        NODE_ENV: production
+        GOOGLE_APPLICATION_CREDENTIALS: /home/acuteangletech/xpensea-988cce69e3c6.json
     ports:
       - "3040:3040"
-    volumes:
-      - ./xpensea-988cce69e3c6.json:/usr/src/app/xpensea-988cce69e3c6.json
+   
 
