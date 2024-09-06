@@ -61,31 +61,31 @@ jobs:
         CONTAINER_NAME: XPENSEA_BACKEND
 
     steps:
-        - name: SSH into Compute Engine and deploy
-          uses: appleboy/ssh-action@v1.0.3
-          with:
-            host: ${{ secrets.GCE_EXTERNAL_IP }}
-            username: ${{ env.GCE_SSH_USER }}
-            key: ${{ secrets.GCE_SSH_KEY }}
-            script: |
-              # Authenticate GCR on the remote machine
-              gcloud auth configure-docker gcr.io
-
-              # Pull Docker Image from GCR
-               docker pull gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-
-              # Stop and remove the existing container if it's running
-               docker stop ${{ env.CONTAINER_NAME }} || true
-               docker rm ${{ env.CONTAINER_NAME }} || true
-
-              # Run the new container
-               docker run -d -p ${{ env.PORT }}:${{ env.PORT }} --name ${{ env.CONTAINER_NAME }} -e ENVIRONMENT=production gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-
-              # Check Docker Images
-               docker images
-
-              # Check Docker Containers
-               docker ps -a
-
-              # Check Container Logs
-               docker logs ${{ env.CONTAINER_NAME }}
+      - name: SSH into Compute Engine and deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.GCE_EXTERNAL_IP }}
+          username: ${{ env.GCE_SSH_USER }}
+          key: ${{ secrets.GCE_SSH_KEY }}
+          script: |
+           # Authenticate GCR on the remote machine
+           gcloud auth configure-docker gcr.io
+    
+           # Pull Docker Image from GCR
+           docker pull gcr.io/${{ env.PROJECT_ID }}/${{ env.GCR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+    
+            # Stop and remove the existing container if it's running
+           docker-compose down || true
+    
+            # Rebuild and run the container with Docker Compose
+            docker-compose up --build -d
+    
+           # Check Docker Images
+           docker images
+    
+           # Check Docker Containers
+           docker ps -a
+    
+           # Check Container Logs
+           docker logs ${{ env.CONTAINER_NAME }}
+    
