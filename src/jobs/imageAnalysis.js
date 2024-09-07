@@ -1,3 +1,4 @@
+// In your file where the function is defined
 const { ChatOpenAI } = require('@langchain/openai');
 const { HumanMessage } = require('@langchain/core/messages');
 
@@ -9,7 +10,6 @@ const openAIModel = new ChatOpenAI({
 
 // Function to analyze the image
 async function analyzeImage(imageUrl) {
-  // Create a message with text and image URL for analysis
   const message = new HumanMessage({
     content: [
       {
