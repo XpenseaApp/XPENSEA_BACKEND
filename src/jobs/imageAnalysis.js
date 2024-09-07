@@ -1,47 +1,37 @@
-const axios = require('axios');
-const { OpenAI } = require('openai');  // Import OpenAI class
+const { ChatOpenAI } = require('@langchain/openai');
+const { HumanMessage } = require('@langchain/core/messages');
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,  // Make sure API key is set in your environment variables
+// Initialize OpenAI client for GPT-4
+const openAIModel = new ChatOpenAI({
+  model: 'gpt-4',  // Use GPT-4 or any other suitable model
+  apiKey: process.env.OPENAI_API_KEY,  // API Key should be set in environment variables
 });
 
-// Function to download image from URL and analyze it using GPT-4V
+// Function to analyze the image
 async function analyzeImage(imageUrl) {
-    try {
-        // Download the image from the URL
-        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-        const imageData = Buffer.from(response.data, 'binary');
+  // Create a message with text and image URL for analysis
+  const message = new HumanMessage({
+    content: [
+      {
+        type: 'text',
+        text: 'Analyze the provided image and extract the following information: \n1. "isExpenseBill": true or false - Whether the image is an applicable expense bill.\n2. "title": (string, optional) - Title for the expense bill.\n3. "category": (string, optional) - Category for the expense bill.\n4. "description": (string, optional) - Description of the expense bill.',
+      },
+      {
+        type: 'image_url',
+        image_url: { url: imageUrl },  // Image URL passed here
+      },
+    ],
+  });
 
-        // Call OpenAI GPT-4V (Vision model)
-        const apiResponse = await openai.chat.completions.create({
-            model: 'gpt-4o',
-            messages: [
-                {
-                    role: 'system',
-                    content: `You are a helpful assistant that analyzes expense bill images.`,
-                },
-                {
-                    role: 'user',
-                    content: `Analyze the provided image and extract the following information:
-                    
-                    1. "isExpenseBill": true or false - Whether the image is an applicable expense bill.
-                    2. "title": (string, optional) - Title for the expense bill.
-                    3. "category": (string, optional) - Category for the expense bill.
-                    4. "description": (string, optional) - Description of the expense bill.
-                    `,
-                },
-            ],
-            file: imageData,  // Attach the downloaded image data
-        });
-
-        // Handle the response from GPT-4V
-        const analysisResult = apiResponse.choices[0].message.content;
-        console.log('Analysis Result:', analysisResult);
-        return analysisResult;
-    } catch (error) {
-        console.error('Error analyzing image with GPT-4V:', error);
-    }
+  try {
+    const response = await openAIModel.invoke([message]);
+    console.log('Analysis Result:', response.content);  // Log the response content
+    return response.content;  // Return the analysis result
+  } catch (error) {
+    console.error('Error analyzing image with GPT-4:', error);
+    throw error;  // Propagate the error
+  }
 }
 
-module.exports = analyzeImage;
+// Export the function as a module
+module.exports = { analyzeImage };
