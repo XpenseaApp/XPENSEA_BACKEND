@@ -1,5 +1,4 @@
 const axios = require('axios');
-const fs = require('fs');  // Import the fs module
 const { OpenAI } = require('openai');  // Import OpenAI class
 
 // Initialize OpenAI client
@@ -7,14 +6,15 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,  // Make sure API key is set in your environment variables
 });
 
-// Upload and analyze the image with GPT-4V
-async function analyzeImage(imagePath) {
+// Function to download image from URL and analyze it using GPT-4V
+async function analyzeImage(imageUrl) {
     try {
-        // Read the image file
-        const imageData = fs.readFileSync(imagePath);
+        // Download the image from the URL
+        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+        const imageData = Buffer.from(response.data, 'binary');
 
         // Call OpenAI GPT-4V (Vision model)
-        const response = await openai.chat.completions.create({
+        const apiResponse = await openai.chat.completions.create({
             model: 'gpt-4-vision',
             messages: [
                 {
@@ -32,11 +32,11 @@ async function analyzeImage(imagePath) {
                     `,
                 },
             ],
-            file: imageData,  // Attach the image file to be analyzed
+            file: imageData,  // Attach the downloaded image data
         });
 
         // Handle the response from GPT-4V
-        const analysisResult = response.choices[0].message.content;
+        const analysisResult = apiResponse.choices[0].message.content;
         console.log('Analysis Result:', analysisResult);
         return analysisResult;
     } catch (error) {
