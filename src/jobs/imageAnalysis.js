@@ -15,7 +15,7 @@ async function analyzeImage(imageUrl) {
 
         // Call OpenAI GPT-4V (Vision model)
         const apiResponse = await openai.chat.completions.create({
-            model: 'gpt-4-vision',
+            model: 'gpt-4o',
             messages: [
                 {
                     role: 'system',
