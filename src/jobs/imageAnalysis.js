@@ -60,7 +60,7 @@ async function analyzeImage(imageUrl) {
           content: [
             {
               type: 'text',
-              text: `Analyze the provided image and extract the following information:`,
+              text: `Analyze the provided image and extract the following information, make sure that you don't hallucinate any information, if you are not sure about any information, you can leave it blank. if you are not sure if it is not an image of a paper bill then make the isExpenseBill false  \n\n1. "isExpenseBill": true or false - Whether the image is an applicable expense bill. \n2. "title": (string, optional) - Title for the expense bill. \n3. "category": (string, optional) - Category for the expense bill. \n4. "description": (string, optional) - Description of the expense bill. \n\nImage and additional details:`,
             },
             {
               type: 'image_url',
