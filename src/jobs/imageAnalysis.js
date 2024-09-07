@@ -1,37 +1,58 @@
-// In your file where the function is defined
 const { ChatOpenAI } = require('@langchain/openai');
 const { HumanMessage } = require('@langchain/core/messages');
+const axios = require('axios');
 
-// Initialize OpenAI client for GPT-4
-const openAIModel = new ChatOpenAI({
-  model: 'gpt-4',  // Use GPT-4 or any other suitable model
-  apiKey: process.env.OPENAI_API_KEY,  // API Key should be set in environment variables
-});
+let llm;
 
-// Function to analyze the image
-async function analyzeImage(imageUrl) {
-  const message = new HumanMessage({
-    content: [
-      {
-        type: 'text',
-        text: 'Analyze the provided image and extract the following information: \n1. "isExpenseBill": true or false - Whether the image is an applicable expense bill.\n2. "title": (string, optional) - Title for the expense bill.\n3. "category": (string, optional) - Category for the expense bill.\n4. "description": (string, optional) - Description of the expense bill.',
-      },
-      {
-        type: 'image_url',
-        image_url: { url: imageUrl },  // Image URL passed here
-      },
-    ],
-  });
+// Function to analyze image using GPT-4 Vision model
+const analyzeImage = async ( imageURL, extraDetails = '') => {
+  let imageSummary = '';
+  openAIApiKey = process.env.OPENAI_API_KEY;
 
   try {
-    const response = await openAIModel.invoke([message]);
-    console.log('Analysis Result:', response.content);  // Log the response content
-    return response.content;  // Return the analysis result
-  } catch (error) {
-    console.error('Error analyzing image with GPT-4:', error);
-    throw error;  // Propagate the error
-  }
-}
+    // Initialize OpenAI client if not already initialized
+    if (!llm) {
+      llm = new ChatOpenAI({
+        openAIApiKey,
+        modelName: 'gpt-4o',
+        maxTokens: 1024,
+      });
+    }
 
-// Export the function as a module
+    // Fetch the image and convert it to base64
+    const response = await axios.get(imageURL, { responseType: 'arraybuffer' });
+    const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+
+    // Construct the multimodal message (text + image)
+    const text = `Below is the image for reference. Please provide a comprehensive analysis of the contents of the image.\n${extraDetails}`;
+
+    const imagePromptMessage = new HumanMessage({
+      content: [
+        {
+          type: 'text',
+          text,
+        },
+        {
+          type: 'image_url',
+          image_url: {
+            url: `data:image/jpeg;base64,${base64Image}`,
+            detail: 'high', // 'low' or 'high' for desired detail
+          },
+        },
+      ],
+    });
+
+    // Invoke the GPT-4 Vision model
+    const responseLLM = await llm.invoke([imagePromptMessage]);
+    if (responseLLM?.content) {
+      imageSummary = responseLLM.content;
+    }
+  } catch (error) {
+    console.error('Error analyzing image:', error);
+  }
+
+  return imageSummary;
+};
+
+// Exporting the function
 module.exports = { analyzeImage };
