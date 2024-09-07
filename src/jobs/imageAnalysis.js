@@ -1,58 +1,76 @@
-const { ChatOpenAI } = require('@langchain/openai');
-const { HumanMessage } = require('@langchain/core/messages');
 const axios = require('axios');
+const { HumanMessage } = require('@langchain/core/messages');
+const { ChatOpenAI } = require('@langchain/openai');
+const { ChatPromptTemplate } = require('@langchain/core/prompts');
+const { z } = require('zod');
 
-let llm;
+// Fetch the image data as a URL or binary buffer
+async function getImageData(url) {
+    console.log("Fetching image data from URL:", url);
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    console.log("Image data successfully fetched.");
+    return response.data; // Return binary data instead of base64
+}
 
-// Function to analyze image using GPT-4 Vision model
-async function analyzeImage ( imageURL, extraDetails = '') {
-  let imageSummary = '';
-  openAIApiKey = process.env.OPENAI_API_KEY;
+const taggingPrompt = ChatPromptTemplate.fromTemplate(
+    `Analyze the provided image and extract the following information:
+    
+    1. "isExpenseBill": true or false - Whether the image is an applicable expense bill.
+    2. "title": (string, optional) - Title for the expense bill.
+    3. "category": (string, optional) - Category for the expense bill.
+    4. "description": (string, optional) - Description of the expense bill.
+    Image and additional details:
+    {input}
+    `
+);
 
-  try {
-    // Initialize OpenAI client if not already initialized
-    if (!llm) {
-      llm = new ChatOpenAI({
-        openAIApiKey,
-        modelName: 'gpt-4o',
-        maxTokens: 1024,
-      });
-    }
+// Define the Zod schema for structured output
+const expenseSchema = z.object({
+    isExpenseBill: z.boolean().describe("Whether the image is an applicable expense bill"),
+    title: z.string().optional().describe("Title for the expense bill"),
+    category: z.string().optional().describe("Category for the expense bill"),
+    description: z.string().optional().describe("Description of the expense bill"),
+});
 
-    // Fetch the image and convert it to base64
-    const response = await axios.get(imageURL, { responseType: 'arraybuffer' });
-    const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+// Analyze the image using GPT-4 via LangChain
+async function analyzeImage(imageUrl) {
+    console.log("Starting analysis of image:", imageUrl);
 
-    // Construct the multimodal message (text + image)
-    const text = `Below is the image for reference. Please provide a comprehensive analysis of the contents of the image.\n${extraDetails}`;
-
-    const imagePromptMessage = new HumanMessage({
-      content: [
-        {
-          type: 'text',
-          text,
-        },
-        {
-          type: 'image_url',
-          image_url: {
-            url: `data:image/jpeg;base64,${base64Image}`,
-            detail: 'high', // 'low' or 'high' for desired detail
-          },
-        },
-      ],
+    const model = new ChatOpenAI({
+        temperature: 0,
+        modelName: 'gpt-4',
+        apiKey: process.env.OPENAI_API_KEY,  // Ensure the API key is set in the environment variables
     });
 
-    // Invoke the GPT-4 Vision model
-    const responseLLM = await llm.invoke([imagePromptMessage]);
-    if (responseLLM?.content) {
-      imageSummary = responseLLM.content;
+    try {
+        const imageData = await getImageData(imageUrl);
+        console.log("Image data prepared for analysis.");
+
+        // Consider storing the image to a temporary storage and passing the URL instead
+        // For example:
+        // const temporaryImageUrl = await uploadImageToTemporaryStorage(imageData);
+
+        const inputContent = `The image URL is: ${imageUrl}. Please analyze the image accordingly.`;
+        console.log("Input content for LLM prepared:", inputContent);
+
+        const llmWithStructuredOutput = model.withStructuredOutput(expenseSchema, {
+            name: 'extractor',
+        });
+
+        const taggingChain = taggingPrompt.pipe(llmWithStructuredOutput);
+
+        const response = await taggingChain.invoke({ input: inputContent });
+        console.log("Response from LLM received:", response);
+
+        // Validate the response using the Zod schema
+
+
+        // Output the structured JSON response
+        console.log("Validated response data:", response);
+        return response;
+    } catch (error) {
+        console.error("Error during image analysis:", error);
     }
-  } catch (error) {
-    console.error('Error analyzing image:', error);
-  }
+}
 
-  return imageSummary;
-};
-
-// Exporting the function
-module.exports = { analyzeImage };
+module.exports = analyzeImage;
