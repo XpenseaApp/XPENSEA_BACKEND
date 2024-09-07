@@ -31,6 +31,7 @@ const taggingPrompt = ChatPromptTemplate.fromTemplate(
     `
 );
 
+
 // Define the Zod schema for structured output
 const expenseSchema = z.object({
     isExpenseBill: z.boolean().describe("Whether the image is an applicable expense bill"),
@@ -55,7 +56,21 @@ async function analyzeImage(imageUrl) {
         console.log("Image data prepared for analysis.");
 
         // Construct input content combining base64 image and extra details
-        const inputContent = `Here is the image in base64 format: data:image/jpeg;base64,${base64Image}. Please analyze the image accordingly.`;
+        const inputContent = new HumanMessage({
+          content: [
+            {
+              type: 'text',
+              text: `Analyze the provided image and extract the following information:`,
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`,
+                detail: 'high',
+              },
+            },
+          ],
+        });
         console.log("Input content for LLM prepared:", inputContent);
 
         // Add Zod schema validation for structured output
