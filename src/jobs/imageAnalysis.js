@@ -21,7 +21,7 @@ async function getImageData(url) {
 const taggingPrompt = ChatPromptTemplate.fromTemplate(
     `Analyze the provided image and extract the following information:
     
-    1. "isExpenseBill": true or false - Whether the image is an applicable expense bill.
+    1. "isExpenseBill": true or false - Whether the image is an applicable expense bill, it should be false if the image is not an paper expense bill.
     2. "title": (string, optional) - Title for the expense bill.
     3. "category": (string, optional) - Category for the expense bill.
     4. "description": (string, optional) - Description of the expense bill.
@@ -34,7 +34,7 @@ const taggingPrompt = ChatPromptTemplate.fromTemplate(
 
 // Define the Zod schema for structured output
 const expenseSchema = z.object({
-    isExpenseBill: z.boolean().describe("Whether the image is an applicable expense bill"),
+    isExpenseBill: z.boolean().describe("Whether the image is an applicable expense bill it should be false if the image is not an paper expense bill"),
     title: z.string().optional().describe("Title for the expense bill"),
     category: z.string().optional().describe("Category for the expense bill"),
     description: z.string().optional().describe("Description of the expense bill"),
