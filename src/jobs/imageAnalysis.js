@@ -5,7 +5,7 @@ const axios = require('axios');
 let llm;
 
 // Function to analyze image using GPT-4 Vision model
-const analyzeImage = async ( imageURL, extraDetails = '') => {
+async function analyzeImage ( imageURL, extraDetails = '') {
   let imageSummary = '';
   openAIApiKey = process.env.OPENAI_API_KEY;
 
