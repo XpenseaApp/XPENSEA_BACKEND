@@ -46,7 +46,7 @@ async function analyzeImage(imageUrl) {
 
     const model = new ChatOpenAI({
         temperature: 0,
-        modelName: 'gpt-4-vision-preview',  // Use the GPT-4 Vision model for image analysis
+        modelName: 'gpt-4o',  // Use the GPT-4 Vision model for image analysis
         apiKey: process.env.OPENAI_API_KEY,  // Ensure the API key is set in the environment variables
     });
 
