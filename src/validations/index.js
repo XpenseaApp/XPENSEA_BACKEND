@@ -130,7 +130,7 @@ exports.createUserEventSchema = Joi.object({
   startTime: Joi.date().required(),
   endTime: Joi.date().required(),
   description: Joi.string().required(),
-  status: Joi.boolean(),
+  status: Joi.string(),
 });
 
 exports.createUserEventEditSchema = Joi.object({
