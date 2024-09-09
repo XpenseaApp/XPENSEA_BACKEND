@@ -1,40 +1,22 @@
-const AWS = require("aws-sdk");
+const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 
-// Define the name of the secret and the AWS region
-const secretName = "prod/xpensea";
-const region = "ap-south-1";
-
-// Create a Secrets Manager client
-const client = new AWS.SecretsManager({ region });
-
-/**
- * Loads secrets from AWS Secrets Manager and sets them as environment variables.
- */
 const loadSecrets = async () => {
+  const client = new SecretManagerServiceClient();
+  const secretName = 'projects/393541516579/secrets/prod_xpensea/versions/latest';
+
   try {
-    // Fetch the secret value from AWS Secrets Manager
-    const data = await client
-      .getSecretValue({ SecretId: secretName })
-      .promise();
+    const [accessResponse] = await client.accessSecretVersion({ name: secretName });
+    const payload = accessResponse.payload.data.toString('utf8');
+    const secrets = JSON.parse(payload);
 
-    if (data.SecretString) {
-      // Parse the secret string into a JSON object
-      const secrets = JSON.parse(data.SecretString);
-
-      // Set each secret as an environment variable
-      for (const [key, value] of Object.entries(secrets)) {
-        process.env[key] = value;
-      }
-
-      console.log(
-        "Secrets successfully loaded and set as environment variables."
-      );
-    } else {
-      console.log("SecretString not found in the secret.");
+    for (const [key, value] of Object.entries(secrets)) {
+      process.env[key] = value;
     }
+
+    console.log('Secrets successfully loaded and set as environment variables.');
   } catch (error) {
-    console.error(`Error retrieving secrets: ${error.message}`);
-    throw new Error(`Error retrieving secrets: ${error.message}`);
+    console.error('Error retrieving secrets:', error);
+    throw new Error('Error retrieving secrets: ' + error.message);
   }
 };
 

@@ -9,6 +9,7 @@ const clc = require("cli-color");
 const responseHandler = require("./src/helpers/responseHandler");
 const loadSecrets = require("./src/config/env.config");
 
+
 const {
   swaggerUi,
   swaggerSpec,
@@ -25,17 +26,21 @@ const NODE_ENV = process.env.NODE_ENV;
 //* Function to start the server
 const startServer = async () => {
   try {
-    if (NODE_ENV === "production") {
-      await loadSecrets();
-      console.log("Server started", process.env.test)
-    }
+    // if (NODE_ENV === "production") {
+    //   // process.env.GOOGLE_APPLICATION_CREDENTIALS = "gha-creds-3274efd02b687b3a.json";
+    //   await loadSecrets();
+    //   console.log("Server started", process.env.test)
+    // }else{
+    //   process.env.GOOGLE_APPLICATION_CREDENTIALS = "C:\\Users\\dicor\\OneDrive\\Desktop\\Acute\\xpensea-988cce69e3c6.json"; 
+    //   await loadSecrets();
+    // }
     const { PORT, API_VERSION } = process.env;
     const userRoute = require("./src/routes/user");
     const adminRoute = require("./src/routes/admin");
-
-
-    //* Define the PORT & API version based on environment variable
-
+    
+    
+    //* Define the PORT & API version based on environment variables
+    
     //* Enable Cross-Origin Resource Sharing (CORS) middleware
     app.use(cors());
     //* Parse JSON request bodies
@@ -46,14 +51,14 @@ const startServer = async () => {
     require("./src/helpers/connection");
     //* Start the cron job
     require("./src/jobs"); 
-
+    
     //* Swagger setup
     app.use(
       "/api-docs",
       swaggerUi.serve,
       swaggerUi.setup(swaggerSpec, swaggerOptions)
     );
-
+    
     //* Configure routes for user API
     app.use(`${BASE_PATH}/admin`, adminRoute);
     app.use(`${BASE_PATH}/user`, userRoute);
