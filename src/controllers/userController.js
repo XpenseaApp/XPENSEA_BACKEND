@@ -588,6 +588,7 @@ exports.getExpense = async (req, res) => {
       description: expense.description,
       image: expense.image,
       date: moment(expense.createdAt).format("MMM DD YYYY"),
+      location: expense.address,
     };
 
     // Conditionally add aiScores if available
