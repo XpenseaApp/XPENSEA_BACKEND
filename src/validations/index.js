@@ -94,6 +94,7 @@ exports.createExpenseSchema = Joi.object({
   date: Joi.date().required(),
   time: Joi.date().required(),
   location: Joi.string().required(),
+  address: Joi.string().required(),
   category: Joi.string().required(),
   description: Joi.string().required(),
   image: Joi.string().required(),

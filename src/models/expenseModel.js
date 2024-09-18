@@ -7,6 +7,7 @@ const expenseSchema = mongoose.Schema(
     date: { type: Date },
     time: { type: Date },
     location: { type: String },
+    address: { type: String },
     category: { type: String },
     description: { type: String },
     image: { type: String },
