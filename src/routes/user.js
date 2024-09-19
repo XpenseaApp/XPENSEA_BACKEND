@@ -19,6 +19,7 @@ userRoute.get("/list", userController.listController);
 
 userRoute.get("/expense/:id", userController.getExpense);
 userRoute.get("/report/:id", userController.getReport);
+userRoute.put("/report/:id", userController.updateReport);
 userRoute.get("/category", userController.getCategory);
 
 userRoute.put("/change-mpin", userController.changeMpin);
