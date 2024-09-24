@@ -23,8 +23,7 @@ const deductionSchema = mongoose.Schema(
     mode: {
       type: String,
       enum: ["wallet", "bank"],
-    },
-    comment: { type: String },
+    }
   },
   { timestamps: true }
 );
