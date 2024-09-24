@@ -1616,9 +1616,21 @@ exports.getUserReports = async (req, res) => {
 exports.reimburseReport = async (req, res) => {
   try {
     const { id } = req.params;
-    const { descriptionFinance } = req.body;
+    const { descriptionFinance, amount } = req.body;
     if (!id) {
       return responseHandler(res, 400, "Approval ID is required");
+    }
+
+    let report = await Report.findById(id);
+
+    if (amount > 0) {
+      const reqData = {
+        user: report.user,
+        deductBy: req.userId,
+        deductOn: new Date(),
+        mode: "bank",
+      };
+      await Deduction.create(reqData);
     }
 
     const reimburse = await Report.findByIdAndUpdate(
