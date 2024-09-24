@@ -1397,9 +1397,14 @@
  *                 type: string
  *                 description: ID of the report
  *                 example: "667275cda0521a39e214cd6c"
+ *               comment:
+ *                 type: string
+ *                 description: comment of the report
+ *                 example: "comment"
  *             required:
  *               - amount
  *               - report
+ *               - comment
  *     responses:
  *       200:
  *         description: Deduction successful

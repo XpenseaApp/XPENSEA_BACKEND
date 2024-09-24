@@ -197,4 +197,5 @@ exports.createPolicySchema = Joi.object({
 exports.createDeductionSchema = Joi.object({
   amount: Joi.number().required(),
   report: Joi.string().required(),
+  comment: Joi.string().required(),
 });
