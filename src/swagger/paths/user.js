@@ -13,9 +13,9 @@
  *           schema:
  *             type: object
  *             properties:
- *               mobile:
+ *               email:
  *                 type: string
- *                 example: "9876543210"
+ *                 example: "example@gmail.com"
  *     responses:
  *       200:
  *         description: OTP sent successfully
@@ -45,9 +45,9 @@
  *               otp:
  *                 type: number
  *                 example: 72033
- *               mobile:
+ *               email:
  *                 type: string
- *                 example: "9876543210"
+ *                 example: "example@gmail.com"
  *     responses:
  *       200:
  *         description: User verified successfully
