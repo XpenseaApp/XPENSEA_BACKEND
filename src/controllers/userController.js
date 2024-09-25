@@ -14,6 +14,7 @@ const {
   problemSchema,
   createUserEventSchema,
   createUserEventEditSchema,
+  createTransactionSchema,
 } = require("../validations");
 const Problem = require("../models/problemModel");
 const Event = require("../models/eventModel");
@@ -23,8 +24,7 @@ const analyzeImage = require("../jobs/imageAnalysis");
 const transaction = require("../models/transactionModel");
 const Policy = require("../models/policyModel");
 const Deduction = require("../models/deductionModel");
-const Location = require('../models/locationModel');
-
+const Location = require("../models/locationModel");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
@@ -1287,7 +1287,6 @@ exports.getPolicy = async (req, res) => {
   }
 };
 
-
 exports.saveLocation = async (req, res) => {
   try {
     const { eventName, eventId, location } = req.body;
@@ -1308,5 +1307,41 @@ exports.saveLocation = async (req, res) => {
     return responseHandler(res, 200, "Location saved successfully");
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+exports.createtransaction = async (req, res) => {
+  try {
+    const transactionData = req.body;
+
+    const validation = createTransactionSchema.validate(transactionData, {
+      abortEarly: false,
+    });
+
+    if (validation.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${validation.error.details
+          .map((err) => err.message)
+          .join(", ")}`
+      );
+    }
+
+    // Create the advance payment record
+    const newtransaction = await transaction.create(transactionData);
+
+    if (newtransaction) {
+      return responseHandler(
+        res,
+        201,
+        `Transaction created successfully!`,
+        newtransaction
+      );
+    } else {
+      return responseHandler(res, 400, `Transaction creation failed`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };

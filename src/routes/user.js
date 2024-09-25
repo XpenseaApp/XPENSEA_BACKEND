@@ -42,6 +42,7 @@ userRoute.get("/wallet", userController.getWallet);
 userRoute.get("/policy", userController.getPolicy);
 
 userRoute.post("/location", userController.saveLocation);
+userRoute.post("/transaction", userController.createtransaction);
 
 
 module.exports = userRoute;
