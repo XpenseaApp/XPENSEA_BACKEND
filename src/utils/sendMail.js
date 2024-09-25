@@ -13,7 +13,7 @@ const sendMail = async (to, otp) => {
     });
 
     const mailOptions = {
-      from: NODE_MAIL,
+      from: `Xpensea`,
       to: to,
       subject: `Your OTP for Secure Login on Xpensea`,
       text: `To complete your login on Xpensea, please use the One-Time Password (OTP) provided below:\n
