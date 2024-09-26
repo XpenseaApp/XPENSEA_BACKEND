@@ -1184,6 +1184,44 @@ exports.imageAnalysis = async (req, res) => {
   }
 };
 
+exports.createtransaction = async (req, res) => {
+  try {
+    const transactionData = req.body;
+
+    // Validate input data (Assuming you have a validation schema)
+    const validation = createTransactionSchema.validate(transactionData, {
+      abortEarly: false,
+    });
+
+    if (validation.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${validation.error.details
+          .map((err) => err.message)
+          .join(", ")}`
+      );
+    }
+
+    // Create the advance payment record
+    const newtransaction = await transaction.create(transactionData);
+
+    if (newtransaction) {
+      return responseHandler(
+        res,
+        201,
+        `Transaction created successfully!`,
+        newtransaction
+      );
+    } else {
+      return responseHandler(res, 400, `Transaction creation failed`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+
 exports.viewtransactionById = async (req, res) => {
   try {
     const transactionId = req.params.id;
