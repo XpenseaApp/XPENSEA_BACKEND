@@ -37,7 +37,7 @@ userRoute.put("/reimburse/:id", userController.reimburseReport);
 
 userRoute.get("/image-analysis", userController.imageAnalysis);
 
-userRoute.post("/advance-payment", adminController.createtransaction);
+userRoute.post("/advance-payment", userController.createtransaction);
 userRoute.get("/advance-payment/:id", userController.viewtransactionById);
 userRoute.get("/wallet", userController.getWallet);
 userRoute.get("/policy", userController.getPolicy);
