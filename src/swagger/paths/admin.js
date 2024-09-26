@@ -1267,6 +1267,68 @@
 
 /**
  * @swagger
+ * /admin/transaction:
+ *   get:
+ *     summary: Get a list of transactions and deductions
+ *     description: Retrieve a combined list of credit transactions and debit deductions. You can filter the results by type (`credit`, `debit`) or get all transactions if no filter is applied.
+ *     tags:
+ *       - Transaction
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [credit, debit]
+ *         description: Type of entries to retrieve (either "credit" for transactions or "debit" for deductions). If no type is provided, all entries are retrieved.
+ *     responses:
+ *       200:
+ *         description: A combined list of transactions and deductions is retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: Unique identifier for the transaction or deduction.
+ *                     example: "64c0ed92b7e8773e9cd3c404"
+ *                   amount:
+ *                     type: number
+ *                     description: The amount of the transaction or deduction.
+ *                     example: 500
+ *                   type:
+ *                     type: string
+ *                     description: Indicates whether the entry is a "credit" (transaction) or "debit" (deduction).
+ *                     example: "credit"
+ *                   date:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The date of the transaction or deduction.
+ *                     example: "2023-09-25T15:00:00.000Z"
+ *                   description:
+ *                     type: string
+ *                     description: A brief description of the transaction or deduction.
+ *                     example: "Payment for service"
+ *                   user:
+ *                     type: string
+ *                     description: Name of the user affected by the transaction or deduction.
+ *                     example: "John Doe"
+ *                   performedBy:
+ *                     type: string
+ *                     description: Name of the person who performed the transaction or deduction.
+ *                     example: "Admin User"
+ *       404:
+ *         description: No transactions or deductions found.
+ *       500:
+ *         description: Internal server error.
+ */
+
+/**
+ * @swagger
  * /admin/transaction/{id}:
  *   get:
  *     summary: Get transaction details by ID
