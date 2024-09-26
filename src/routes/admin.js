@@ -60,7 +60,7 @@ adminRoute.get("/users/filtered", adminController.getFilteredUsers);
 adminRoute.get("/finance/:id", adminController.getFinance);
 
 adminRoute.post("/transaction", adminController.createtransaction);
-adminRoute.get("/transaction", adminController.viewtransactions);
+adminRoute.get("/transaction", adminController.viewTransactionsAndDeductions);
 adminRoute.get("/transaction/:id", adminController.viewtransactionById);
 adminRoute.put("/transaction/:id", adminController.transactionMarkCompleted);
 
