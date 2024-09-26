@@ -1838,6 +1838,66 @@ exports.createtransaction = async (req, res) => {
   }
 };
 
+exports.viewTransactionsAndDeductions = async (req, res) => {
+  try {
+    const { type } = req.query; // Get the 'type' query parameter from the request (e.g., 'credit' or 'debit')
+
+    // Fetch all transactions and deductions
+    let transactions = [];
+    let deductions = [];
+
+    // Fetch transactions if type is not 'debit'
+    if (!type || type === "credit") {
+      transactions = await transaction
+        .find({})
+        .populate("requestedBy.sender requestedBy.receiver paidBy", "name");
+    }
+
+    // Fetch deductions if type is not 'credit'
+    if (!type || type === "debit") {
+      deductions = await Deduction.find({}).populate("user deductBy report", "name");
+    }
+
+    // Ensure both lists have the same structure
+    const transactionList = transactions.map(transaction => ({
+      id: transaction._id,
+      amount: transaction.amount,
+      type: "credit", // Mark transactions as credit
+      date: transaction.paidOn || transaction.requestedOn, // Use paidOn if available, else requestedOn
+      description: transaction.description,
+      user: transaction.requestedBy.receiver.name, // Assuming receiver is the user for consistency with deductions
+      performedBy: transaction.requestedBy.sender.name, // Admin or sender performing the transaction
+    }));
+
+    const deductionList = deductions.map(deduction => ({
+      id: deduction._id,
+      amount: deduction.amount,
+      type: "debit", // Mark deductions as debit
+      date: deduction.deductOn, // Deducted date
+      description: `Deduction: ${deduction.report ? "Report ID: " + deduction.report : "No report"}`, // Customize description
+      user: deduction.user.name, // The user affected by the deduction
+      performedBy: deduction.deductBy.name, // Admin who performed the deduction
+    }));
+
+    // Combine both lists if no type filter is applied, else return the filtered list
+    let combinedList = [];
+    if (!type) {
+      combinedList = [...transactionList, ...deductionList]; // Combine if no type is specified
+    } else if (type === "credit") {
+      combinedList = transactionList; // Return only transactions (credit)
+    } else if (type === "debit") {
+      combinedList = deductionList; // Return only deductions (debit)
+    }
+
+    // Sort the combined list by date (latest first)
+    combinedList.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    return responseHandler(res, 200, "Transactions and deductions retrieved successfully", combinedList);
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
 exports.viewtransactionById = async (req, res) => {
   try {
     const transactionId = req.params.id;
