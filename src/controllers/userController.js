@@ -109,6 +109,7 @@ exports.mpinHandler = async (req, res) => {
 
       const token = generateToken(user._id, user.userType);
       return responseHandler(res, 200, "Login successfull..!", {
+        _id: user._id,
         token,
         userType: user.userType,
         username: user.name,
