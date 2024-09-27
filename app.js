@@ -8,8 +8,6 @@ const volleyball = require("volleyball");
 const clc = require("cli-color");
 const responseHandler = require("./src/helpers/responseHandler");
 const loadSecrets = require("./src/config/env.config");
-
-
 const {
   swaggerUi,
   swaggerSpec,
