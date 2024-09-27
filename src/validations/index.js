@@ -202,27 +202,27 @@ exports.createDeductionSchema = Joi.object({
 
 //nodemailer code
 
-var nodemailer = require('nodemailer');
+// var nodemailer = require('nodemailer');
 
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'help.xpensea@gmail.com',
-    pass: 'bvix uhjn cvwf wczw'
-  }
-});
+// var transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: 'help.xpensea@gmail.com',
+//     pass: 'bvix uhjn cvwf wczw'
+//   }
+// });
 
-var mailOptions = {
-  from: 'help.xpensea@gmail.com',
-  to: 'rishariyad@gmail.com',
-  subject: 'Sending Email using Node.js',
-  text: 'This is a test email!'
-};
+// var mailOptions = {
+//   from: 'help.xpensea@gmail.com',
+//   to: 'rishariyad@gmail.com',
+//   subject: 'Sending Email using Node.js',
+//   text: 'This is a test email!'
+// };
 
-transporter.sendMail(mailOptions, function(error, info){
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Email sent: ' + info.response);
-  }
-});
+// transporter.sendMail(mailOptions, function(error, info){
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log('Email sent: ' + info.response);
+//   }
+// });

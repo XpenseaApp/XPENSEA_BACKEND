@@ -968,6 +968,19 @@
  *         schema:
  *           type: string
  *         description: ID of the report to reimburse
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: string
+ *                 example: "53"
+ *               descriptionFinance:
+ *                 type: string
+ *                 example: "Example"
  *     responses:
  *       200:
  *         description: Reimbursed successfully

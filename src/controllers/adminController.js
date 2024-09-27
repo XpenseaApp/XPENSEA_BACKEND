@@ -1627,6 +1627,7 @@ exports.reimburseReport = async (req, res) => {
       const reqData = {
         user: report.user,
         deductBy: req.userId,
+        amount: Number(amount),
         deductOn: new Date(),
         mode: "bank",
       };
