@@ -1629,6 +1629,7 @@ exports.reimburseReport = async (req, res) => {
         deductBy: req.userId,
         amount: Number(amount),
         deductOn: new Date(),
+        report: id,
         mode: "bank",
       };
       await Deduction.create(reqData);
