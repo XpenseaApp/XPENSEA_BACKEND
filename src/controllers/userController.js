@@ -39,7 +39,7 @@ exports.sendOtp = async (req, res) => {
     if (!user) {
       return responseHandler(res, 404, "User not found");
     }
-    const otp = generateOTP(5);
+    const otp = generateOTP(4);
     const sendOtpFn = await sendMail(email, otp);
     if (sendOtpFn.status == "failure") {
       return responseHandler(res, 400, "OTP sent failed");
