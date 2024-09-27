@@ -87,16 +87,16 @@ Identification Number) related operations for a user. Here is a breakdown of wha
 doing: */
 exports.mpinHandler = async (req, res) => {
   try {
-    const { mobile, mpin } = req.body;
+    const { email, mpin } = req.body;
 
-    if (!mobile) {
-      return responseHandler(res, 400, "Mobile number is required");
+    if (!email) {
+      return responseHandler(res, 400, "Email is required");
     }
     if (!mpin) {
       return responseHandler(res, 400, "MPIN is required");
     }
 
-    const user = await User.findOne({ mobile });
+    const user = await User.findOne({ email });
     if (!user) {
       return responseHandler(res, 404, "User not found");
     }
