@@ -841,6 +841,7 @@ exports.listController = async (req, res) => {
             amount: data.amount,
             status: data.status,
             deductBy: data.deductBy.name,
+            paymentMethod: data.mode,
             report: data.report.title,
             reportId: data.report.reportId,
             deductOn: moment(data.deductOn).format("MMM DD YYYY"),
