@@ -1161,6 +1161,12 @@ exports.reimburseReport = async (req, res) => {
       { new: true }
     );
 
+    await Notification.create({
+      content: reimburse._id,
+      user: reimburse.user,
+      status: reimburse.status,
+    });
+
     if (!reimburse) return responseHandler(res, 400, "Reimbursed failed");
 
     return responseHandler(res, 200, `Reimbursed successfully`);
