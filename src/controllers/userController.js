@@ -68,7 +68,7 @@ exports.verifyUser = async (req, res) => {
     if (!user) {
       return responseHandler(res, 404, "User not found");
     }
-    if (user.otp !== otp) {
+    if (user.otp !== Number(otp)) {
       return responseHandler(res, 400, "Invalid OTP");
     }
     user.otp = null;

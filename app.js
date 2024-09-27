@@ -1,5 +1,5 @@
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config(); // Load local .env only if not in productions
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config(); // Load local .env only if not in productions
 }
 
 const express = require("express");
@@ -17,9 +17,7 @@ const {
 const app = express();
 app.use(volleyball);
 
-
 const NODE_ENV = process.env.NODE_ENV;
-
 
 //* Function to start the server
 const startServer = async () => {
@@ -29,34 +27,31 @@ const startServer = async () => {
     //   await loadSecrets();
     //   console.log("Server started", process.env.test)
     // }else{
-    //   process.env.GOOGLE_APPLICATION_CREDENTIALS = "C:\\Users\\dicor\\OneDrive\\Desktop\\Acute\\xpensea-988cce69e3c6.json"; 
+    //   process.env.GOOGLE_APPLICATION_CREDENTIALS = "C:\\Users\\dicor\\OneDrive\\Desktop\\Acute\\xpensea-988cce69e3c6.json";
     //   await loadSecrets();
     // }
     const { PORT, API_VERSION } = process.env;
     const userRoute = require("./src/routes/user");
     const adminRoute = require("./src/routes/admin");
-    
-    
+
     //* Define the PORT & API version based on environment variables
-    
+
     //* Enable Cross-Origin Resource Sharing (CORS) middleware
     app.use(cors());
     //* Parse JSON request bodies
     app.use(express.json());
     //* Set the base path for API routes
     const BASE_PATH = `/api/${API_VERSION}`;
-    //* Import database connection module
-    require("./src/helpers/connection");
     //* Start the cron job
-    require("./src/jobs"); 
-    
+    require("./src/jobs");
+
     //* Swagger setup
     app.use(
       "/api-docs",
       swaggerUi.serve,
       swaggerUi.setup(swaggerSpec, swaggerOptions)
     );
-    
+
     //* Configure routes for user API
     app.use(`${BASE_PATH}/admin`, adminRoute);
     app.use(`${BASE_PATH}/user`, userRoute);
@@ -74,7 +69,11 @@ const startServer = async () => {
     //! Start the server and listen on the specified port from environment variable
     app.listen(PORT, () => {
       const portMessage = clc.redBright(`✓ App is running on port: ${PORT}`);
-      const envMessage = clc.yellowBright(`✓ Environment: ${NODE_ENV || 'development'}`);
+      const envMessage = clc.yellowBright(
+        `✓ Environment: ${NODE_ENV || "development"}`
+      );
+      //* Import database connection module
+      require("./src/helpers/connection");
       console.log(`${portMessage}\n${envMessage}`);
     });
   } catch (error) {
