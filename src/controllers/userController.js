@@ -68,7 +68,7 @@ exports.verifyUser = async (req, res) => {
     if (!user) {
       return responseHandler(res, 404, "User not found");
     }
-    if (user.otp !== otp) {
+    if (user.otp !== Number(otp)) {
       return responseHandler(res, 400, "Invalid OTP");
     }
     user.otp = null;
@@ -87,16 +87,16 @@ Identification Number) related operations for a user. Here is a breakdown of wha
 doing: */
 exports.mpinHandler = async (req, res) => {
   try {
-    const { mobile, mpin } = req.body;
+    const { email, mpin } = req.body;
 
-    if (!mobile) {
-      return responseHandler(res, 400, "Mobile number is required");
+    if (!email) {
+      return responseHandler(res, 400, "Email is required");
     }
     if (!mpin) {
       return responseHandler(res, 400, "MPIN is required");
     }
 
-    const user = await User.findOne({ mobile });
+    const user = await User.findOne({ email });
     if (!user) {
       return responseHandler(res, 404, "User not found");
     }
@@ -227,6 +227,12 @@ exports.createReport = async (req, res) => {
           status: newReport.status,
         };
         await Notification.create(data);
+        const approverNotification = {
+          content: newReport._id,
+          user: user.approver,
+          status: newReport.status,
+        };
+        await Notification.create(approverNotification);
         return responseHandler(
           res,
           200,
@@ -1156,6 +1162,12 @@ exports.reimburseReport = async (req, res) => {
       { new: true }
     );
 
+    await Notification.create({
+      content: reimburse._id,
+      user: reimburse.user,
+      status: reimburse.status,
+    });
+
     if (!reimburse) return responseHandler(res, 400, "Reimbursed failed");
 
     return responseHandler(res, 200, `Reimbursed successfully`);
@@ -1222,7 +1234,6 @@ exports.createtransaction = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
-
 
 exports.viewtransactionById = async (req, res) => {
   try {
