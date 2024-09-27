@@ -13,9 +13,9 @@
  *           schema:
  *             type: object
  *             properties:
- *               mobile:
+ *               email:
  *                 type: string
- *                 example: "9876543210"
+ *                 example: "example@gmail.com"
  *     responses:
  *       200:
  *         description: OTP sent successfully
@@ -45,9 +45,9 @@
  *               otp:
  *                 type: number
  *                 example: 72033
- *               mobile:
+ *               email:
  *                 type: string
- *                 example: "9876543210"
+ *                 example: "example@gmail.com"
  *     responses:
  *       200:
  *         description: User verified successfully
@@ -659,4 +659,59 @@
  *         description: Policy not found
  *       500:
  *         description: Internal Server Error
+ */
+
+
+/**
+ * @swagger
+ * /user/transaction:
+ *   post:
+ *     summary: Create a new transaction
+ *     description: API endpoint to create a new transaction record.
+ *     tags:
+ *       - Transaction
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               requestedBy:
+ *                 type: object
+ *                 properties:
+ *                   sender:
+ *                     type: string
+ *                     description: ID of the admin who requested.
+ *                     example: "64c0ed92b7e8773e9cd3c401"
+ *                   receiver:
+ *                     type: string
+ *                     description: ID of the staff who requested.
+ *                     example: "64c0ed92b7e8773e9cd3c402"
+ *               amount:
+ *                 type: number
+ *                 description: Amount of payment.
+ *                 example: 1500.50
+ *               paidBy:
+ *                 type: string
+ *                 description: ID of the financer who paid.
+ *                 example: "64c0ed92b7e8773e9cd3c403"
+ *               paymentMethod:
+ *                 type: string
+ *                 enum: ["Bank Transfer", "Cash", "Credit Card", "Other"]
+ *                 description: Method of payment.
+ *                 example: "Bank Transfer"
+ *               description:
+ *                 type: string
+ *                 description: Description of the payment.
+ *                 example: "Payment for office supplies"
+ *     responses:
+ *       201:
+ *         description: Transaction created successfully.
+ *       400:
+ *         description: Bad request.
+ *       500:
+ *         description: Internal server error.
  */

@@ -14,6 +14,7 @@ const {
   problemSchema,
   createUserEventSchema,
   createUserEventEditSchema,
+  createTransactionSchema,
 } = require("../validations");
 const Problem = require("../models/problemModel");
 const Event = require("../models/eventModel");
@@ -23,23 +24,23 @@ const analyzeImage = require("../jobs/imageAnalysis");
 const transaction = require("../models/transactionModel");
 const Policy = require("../models/policyModel");
 const Deduction = require("../models/deductionModel");
-const Location = require('../models/locationModel');
-
+const Location = require("../models/locationModel");
+const sendMail = require("../utils/sendMail");
 
 /* The `exports.sendOtp` function is responsible for sending an OTP (One Time Password) to a user's
 mobile number for verification purposes. Here is a breakdown of what the function is doing: */
 exports.sendOtp = async (req, res) => {
   try {
-    const { mobile } = req.body;
-    if (!mobile) {
-      return responseHandler(res, 400, "Mobile is required");
+    const { email } = req.body;
+    if (!email) {
+      return responseHandler(res, 400, "Email is required");
     }
-    const user = await User.findOne({ mobile });
+    const user = await User.findOne({ email });
     if (!user) {
       return responseHandler(res, 404, "User not found");
     }
     const otp = generateOTP(5);
-    const sendOtpFn = await sendOtp(mobile, otp);
+    const sendOtpFn = await sendMail(email, otp);
     if (sendOtpFn.status == "failure") {
       return responseHandler(res, 400, "OTP sent failed");
     } else {
@@ -56,14 +57,14 @@ exports.sendOtp = async (req, res) => {
 Password) provided by the user. Here is a breakdown of what the function is doing: */
 exports.verifyUser = async (req, res) => {
   try {
-    const { otp, mobile } = req.body;
+    const { otp, email } = req.body;
     if (!otp) {
       return responseHandler(res, 400, "OTP is required");
     }
-    if (!mobile) {
-      return responseHandler(res, 400, "Mobile is required");
+    if (!email) {
+      return responseHandler(res, 400, "Email is required");
     }
-    const user = await User.findOne({ mobile });
+    const user = await User.findOne({ email });
     if (!user) {
       return responseHandler(res, 404, "User not found");
     }
@@ -1184,6 +1185,44 @@ exports.imageAnalysis = async (req, res) => {
   }
 };
 
+exports.createtransaction = async (req, res) => {
+  try {
+    const transactionData = req.body;
+
+    // Validate input data (Assuming you have a validation schema)
+    const validation = createTransactionSchema.validate(transactionData, {
+      abortEarly: false,
+    });
+
+    if (validation.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${validation.error.details
+          .map((err) => err.message)
+          .join(", ")}`
+      );
+    }
+
+    // Create the advance payment record
+    const newtransaction = await transaction.create(transactionData);
+
+    if (newtransaction) {
+      return responseHandler(
+        res,
+        201,
+        `Transaction created successfully!`,
+        newtransaction
+      );
+    } else {
+      return responseHandler(res, 400, `Transaction creation failed`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+  }
+};
+
+
 exports.viewtransactionById = async (req, res) => {
   try {
     const transactionId = req.params.id;
@@ -1287,7 +1326,6 @@ exports.getPolicy = async (req, res) => {
   }
 };
 
-
 exports.saveLocation = async (req, res) => {
   try {
     const { eventName, eventId, location } = req.body;
@@ -1308,5 +1346,41 @@ exports.saveLocation = async (req, res) => {
     return responseHandler(res, 200, "Location saved successfully");
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error ${error.message}`);
+  }
+};
+
+exports.createtransaction = async (req, res) => {
+  try {
+    const transactionData = req.body;
+
+    const validation = createTransactionSchema.validate(transactionData, {
+      abortEarly: false,
+    });
+
+    if (validation.error) {
+      return responseHandler(
+        res,
+        400,
+        `Invalid input: ${validation.error.details
+          .map((err) => err.message)
+          .join(", ")}`
+      );
+    }
+
+    // Create the advance payment record
+    const newtransaction = await transaction.create(transactionData);
+
+    if (newtransaction) {
+      return responseHandler(
+        res,
+        201,
+        `Transaction created successfully!`,
+        newtransaction
+      );
+    } else {
+      return responseHandler(res, 400, `Transaction creation failed`);
+    }
+  } catch (error) {
+    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
