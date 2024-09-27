@@ -4,7 +4,7 @@ const authVerify = require("../middlewares/authVerify");
 
 const userRoute = express.Router();
 
-// Public Routes
+// Public Route
 userRoute.post("/send-otp", userController.sendOtp);
 userRoute.post("/verify", userController.verifyUser);
 userRoute.post("/mpin", userController.mpinHandler);
