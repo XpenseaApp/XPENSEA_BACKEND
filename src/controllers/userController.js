@@ -226,6 +226,12 @@ exports.createReport = async (req, res) => {
           status: newReport.status,
         };
         await Notification.create(data);
+        const approverNotification = {
+          content: newReport._id,
+          user: user.approver,
+          status: newReport.status,
+        };
+        await Notification.create(approverNotification);
         return responseHandler(
           res,
           200,
@@ -1221,7 +1227,6 @@ exports.createtransaction = async (req, res) => {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
   }
 };
-
 
 exports.viewtransactionById = async (req, res) => {
   try {
