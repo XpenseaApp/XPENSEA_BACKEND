@@ -659,6 +659,7 @@ exports.getReport = async (req, res) => {
       totalAmount: report.expenses.reduce((acc, exp) => acc + exp.amount, 0),
       expenseCount: report.expenses.length,
       Event: report.event,
+      eventStatus: Event.findOne({ _id: report.event }).status,
       expenses: report.expenses.map((expense) => ({
         _id: expense._id,
         title: expense.title,
