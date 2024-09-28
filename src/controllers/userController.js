@@ -651,12 +651,12 @@ exports.getReport = async (req, res) => {
       );
     }
     let eventStatus = null;
-if (report.event) {
-  const eventDetails = await Event.findOne({ _id: report.event });
-  if (eventDetails) {
-    eventStatus = eventDetails.status;
-  }
-}
+    if (report.event) {
+      const eventDetails = await Event.findOne({ _id: report.event });
+      if (eventDetails) {
+        eventStatus = eventDetails.status;
+      }
+    }
 
     const mappedData = {
       _id: report._id,
