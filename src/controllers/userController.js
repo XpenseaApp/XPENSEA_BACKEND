@@ -650,6 +650,13 @@ exports.getReport = async (req, res) => {
         id + " " + isEvent + " Report not found"
       );
     }
+    let eventStatus = null;
+if (report.event) {
+  const eventDetails = await Event.findOne({ _id: report.event });
+  if (eventDetails) {
+    eventStatus = eventDetails.status;
+  }
+}
 
     const mappedData = {
       _id: report._id,
@@ -659,7 +666,7 @@ exports.getReport = async (req, res) => {
       totalAmount: report.expenses.reduce((acc, exp) => acc + exp.amount, 0),
       expenseCount: report.expenses.length,
       Event: report.event,
-      eventStatus: Event.findOne({ _id: report.event }).status,
+      eventStatus: eventStatus,
       expenses: report.expenses.map((expense) => ({
         _id: expense._id,
         title: expense.title,
