@@ -1920,6 +1920,7 @@ exports.viewTransactionsAndDeductions = async (req, res) => {
     const transactionList = transactions.map((transaction) => ({
       id: transaction._id,
       amount: transaction.amount,
+      status: transaction.status,
       type: "credit", // Mark transactions as credit
       date: transaction.paidOn || transaction.requestedOn, // Use paidOn if available, else requestedOn
       description: transaction.description,
@@ -1930,6 +1931,7 @@ exports.viewTransactionsAndDeductions = async (req, res) => {
     const deductionList = deductions.map((deduction) => ({
       id: deduction._id,
       amount: deduction.amount,
+      status: deduction.status ? "deducted" : "failed",
       type: "debit", // Mark deductions as debit
       date: deduction.deductOn, // Deducted date
       description: `Deduction: ${
