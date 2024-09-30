@@ -1369,38 +1369,38 @@ exports.saveLocation = async (req, res) => {
   }
 };
 
-exports.createtransaction = async (req, res) => {
-  try {
-    const transactionData = req.body;
+// exports.createtransaction = async (req, res) => {
+//   try {
+//     const transactionData = req.body;
 
-    const validation = createTransactionSchema.validate(transactionData, {
-      abortEarly: false,
-    });
+//     const validation = createTransactionSchema.validate(transactionData, {
+//       abortEarly: false,
+//     });
 
-    if (validation.error) {
-      return responseHandler(
-        res,
-        400,
-        `Invalid input: ${validation.error.details
-          .map((err) => err.message)
-          .join(", ")}`
-      );
-    }
+//     if (validation.error) {
+//       return responseHandler(
+//         res,
+//         400,
+//         `Invalid input: ${validation.error.details
+//           .map((err) => err.message)
+//           .join(", ")}`
+//       );
+//     }
 
-    // Create the advance payment record
-    const newtransaction = await transaction.create(transactionData);
+//     // Create the advance payment record
+//     const newtransaction = await transaction.create(transactionData);
 
-    if (newtransaction) {
-      return responseHandler(
-        res,
-        201,
-        `Transaction created successfully!`,
-        newtransaction
-      );
-    } else {
-      return responseHandler(res, 400, `Transaction creation failed`);
-    }
-  } catch (error) {
-    return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
-  }
-};
+//     if (newtransaction) {
+//       return responseHandler(
+//         res,
+//         201,
+//         `Transaction created successfully!`,
+//         newtransaction
+//       );
+//     } else {
+//       return responseHandler(res, 400, `Transaction creation failed`);
+//     }
+//   } catch (error) {
+//     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
+//   }
+// };
