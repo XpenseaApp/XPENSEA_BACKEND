@@ -1888,22 +1888,29 @@ exports.createtransaction = async (req, res) => {
 
 exports.viewTransactionsAndDeductions = async (req, res) => {
   try {
-    const { type } = req.query; // Get the 'type' query parameter from the request (e.g., 'credit' or 'debit')
+    const { type, staffId } = req.query; // Get the 'type' query parameter from the request (e.g., 'credit' or 'debit')
 
     // Fetch all transactions and deductions
     let transactions = [];
     let deductions = [];
 
+    const filter = {};
+    const query = {};
+    if (staffId) {
+      filter["requestedBy.receiver"] = new mongoose.Types.ObjectId(staffId);
+      query.user = new mongoose.Types.ObjectId(staffId);
+    }
+
     // Fetch transactions if type is not 'debit'
     if (!type || type === "credit") {
       transactions = await transaction
-        .find({})
+        .find(filter)
         .populate("requestedBy.sender requestedBy.receiver paidBy", "name");
     }
 
     // Fetch deductions if type is not 'credit'
     if (!type || type === "debit") {
-      deductions = await Deduction.find({}).populate(
+      deductions = await Deduction.find(query).populate(
         "user deductBy report",
         "name"
       );
