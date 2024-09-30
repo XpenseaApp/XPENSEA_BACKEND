@@ -817,9 +817,12 @@ exports.listController = async (req, res) => {
         });
       } else {
         const query = {
-          user: req.query.staffId,
           status: true,
         };
+
+        if (req.query.staffId) {
+          query.user = new mongoose.Types.ObjectId(req.query.staffId);
+        }
         totalCount = await Deduction.countDocuments(query);
         const fetchDeductions = await Deduction.find(query)
           .populate("user", "name")
