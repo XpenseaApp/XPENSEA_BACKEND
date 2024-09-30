@@ -1282,13 +1282,13 @@ exports.getWallet = async (req, res) => {
     );
 
     // Calculate the start and end of the current month
-    const startOfMonth = moment().startOf("month").toDate();
-    const endOfMonth = moment().endOf("month").toDate();
+    // const startOfMonth = moment().startOf("month").toDate();
+    // const endOfMonth = moment().endOf("month").toDate();
 
     // Fetch all expenses for the user within the current month
-    const expenses = await Expense.find({
-      createdAt: { $gte: startOfMonth, $lte: endOfMonth },
-      status: { $in: ["mapped", "approved"] },
+    const expenses = await Deduction.find({
+      mode: "wallet",
+      status: true,
       user: req.userId,
     });
 
