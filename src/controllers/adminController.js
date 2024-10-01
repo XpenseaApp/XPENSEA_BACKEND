@@ -1921,24 +1921,26 @@ exports.viewTransactionsAndDeductions = async (req, res) => {
       id: transaction._id,
       amount: transaction.amount,
       status: transaction.status,
+      paymentMethod: transaction.paymentMethod,
       type: "credit", // Mark transactions as credit
       date: transaction.paidOn || transaction.requestedOn, // Use paidOn if available, else requestedOn
       description: transaction.description,
-      user: transaction.requestedBy.receiver.name, // Assuming receiver is the user for consistency with deductions
-      performedBy: transaction.requestedBy.sender.name, // Admin or sender performing the transaction
+      user: transaction.requestedBy.receiver?.name, // Assuming receiver is the user for consistency with deductions
+      performedBy: transaction.requestedBy.sender?.name, // Admin or sender performing the transaction
     }));
 
     const deductionList = deductions.map((deduction) => ({
       id: deduction._id,
       amount: deduction.amount,
+      paymentMethod: deduction.mode,
       status: deduction.status ? "deducted" : "failed",
       type: "debit", // Mark deductions as debit
       date: deduction.deductOn, // Deducted date
       description: `Deduction: ${
         deduction.report ? "Report ID: " + deduction.report : "No report"
       }`, // Customize description
-      user: deduction.user.name, // The user affected by the deduction
-      performedBy: deduction.deductBy.name, // Admin who performed the deduction
+      user: deduction.user?.name, // The user affected by the deduction
+      performedBy: deduction.deductBy?.name, // Admin who performed the deduction
     }));
 
     // Combine both lists if no type filter is applied, else return the filtered list

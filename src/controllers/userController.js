@@ -546,6 +546,7 @@ exports.listController = async (req, res) => {
           },
         },
       ]);
+      console.log("🚀 ~ exports.listController= ~ result:", result)
 
       const reports = result[0].reports;
       const totalCount = result[0].totalCount[0]
