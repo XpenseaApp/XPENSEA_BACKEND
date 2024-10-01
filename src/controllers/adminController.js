@@ -1434,6 +1434,30 @@ exports.getApproval = async (req, res) => {
       return responseHandler(res, 404, "Report not found");
     }
 
+    const wallet = await transaction.find({
+      "requestedBy.receiver": fetchReport.user._id,
+      status: "completed",
+    });
+
+    const walletAmount = wallet.reduce(
+      (acc, advance) => acc + advance.amount,
+      0
+    );
+
+    const deductAmount = await Deduction.aggregate([
+      { $match: { user: fetchReport.user._id, mode: "wallet", status: true } },
+      { $group: { _id: null, amount: { $sum: "$amount" } } },
+      { $project: { _id: 0, amount: 1 } },
+    ]);
+
+    const deductionReport = await Deduction.find({
+      user: fetchReport.user._id,
+      status: true,
+      report: fetchReport._id,
+    })
+      .populate("user", "name")
+      .populate("deductBy", "name");
+
     const mappedData = {
       _id: fetchReport._id,
       user: fetchReport.user.name,
@@ -1462,6 +1486,18 @@ exports.getApproval = async (req, res) => {
         (acc, curr) => acc + curr.amount,
         0
       ),
+      walletAmount:
+        walletAmount - (deductAmount.length > 0 ? deductAmount[0].amount : 0),
+      deduction: deductionReport.map((res) => {
+        return {
+          _id: res._id,
+          amount: res.amount,
+          user: res.user.name,
+          deductBy: res.deductBy.name,
+          mode: res.mode,
+          deductOn: moment(res.deductOn).format("MMM DD YYYY"),
+        };
+      }),
       reportDate: moment(fetchReport.reportDate).format("MMM DD YYYY"),
       creator: fetchReport.event
         ? await mongoose
