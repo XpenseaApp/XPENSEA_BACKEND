@@ -1918,7 +1918,7 @@ exports.viewTransactionsAndDeductions = async (req, res) => {
 
     // Ensure both lists have the same structure
     const transactionList = transactions.map((transaction) => ({
-      id: transaction._id,
+      _id: transaction._id,
       amount: transaction.amount,
       status: transaction.status,
       paymentMethod: transaction.paymentMethod,
@@ -1930,7 +1930,7 @@ exports.viewTransactionsAndDeductions = async (req, res) => {
     }));
 
     const deductionList = deductions.map((deduction) => ({
-      id: deduction._id,
+      _id: deduction._id,
       amount: deduction.amount,
       paymentMethod: deduction.mode,
       status: deduction.status ? "deducted" : "failed",
