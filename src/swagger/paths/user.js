@@ -77,9 +77,9 @@
  *               mpin:
  *                 type: string
  *                 example: "1234"
- *               mobile:
+ *               email:
  *                 type: string
- *                 example: "9876543210"
+ *                 example: "example@gmail.com"
  *     responses:
  *       200:
  *         description: User mpin added successfully
@@ -295,9 +295,9 @@
  *           schema:
  *             type: object
  *             properties:
- *               mobile:
+ *               email:
  *                 type: string
- *                 example: "9876543210"
+ *                 example: "example@gmail.com"
  *               mpin:
  *                 type: string
  *                 example: "4321"

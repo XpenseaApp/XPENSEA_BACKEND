@@ -1270,27 +1270,39 @@ exports.getWallet = async (req, res) => {
     const user = await User.findById(req.userId);
     if (!user) return responseHandler(res, 404, "User not found");
 
+    // Calculate the start and end of the current month
+    const startOfMonth = moment().startOf("month").toDate();
+    const endOfMonth = moment().endOf("month").toDate();
+
     // Calculate the total amount of all advances paid to the user
-    const advances = await transaction.find({
-      "requestedBy.receiver": req.userId,
-      status: "completed", // Only include completed payments
-    });
+    const advances = await transaction
+      .find({
+        createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+        "requestedBy.receiver": req.userId,
+        status: "completed", // Only include completed payments
+      })
+      .populate("requestedBy.sender", "name");
+
+    const mappedAdvances = advances.map((advance) => ({
+      _id: advance._id,
+      amount: advance.amount,
+      date: advance.createdAt,
+      mode: "credit",
+      admin: advance.requestedBy.sender.name,
+    }));
 
     const totalAmount = advances.reduce(
       (acc, advance) => acc + advance.amount,
       0
     );
 
-    // Calculate the start and end of the current month
-    // const startOfMonth = moment().startOf("month").toDate();
-    // const endOfMonth = moment().endOf("month").toDate();
-
     // Fetch all expenses for the user within the current month
     const expenses = await Deduction.find({
+      deductOn: { $gte: startOfMonth, $lte: endOfMonth },
       mode: "wallet",
       status: true,
       user: req.userId,
-    });
+    }).populate("deductBy", "name");
 
     // Calculate the total expenses
     const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
@@ -1301,21 +1313,23 @@ exports.getWallet = async (req, res) => {
     // Map the expense data for response
     const mappedData = expenses.map((exp) => ({
       _id: exp._id,
-      category: exp.category,
       amount: exp.amount,
-      image: exp.image,
-      title: exp.title,
+      date: exp.deductOn,
+      mode: "debit",
+      admin: exp.deductBy.name,
     }));
 
     // Get the user's tier categories (assuming it's relevant for the resp0onse)
     const categories = user.tier.categories;
+
+    const finalMappedData = [...mappedAdvances, ...mappedData];
 
     // Respond with the wallet details
     return responseHandler(res, 200, "Wallet details retrieved successfully", {
       totalAmount,
       totalExpenses,
       balanceAmount,
-      expenses: mappedData,
+      expenses: finalMappedData,
       categories,
     });
   } catch (error) {
