@@ -533,7 +533,6 @@ exports.listController = async (req, res) => {
             as: "expenseDetails",
           },
         },
-        { $unwind: "$expenseDetails" },
         {
           $lookup: {
             from: "tiers",
@@ -549,18 +548,67 @@ exports.listController = async (req, res) => {
           },
         },
         {
+          $addFields: {
+            totalAmount: {
+              $reduce: {
+                input: "$expenseDetails",
+                initialValue: 0,
+                in: { $add: ["$$value", "$$this.amount"] },
+              },
+            },
+            expenseCount: { $size: "$expenseDetails" },
+            formattedDate: {
+              $dateToString: { format: "%b %d %Y", date: "$reportDate" },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            title: 1,
+            status: 1,
+            totalAmount: 1,
+            expenseCount: 1,
+            date: "$formattedDate",
+          },
+        },
+        {
           $facet: {
-            reports: [{ $match: {} }],
+            reports: [
+              { $skip: skipCount },
+              { $limit: 10 },
+              { $sort: { createdAt: -1 } },
+            ],
             totalCount: [{ $count: "count" }],
           },
         },
       ]);
 
-      const reports = result[0].reports;
+      if (!result || result[0].reports.length === 0) {
+        return responseHandler(res, 200, "No Reports found", []);
+      }
+
+      const mappedData = result[0].reports.map((item) => {
+        return {
+          _id: item._id,
+          title: item.title,
+          status: item.status,
+          totalAmount: item.totalAmount,
+          expenseCount: item.expenseCount,
+          date: item.date,
+        };
+      });
+
       const totalCount = result[0].totalCount[0]
         ? result[0].totalCount[0].count
         : 0;
-      return responseHandler(res, 200, "Approvals found", reports, totalCount);
+      return responseHandler(
+        res,
+        200,
+        "Approvals found",
+        mappedData,
+        totalCount
+      );
     } else {
       return responseHandler(res, 404, "Invalid type..!");
     }
