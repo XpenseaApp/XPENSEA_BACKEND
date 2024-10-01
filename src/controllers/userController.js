@@ -1271,8 +1271,8 @@ exports.getWallet = async (req, res) => {
     if (!user) return responseHandler(res, 404, "User not found");
 
     // Calculate the start and end of the current month
-    const startOfMonth = moment().startOf("month").toDate();
-    const endOfMonth = moment().endOf("month").toDate();
+    const startOfMonth = moment.utc().startOf("month").toDate();
+    const endOfMonth = moment.utc().endOf("month").toDate();
 
     // Calculate the total amount of all advances paid to the user
     const advances = await transaction
