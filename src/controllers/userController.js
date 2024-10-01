@@ -527,6 +527,15 @@ exports.listController = async (req, res) => {
         { $unwind: "$userDetails" },
         {
           $lookup: {
+            from: "expenses",
+            localField: "expenses",
+            foreignField: "_id",
+            as: "expenseDetails",
+          },
+        },
+        { $unwind: "$expenseDetails" },
+        {
+          $lookup: {
             from: "tiers",
             localField: "userDetails.tier",
             foreignField: "_id",
@@ -546,7 +555,6 @@ exports.listController = async (req, res) => {
           },
         },
       ]);
-      console.log("🚀 ~ exports.listController= ~ result:", result)
 
       const reports = result[0].reports;
       const totalCount = result[0].totalCount[0]
