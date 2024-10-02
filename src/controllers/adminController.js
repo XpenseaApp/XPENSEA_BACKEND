@@ -1910,7 +1910,9 @@ exports.viewTransactionsAndDeductions = async (req, res) => {
       date: transaction.paidOn || transaction.requestedOn, // Use paidOn if available, else requestedOn
       description: transaction.description,
       user: transaction.requestedBy.receiver?.name, // Assuming receiver is the user for consistency with deductions
-      performedBy: transaction.requestedBy.sender?.name, // Admin or sender performing the transaction
+      performedBy: transaction.requestedBy.sender?.name
+        ? transaction.requestedBy.sender?.name
+        : transaction.requestedBy.receiver?.name, // Admin or sender performing the transaction
     }));
 
     const deductionList = deductions.map((deduction) => ({
