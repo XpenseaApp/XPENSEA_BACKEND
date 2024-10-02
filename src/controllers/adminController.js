@@ -2273,6 +2273,23 @@ exports.deductWallet = async (req, res) => {
     const report = await Report.findById(req.body.report);
     if (!report) return responseHandler(res, 404, "Report not found");
 
+    const totalAmountInWallet = await transaction.find({
+      "requestedBy.receiver": report.user,
+      status: "completed",
+    });
+
+    const deductAmountFromWallet = await Deduction.find({
+      user: report.user,
+      mode: "wallet",
+      status: true,
+    });
+
+    const currentAmountInWallet =
+      Number(totalAmountInWallet) - Number(deductAmountFromWallet);
+
+    if (currentAmountInWallet < 0)
+      return responseHandler(res, 400, "Insufficient wallet balance");
+
     req.body.user = report.user;
     req.body.deductBy = req.userId;
     req.body.deductOn = new Date();
