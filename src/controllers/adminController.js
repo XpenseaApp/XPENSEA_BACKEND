@@ -771,86 +771,34 @@ exports.listController = async (req, res) => {
       if (status) {
         filter.status = status;
       }
-      if (req.query.staffId) {
-        filter["requestedBy.receiver"] = new mongoose.Types.ObjectId(
-          req.query.staffId
-        );
+
+      // Count total matching advance payment documents
+      const totalCount = await transaction.countDocuments(filter);
+
+      // Fetch advance payments based on the filter
+      const fetchAdvances = await transaction
+        .find(filter)
+        .populate("requestedBy.sender requestedBy.receiver paidBy", "name")
+        .skip(skipCount)
+        .limit(limit)
+        .sort({ createdAt: -1 })
+        .lean();
+
+      if (!fetchAdvances || fetchAdvances.length === 0) {
+        return responseHandler(res, 404, "No Transactions found");
       }
 
-      let mappedData;
-      let totalCount;
-
-      if (req.query.transactionType === "credit") {
-        // Count total matching advance payment documents
-        totalCount = await transaction.countDocuments(filter);
-
-        // Fetch advance payments based on the filter
-        const fetchAdvances = await transaction
-          .find(filter)
-          .populate("requestedBy.sender requestedBy.receiver paidBy", "name")
-          .skip(skipCount)
-          .limit(limit)
-          .sort({ createdAt: -1 })
-          .lean();
-
-        if (!fetchAdvances || fetchAdvances.length === 0) {
-          return responseHandler(res, 404, "No Transactions found");
-        }
-
-        mappedData = fetchAdvances.map((data) => {
-          return {
-            _id: data._id,
-            sender: data.requestedBy.sender.name,
-            receiver: data.requestedBy.receiver.name,
-            paidBy: data.paidBy ? data.paidBy.name : "",
-            amount: data.amount,
-            status: data.status,
-            paymentMethod: data.paymentMethod,
-            requestedOn: moment(data.requestedOn).format("MMM DD YYYY"),
-            paidOn: data.paidOn
-              ? moment(data.paidOn).format("MMM DD YYYY")
-              : "Not Paid Yet",
-            createdAt: moment(data.createdAt).format("MMM DD YYYY"),
-            updatedAt: moment(data.updatedAt).format("MMM DD YYYY"),
-            description: data.description,
-          };
-        });
-      } else {
-        const query = {
-          status: true,
+      const mappedData = fetchAdvances.map((data) => {
+        return {
+          _id: data._id,
+          performedBy: data.requestedBy.sender.name,
+          user: data.requestedBy.receiver.name,
+          paidBy: data.paidBy ? data.paidBy.name : "",
+          amount: data.amount,
+          status: data.status,
+          paymentMethod: data.paymentMethod,
         };
-
-        if (req.query.staffId) {
-          query.user = new mongoose.Types.ObjectId(req.query.staffId);
-        }
-        totalCount = await Deduction.countDocuments(query);
-        const fetchDeductions = await Deduction.find(query)
-          .populate("user", "name")
-          .populate("deductBy", "name")
-          .populate("report", "title reportId")
-          .skip(skipCount)
-          .limit(limit)
-          .sort({ createdAt: -1 })
-          .lean();
-
-        if (!fetchDeductions || fetchDeductions.length === 0) {
-          return responseHandler(res, 404, "No Transactions found");
-        }
-
-        mappedData = fetchDeductions.map((data) => {
-          return {
-            _id: data._id,
-            user: data.user.name,
-            amount: data.amount,
-            status: data.status,
-            deductBy: data.deductBy.name,
-            paymentMethod: data.mode,
-            report: data.report.title,
-            reportId: data.report.reportId,
-            deductOn: moment(data.deductOn).format("MMM DD YYYY"),
-          };
-        });
-      }
+      });
 
       return responseHandler(
         res,
