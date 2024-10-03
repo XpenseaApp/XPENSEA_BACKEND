@@ -1625,6 +1625,7 @@ exports.getUserReports = async (req, res) => {
         expenseCount: data.expenses.length,
         totalAmount: data.expenses.reduce((acc, curr) => acc + curr.amount, 0),
         location: data.location,
+        type: data.type,
         status: data.status,
         approver: data.approver ? data.approver.name : null,
         reportDate: moment(data.reportDate).format("MMM DD YYYY"),
