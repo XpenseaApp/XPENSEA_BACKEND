@@ -1424,7 +1424,7 @@ exports.getApproval = async (req, res) => {
           title: expense.title,
           amount: expense.amount,
           createdAt: moment(expense.createdAt).format("MMM DD YYYY"),
-          location: expense.location,
+          location: expense.address,
           status: expense.status,
           category: expense.category,
           image: expense.image,
