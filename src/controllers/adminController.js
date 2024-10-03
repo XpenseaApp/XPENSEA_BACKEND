@@ -2149,6 +2149,25 @@ exports.getWallet = async (req, res) => {
     // Get the user's tier categories (assuming it's relevant for the resp0onse)
     const categories = user.tier.categories;
 
+    const totalReportSubmitted = await Report.countDocuments({
+      user: id,
+    });
+
+    const totalReportReimbursed = await Report.countDocuments({
+      user: id,
+      status: "reimbursed",
+    });
+
+    const totalReportRejected = await Report.countDocuments({
+      user: id,
+      status: "rejected",
+    });
+
+    const totalReportPending = await Report.countDocuments({
+      user: id,
+      status: "pending",
+    });
+
     // Respond with the wallet details
     return responseHandler(res, 200, "Wallet details retrieved successfully", {
       totalAmount,
@@ -2156,6 +2175,10 @@ exports.getWallet = async (req, res) => {
       balanceAmount,
       expenses: mappedData,
       categories,
+      totalReportSubmitted,
+      totalReportReimbursed,
+      totalReportRejected,
+      totalReportPending,
     });
   } catch (error) {
     return responseHandler(res, 500, `Internal Server Error: ${error.message}`);
