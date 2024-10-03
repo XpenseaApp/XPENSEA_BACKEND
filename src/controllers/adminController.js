@@ -791,8 +791,8 @@ exports.listController = async (req, res) => {
       const mappedData = fetchAdvances.map((data) => {
         return {
           _id: data._id,
-          performedBy: data.requestedBy.sender.name,
-          user: data.requestedBy.receiver.name,
+          performedBy: data.requestedBy?.sender?.name,
+          user: data.requestedBy?.receiver?.name,
           paidBy: data.paidBy ? data.paidBy.name : "",
           amount: data.amount,
           status: data.status,
