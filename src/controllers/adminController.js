@@ -2197,10 +2197,7 @@ exports.getDashboard = async (req, res) => {
       },
       {
         $group: {
-          _id: {
-            user: "$user",
-            category: "$category",
-          },
+          _id: "$user",
           totalAmount: { $sum: "$amount" },
           count: { $sum: 1 },
         },
@@ -2208,7 +2205,7 @@ exports.getDashboard = async (req, res) => {
       {
         $lookup: {
           from: "users",
-          localField: "_id.user",
+          localField: "_id",
           foreignField: "_id",
           as: "user",
         },
@@ -2228,7 +2225,6 @@ exports.getDashboard = async (req, res) => {
           _id: 0,
           user: "$user.name",
           tier: "$user.tier.title",
-          category: "$_id.category",
           totalAmount: 1,
           count: 1,
         },
