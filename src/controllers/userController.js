@@ -439,26 +439,26 @@ exports.listController = async (req, res) => {
         return responseHandler(res, 200, "No Notifications found", []);
       }
 
-      const mappedData = fetchNotifications.map((item) => {
-        const totalAmount = item.content.expenses.reduce(
-          (acc, exp) => acc + exp.amount,
-          0
-        );
-        return {
-          _id: item._id,
-          title: item.content.title,
-          status: item.status,
-          totalAmount,
-          expenseCount: item.content.expenses.length,
-          date: moment(item.createdAt).format("MMM DD YYYY"),
-        };
-      });
+      // const mappedData = fetchNotifications.map((item) => {
+      //   const totalAmount = item.content.expenses.reduce(
+      //     (acc, exp) => acc + exp.amount,
+      //     0
+      //   );
+      //   return {
+      //     _id: item._id,
+      //     title: item.content.title,
+      //     status: item.status,
+      //     totalAmount,
+      //     expenseCount: item.content.expenses.length,
+      //     date: moment(item.createdAt).format("MMM DD YYYY"),
+      //   };
+      // });
 
       return responseHandler(
         res,
         200,
         "Notifications found",
-        mappedData,
+        fetchNotifications,
         totalCount
       );
     } else if (type === "events") {
