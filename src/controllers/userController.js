@@ -424,6 +424,7 @@ exports.listController = async (req, res) => {
     } else if (type === "notifications") {
       const totalCount = await Notification.countDocuments(filter);
       const fetchNotifications = await Notification.find(filter)
+        .populate("content", "title reportId")
         .populate({
           path: "content",
           populate: {
