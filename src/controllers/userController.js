@@ -422,6 +422,7 @@ exports.listController = async (req, res) => {
         totalCount
       );
     } else if (type === "notifications") {
+      filter.isRead = false;
       const totalCount = await Notification.countDocuments(filter);
       const fetchNotifications = await Notification.find(filter)
         .populate("content", "title reportId")
@@ -439,6 +440,8 @@ exports.listController = async (req, res) => {
       if (!fetchNotifications || fetchNotifications.length === 0) {
         return responseHandler(res, 200, "No Notifications found", []);
       }
+
+      await Notification.updateMany(filter);
 
       // const mappedData = fetchNotifications.map((item) => {
       //   const totalAmount = item.content.expenses.reduce(
