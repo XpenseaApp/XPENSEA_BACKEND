@@ -1349,7 +1349,7 @@ exports.getWallet = async (req, res) => {
       amount: advance.amount,
       date: advance.createdAt,
       mode: "credit",
-      admin: advance.requestedBy.sender.name,
+      admin: advance.requestedBy.sender ? advance.requestedBy.sender.name : "User",
     }));
 
     const totalAmount = advances.reduce(
