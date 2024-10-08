@@ -99,7 +99,7 @@ async function runOCR(id) {
 
     try {
       console.log('Starting OCR for expense:', expense._id);
-      const { data: { text } } = await worker.recognize(expense.image);
+      const { data: { text } } = await worker.recognize(expense.image[0]);
       console.log('Recognition result for expense', expense._id, ':', text);
 
       const input = `This is a reimbursement expense. The name of the expense is ${expense.title}, the amount is ${expense.amount}, the date is ${expense.date}, the time is ${expense.time}, the category is ${expense.category}, the description is ${expense.description}, and the ocr data in the image is ${text}. With maximum scrutiny based on the data in the image find the scores for authenticity, accuracy, compliance, completeness, and relevance of the expense. Strictly If the ocr data in the image does not represent any type of bill then the scores should be 0.`;
