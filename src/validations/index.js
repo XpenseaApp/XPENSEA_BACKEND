@@ -97,7 +97,7 @@ exports.createExpenseSchema = Joi.object({
   address: Joi.string().required(),
   category: Joi.string().required(),
   description: Joi.string().required(),
-  image: Joi.string().required(),
+  image: Joi.array().required(),
 });
 
 exports.createReportSchema = Joi.object({
