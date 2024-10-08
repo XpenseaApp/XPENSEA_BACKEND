@@ -1345,11 +1345,13 @@ exports.getWallet = async (req, res) => {
       .populate("requestedBy.sender", "name");
 
     const mappedAdvances = advances.map((advance) => ({
-      _id: advance._id,
+      _id: `#transaction_${String(advance._id).slice(0, 6)}`,
       amount: advance.amount,
       date: advance.createdAt,
       mode: "credit",
-      admin: advance.requestedBy.sender ? advance.requestedBy.sender.name : "User",
+      admin: advance.requestedBy.sender
+        ? advance.requestedBy.sender.name
+        : "User",
     }));
 
     const totalAmount = advances.reduce(
@@ -1373,7 +1375,7 @@ exports.getWallet = async (req, res) => {
 
     // Map the expense data for response
     const mappedData = expenses.map((exp) => ({
-      _id: exp._id,
+      _id: `#transaction_${String(exp._id).slice(0, 6)}`,
       amount: exp.amount,
       date: exp.deductOn,
       mode: "debit",
