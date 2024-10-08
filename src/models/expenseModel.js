@@ -11,6 +11,7 @@ const expenseSchema = mongoose.Schema(
     category: { type: String },
     description: { type: String },
     image: [{ type: String }], // TODO: change name as document 
+    documentOcrText: [{ type: String }], 
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
