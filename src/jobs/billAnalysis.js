@@ -1,12 +1,8 @@
-
-
 const Tesseract = require('tesseract.js');
 const Expense = require('../models/expenseModel');
 const { ChatPromptTemplate } = require('@langchain/core/prompts');
 const { ChatOpenAI } = require('@langchain/openai');
 const { z } = require('zod');
-
-
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 console.log(process.env.test,'OpenAI API key', OPENAI_API_KEY);
@@ -90,20 +86,26 @@ async function runOCR(id) {
       return;
     }
 
-    if (!expense.image) {
+    if (!expense.image || expense.image.length === 0) {
       console.log('Expense does not have an image.');
       return;
     }
 
     const worker = await createWorker();
+    let ocrText = '';
 
     try {
       console.log('Starting OCR for expense:', expense._id);
-      const { data: { text } } = await worker.recognize(expense.image[0]);
-      console.log('Recognition result for expense', expense._id, ':', text);
-      expense.documentOcrText = text;
+      
+      // Process each image in the array
+      for (let i = 0; i < expense.image.length; i++) {
+        const { data: { text } } = await worker.recognize(expense.image[i]);
+        console.log(`Recognition result for expense ${expense._id}, image ${i + 1}:`, text);
+        expense.documentOcrText[i] = text; // Save concatenated OCR result
+      }
 
-      const input = `This is a reimbursement expense. The name of the expense is ${expense.title}, the amount is ${expense.amount}, the date is ${expense.date}, the time is ${expense.time}, the category is ${expense.category}, the description is ${expense.description}, and the ocr data in the image is ${text}. With maximum scrutiny based on the data in the image find the scores for authenticity, accuracy, compliance, completeness, and relevance of the expense. Strictly If the ocr data in the image does not represent any type of bill then the scores should be 0.`;
+
+      const input = `This is a reimbursement expense. The name of the expense is ${expense.title}, the amount is ${expense.amount}, the date is ${expense.date}, the time is ${expense.time}, the category is ${expense.category}, the description is ${expense.description}, and the ocr data in the image is ${ocrText}. With maximum scrutiny based on the data in the image find the scores for authenticity, accuracy, compliance, completeness, and relevance of the expense. Strictly If the ocr data in the image does not represent any type of bill then the scores should be 0.`;
 
       const classificationResult = await taggingChain.invoke({ input });
 
@@ -121,5 +123,6 @@ async function runOCR(id) {
     console.error('Error in runOCR function:', err);
   }
 }
+
 //test//
 module.exports = runOCR;
