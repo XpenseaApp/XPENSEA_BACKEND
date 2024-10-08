@@ -11,7 +11,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: `https://dev-api.xpensea.com/api/v1`,
+      url: `https://xpensea--backend-393541516579.asia-south1.run.app/api/v1/`,
     },
     {
       url: `http://localhost:${PORT}/api/${API_VERSION}`,
@@ -40,11 +40,11 @@ const options = {
 
 const swaggerOptions = {
   swaggerOptions: {
-    docExpansion: "none", 
-    filter: true, 
-    tagsSorter: "alpha", 
-    operationsSorter: "alpha" 
-  }
+    docExpansion: "none",
+    filter: true,
+    tagsSorter: "alpha",
+    operationsSorter: "alpha",
+  },
 };
 
 const swaggerSpec = swaggerJSDoc(options);
