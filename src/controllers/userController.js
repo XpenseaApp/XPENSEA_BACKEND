@@ -360,54 +360,72 @@ exports.listController = async (req, res) => {
     };
 
     if (type === "reports") {
-      const totalCount = await Report.countDocuments(filter);
-const fetchReports = await Report.find(filter)
-  .populate({
-    path: "expenses",
-    select: "amount",
-  })
-  .skip(skipCount)
-  .limit(10)
-  .sort({ createdAt: -1 })
-  .lean();
-
-if (!fetchReports || fetchReports.length === 0) {
-  return responseHandler(res, 200, "No Reports found", [], totalCount);
-}
-
-const mappedData = await Promise.all(
-  fetchReports.map(async (item) => {
-    let isEvent = false;
-    let eventType = null;
-
-    if (item.event) {
-      const eventDetails = await Event.findOne({ _id: item.event });
-      if (eventDetails) {
-        eventType = eventDetails.type;
+      try {
+        // Count total number of documents
+        const totalCount = await Report.countDocuments(filter);
+      
+        // Fetch reports with expenses populated
+        const fetchReports = await Report.find(filter)
+          .populate({
+            path: "expenses",
+            select: "amount",
+          })
+          .skip(skipCount)
+          .limit(10)
+          .sort({ createdAt: -1 })
+          .lean();
+      
+        // Check if reports were found
+        if (!fetchReports || fetchReports.length === 0) {
+          return responseHandler(res, 200, "No Reports found", [], totalCount);
+        }
+      
+        // Use Promise.all to handle async map operations
+        const mappedData = await Promise.all(
+          fetchReports.map(async (item) => {
+            if (!item) {
+              throw new Error("Report item is undefined.");
+            }
+      
+            let isEvent = false;
+            let eventType = null;
+      
+            // Check if there's an associated event
+            if (item.event) {
+              const eventDetails = await Event.findOne({ _id: item.event });
+              if (eventDetails) {
+                eventType = eventDetails.type;
+              }
+              isEvent = true;
+            }
+      
+            // Calculate the total expense amount
+            const totalAmount = item.expenses.reduce(
+              (acc, exp) => acc + exp.amount,
+              0
+            );
+      
+            // Return the processed data for each report
+            return {
+              _id: item._id,
+              title: item.title,
+              status: item.status,
+              isEvent: isEvent,
+              eventType: eventType,
+              totalAmount,
+              expenseCount: item.expenses.length,
+              date: moment(item.reportDate).format("MMM DD YYYY"),
+            };
+          })
+        );
+      
+        // Return the response with the processed data and total count
+        return responseHandler(res, 200, "Reports found", mappedData, totalCount);
+      } catch (error) {
+        console.error("Error fetching reports:", error.message);
+        return responseHandler(res, 500, "Internal Server Error", []);
       }
-      isEvent = true;
-    }
-
-    const totalAmount = item.expenses.reduce(
-      (acc, exp) => acc + exp.amount,
-      0
-    );
-
-    return {
-      _id: item._id,
-      title: item.title,
-      status: item.status,
-      isEvent: isEvent,
-      eventType: eventType,
-      totalAmount,
-      expenseCount: item.expenses.length,
-      date: moment(item.reportDate).format("MMM DD YYYY"),
-    };
-  })
-);
-
-return responseHandler(res, 200, "Reports found", mappedData, totalCount);
-
+      
     } else if (type === "expenses") {
       const totalCount = await Expense.countDocuments(filter);
       const fetchExpenses = await Expense.find(filter)
