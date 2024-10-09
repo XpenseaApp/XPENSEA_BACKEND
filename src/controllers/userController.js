@@ -423,7 +423,7 @@ exports.listController = async (req, res) => {
         return responseHandler(res, 200, "Reports found", mappedData, totalCount);
       } catch (error) {
         console.error("Error fetching reports:", error.message);
-        return responseHandler(res, 500, "Internal Server Error", []);
+        return responseHandler(res, 500, "Internal Server Error", [error.message]);
       }
       
     } else if (type === "expenses") {
