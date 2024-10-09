@@ -361,6 +361,7 @@ exports.listController = async (req, res) => {
 
     if (type === "reports") {
       const totalCount = await Report.countDocuments(filter);
+      const eventDetails = await Event.findOne({ _id: item.event });
       const fetchReports = await Report.find(filter)
         .populate({
           path: "expenses",
@@ -370,15 +371,14 @@ exports.listController = async (req, res) => {
         .limit(10)
         .sort({ createdAt: -1 })
         .lean();
-      if (!fetchReports || fetchReports.length === 0) {
-        return responseHandler(res, 200, "No Reports found", []);
-      }
+        if (!fetchReports || fetchReports.length === 0) {
+          return responseHandler(res, 200, "No Reports found", []);
+        }
       
-      const mappedData = fetchReports.map(async (item) => {
+      const mappedData = fetchReports.map( (item) => {
         let isEvent = false;
         let eventType = null;
         if (item.event) {
-          const eventDetails = await Event.findOne({ _id: item.event });
           if (eventDetails) {
             eventType = eventDetails.type;
           }
