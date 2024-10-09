@@ -373,8 +373,19 @@ exports.listController = async (req, res) => {
       if (!fetchReports || fetchReports.length === 0) {
         return responseHandler(res, 200, "No Reports found", []);
       }
-
-      const mappedData = fetchReports.map((item) => {
+      
+      const mappedData = fetchReports.map(async (item) => {
+        let isEvent = false;
+        let eventType = null;
+        if (item.event) {
+          const eventDetails = await Event.findOne({ _id: item.event });
+          if (eventDetails) {
+            eventType = eventDetails.type;
+          }
+        }
+        if (item.event) {
+          isEvent = true;
+        } 
         const totalAmount = item.expenses.reduce(
           (acc, exp) => acc + exp.amount,
           0
@@ -383,6 +394,8 @@ exports.listController = async (req, res) => {
           _id: item._id,
           title: item.title,
           status: item.status,
+          isEvent :isEvent,
+          eventType: eventType,
           totalAmount,
           expenseCount: item.expenses.length,
           date: moment(item.reportDate).format("MMM DD YYYY"),
